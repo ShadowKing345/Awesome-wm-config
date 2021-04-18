@@ -7,16 +7,26 @@ local variables = require( 'variables' )
 
 local r = {}
 
-r.awesomemenu = {
-    { "hotkeys", function() require'awful.hotkeys_popup'.show_help( nil, awful.screen.focused() ) end },
-    { "manual", variables.terminal .. " -e man awesome" },
-    { "edit config", variables.editor_cmd .. " " .. awesome.conffile }, { "restart", awesome.restart },
-    { "quit", function() awesome.quit() end }
-}
 r.mainmenu = awful.menu( {
-    items = { { "awesome", r.awesomemenu, beautiful.awesome_icon }, { "open terminal", variables.terminal } }
+    items = {
+        {
+            "Awesome", {
+                { "Hotkeys", function()
+                    require'awful.hotkeys_popup'.show_help( nil, awful.screen.focused() )
+                end }, { "Manual", variables.terminal .. " -e man awesome" },
+                { "Edit Config", variables.editor_cmd .. " " .. awesome.conffile }, { "Reload Config", awesome.restart }
+            }, beautiful.awesome_icon
+        }, {
+            "Power Options", {
+                { "Logout", awesome.quit }, { "Reboot", function() awful.spawn( "reboot" ) end },
+                { "Suspend", function() awful.spawn( "systemctl suspend" ) end },
+                { "Shutdown", function() awful.spawn( "shutdown now" ) end }
+            }
+        }, { "Open Terminal", variables.terminal }
+    }
 } )
-r.launcher = awful.widget.launcher( { image = beautiful.awesome_icon, menu = r.mainmenu } )
+
+r.launcher = awful.widget.launcher( { image = beautiful.awesome_icon, menu = r.mainmenu }, {} )
 r.textclock = wibox.widget.textclock()
 
 function r.Init()
@@ -29,6 +39,7 @@ function r.Init()
 
         -- Create a promptbox for each screen
         s.promptbox = awful.widget.prompt()
+        -- Create an imagebox widget which will contain an icon indicating which layout we're using.
         -- Create an imagebox widget which will contain an icon indicating which layout we're using.
         -- We need one layoutbox per screen.
         s.layoutbox = awful.widget.layoutbox( s )
@@ -50,6 +61,7 @@ function r.Init()
             buttons = keybindings.mouse.taskList
         }
 
+
         -- Create the wibox
         s.wibox = awful.wibar( { position = "top", screen = s } )
 
@@ -67,7 +79,7 @@ function r.Init()
                 layout = wibox.layout.fixed.horizontal,
                 wibox.widget.systray(),
                 r.textclock,
-                s.layoutbox
+                s.layoutbox,
             }
         }
     end )

@@ -4,7 +4,10 @@ local gears = require( 'gears' )
 local r = {}
 
 function r.Init()
-    beautiful.init( gears.filesystem.get_themes_dir() .. "default/theme.lua" )
+
+    if not beautiful.init( require( 'theme.dark-red.theme' ) ) then
+        beautiful.init( gears.filesystem.get_themes_dir() .. "default/theme.lua" )
+    end
     screen.connect_signal( "property::geometry", r.Set_wallpaper )
 end
 
