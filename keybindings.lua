@@ -67,7 +67,7 @@ r.keyboard.awesome = combine_tables( {
         }
     end, { description = "lua execute prompt", group = "Awesome" } ),
     awful.key( modkey, "p", function() menubar.show() end, { description = "show the menubar", group = "Awesome" } ),
-    awful.key( { "Mod1" }, "Tab", function() require( "windows.task-switcher" )() end,
+    awful.key( { "Mod1" }, "Tab", function() require"window-manager.wibar".task_switcher:show() end,
                { description = "Open Task Switcher", group = "Awesome" } )
 } )
 
