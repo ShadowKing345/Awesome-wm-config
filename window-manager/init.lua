@@ -13,7 +13,7 @@ function r.Init()
 
     require( 'window-manager.wibar' ).Init()
     root.buttons( keybindings.combine_tables( {
-        awful.button( {}, 3, function() r.mainmenu:toggle() end ), awful.button( {}, 4, awful.tag.viewnext ),
+        awful.button( {}, 3, function() require'window-manager.wibar'.mainmenu:toggle() end ), awful.button( {}, 4, awful.tag.viewnext ),
         awful.button( {}, 5, awful.tag.viewprev )
     } ) )
 
