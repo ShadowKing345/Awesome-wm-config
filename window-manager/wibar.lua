@@ -1,9 +1,11 @@
-local awful = require( 'awful' )
-local keybindings = require( 'keybindings' )
-local wibox = require( 'wibox' )
-local gears = require( 'gears' )
-local beautiful = require( 'beautiful' )
-local variables = require( 'variables' )
+local awful = require( "awful" )
+local keybindings = require( "keybindings" )
+local wibox = require( "wibox" )
+local gears = require( "gears" )
+local beautiful = require( "beautiful" )
+local variables = require( "variables" )
+
+local task_switcher = require( "widgets.task-switcher" )
 
 local r = {}
 
@@ -12,7 +14,7 @@ r.mainmenu = awful.menu( {
         {
             "Awesome", {
                 { "Hotkeys", function()
-                    require'awful.hotkeys_popup'.show_help( nil, awful.screen.focused() )
+                    require"awful.hotkeys_popup".show_help( nil, awful.screen.focused() )
                 end }, { "Manual", variables.terminal .. " -e man awesome" },
                 { "Edit Config", variables.editor_cmd .. " " .. awesome.conffile }, { "Reload Config", awesome.restart }
             }, beautiful.awesome_icon
@@ -26,13 +28,15 @@ r.mainmenu = awful.menu( {
     }
 } )
 
+r.task_switcher = task_switcher({})
+
 r.launcher = awful.widget.launcher( { image = beautiful.awesome_icon, menu = r.mainmenu }, {} )
 r.textclock = wibox.widget.textclock()
 
 function r.Init()
     awful.screen.connect_for_each_screen( function(s)
         -- Wallpaper
-        require'theme'.Set_wallpaper( s )
+        require"theme".Set_wallpaper( s )
 
         -- Each screen has its own tag table.
         awful.tag( { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1] )
@@ -61,7 +65,6 @@ function r.Init()
             buttons = keybindings.mouse.taskList
         }
 
-
         -- Create the wibox
         s.wibox = awful.wibar( { position = "top", screen = s } )
 
@@ -79,7 +82,7 @@ function r.Init()
                 layout = wibox.layout.fixed.horizontal,
                 wibox.widget.systray(),
                 r.textclock,
-                s.layoutbox,
+                s.layoutbox
             }
         }
     end )
