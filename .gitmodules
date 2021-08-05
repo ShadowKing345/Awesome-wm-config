@@ -1,0 +1,3 @@
+[submodule "redflat"]
+	path = redflat
+	url = git@github.com:worron/redflat.git
