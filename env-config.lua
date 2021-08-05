@@ -18,6 +18,7 @@ function env:init(args)
     self.fm = "nemo"
     self.home = os.getenv("HOME")
     self.themedir = awful.util.get_configuration_dir() .. "theme"
+    self.player = args.player or "spotify"
 
     -- i can see why boolean defaults are a pain
     self.sloppy_focus = args.sloppy_focus or false

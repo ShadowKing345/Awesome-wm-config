@@ -64,22 +64,29 @@ taglist.buttons = awful.util.table.join(
 local textclock = {}
 textclock.widget = redflat.widget.textclock({ timeformat = "%H:%M", dateformat = "%b %d %a"})
 
--- Layout config
-local layoutbox = {}
-
-layoutbox.buttons = awful.util.table.join(
-	awful.button({}, 1, function() awful.layout.inc(1) end),
-	awful.button({}, 3, function() redflat.widget.layoutbox:toggle_menu(mouse.screen.selected_tag) end),
-	awful.button({}, 4, function() awful.layout.inc(1) end),
-	awful.button({}, 5, function() awful.layout.inc(-1) end)
-)
-
 -- Tray widget
 local tray = {}
 tray.widget = redflat.widget.minitray()
 
 tray.buttons = awful.util.table.join(
 	awful.button({}, 1, function() redflat.widget.minitray:toggle() end)
+)
+
+-- PA volume control
+local volume = {}
+volume.widget = redflat.widget.pulse(nil, { widget = redflat.gauge.audio.blue.new })
+
+-- activate player widget
+redflat.float.player:init({ name = env.player })
+
+volume.buttons = awful.util.table.join(
+	awful.button({}, 4, function() volume.widget:change_volume()                end),
+	awful.button({}, 5, function() volume.widget:change_volume({ down = true }) end),
+	awful.button({}, 2, function() volume.widget:mute()                         end),
+	awful.button({}, 3, function() redflat.float.player:show()                  end),
+	awful.button({}, 1, function() redflat.float.player:action("PlayPause")     end),
+	awful.button({}, 8, function() redflat.float.player:action("Previous")      end),
+	awful.button({}, 9, function() redflat.float.player:action("Next")          end)
 )
 
 -- Screen setup
@@ -89,9 +96,6 @@ awful.screen.connect_for_each_screen(function (s)
 
 	-- tags
 	awful.tag({"Tag1", "Tag2", "Tag3", "Tag4", "Tag5"}, s, awful.layout.layouts[1])
-
-	-- layout widget
-	layoutbox[s] = redflat.widget.layoutbox({screen = s})
 
 	-- taglist widget
 	taglist[s] = redflat.widget.taglist({screen = s, buttons = taglist.buttons, hint = env.tagtip }, taglist.style)
@@ -127,7 +131,7 @@ awful.screen.connect_for_each_screen(function (s)
 			layout = wibox.layout.fixed.horizontal,
 			
 			seperator,
-			env.wrapper(layoutbox[s], "layoutbox", layoutbox.buttons),
+			env.wrapper(volume.widget, "volume", volume.buttons),
 			seperator,
 			env.wrapper(textclock.widget, "textclock"),
 			seperator,
@@ -138,7 +142,7 @@ end)
 
 -- Key Bindings
 local hotkeys = require("keys-config")
-hotkeys:init({env = env, menu = mymenu.mainmenu})
+hotkeys:init({env = env, menu = mymenu.mainmenu, volume = volume.widget })
 
 -- Rules
 local rules = require("rules-config")
@@ -151,3 +155,10 @@ titlebar:init()
 -- Base signals for awesome wm
 local signals = require("signals-config")
 signals:init({env = env})
+
+
+-- Autostart user applications
+if redflat.startup.is_startup then
+	local autostart = require("autostart-config")
+	autostart.run()
+end

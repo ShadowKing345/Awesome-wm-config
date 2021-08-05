@@ -82,12 +82,26 @@ local function client_numkey(i, mod, action)
 	)
 end
 
+-- right bottom corner position
+local rt_corner = function ()
+	return {
+		x = screen[mouse.screen].workarea.x + screen[mouse.screen].workarea.width,
+	    y = screen[mouse.screen].workarea.y
+	}
+end
+
 -- Build hotkeys depended on config parameters
 function hotkeys:init(args)
     -- Init vars
     args = args or {}
     local env = args.env
     local menu = args.menu
+	local volume = args.volume
+
+	-- volume functions
+	local volume_raise = function () volume:change_volume({ show_notify = true }) end
+	local volume_lower = function () volume:change_volume({ show_notify = true, down = true }) end
+	local volume_mute = function () volume:mute() end
 
     self.mouse.root = (awful.util.table.join(
         awful.button({ }, 3, function () menu:toggle() end),
@@ -210,11 +224,11 @@ function hotkeys:init(args)
 			{ description = "Show main menu", group = "Widgets" }
 		},
 		{
-			{ env.mod }, "r", function() apprunner:show() end,
+			{ env.mod }, "r", function() redflat.float.prompt:run() end,
 			{ description = "Application launcher", group = "Widgets" }
 		},
 		{
-			{ env.mod }, "p", function() redflat.float.prompt:run() end,
+			{ env.mod }, "p", function() apprunner:show() end,
 			{ description = "Show the prompt box", group = "Widgets" }
 		},
 		{
@@ -272,7 +286,6 @@ function hotkeys:init(args)
 			{ env.mod }, "Left", awful.tag.viewprev,
 			{ description = "View previous tag", group = "Tag navigation" }
 		},
-
 		{
 			{ env.mod }, "y", function() laybox:toggle_menu(mouse.screen.selected_tag) end,
 			{ description = "Show layout menu", group = "Layouts" }
@@ -285,6 +298,49 @@ function hotkeys:init(args)
 			{ env.mod }, "Down", function() awful.layout.inc(-1) end,
 			{ description = "Select previous layout", group = "Layouts" }
 		},
+
+		{
+			{ }, "XF86AudioRaiseVolume", volume_raise,
+			{ description = "Play/Pause", group = "Media Controls" }
+		},
+		{
+			{ }, "XF86AudioLowerVolume", volume_lower,
+			{ description = "Play/Pause", group = "Media Controls" }
+		},
+		{
+			{ }, "XF86AudioMute", volume_mute,
+			{ description = "Play/Pause", group = "Media Controls" }
+		},
+
+		{
+			{ env.mod }, "e", function() redflat.float.player:show(rt_corner()) end,
+			{ description = "Show/hide widget", group = "Audio player" }
+		},
+		{
+			{}, "XF86AudioPlay", function() redflat.float.player:action("PlayPause") end,
+			{ description = "Play/Pause track", group = "Audio player" }
+		},
+		{
+			{}, "XF86AudioNext", function() redflat.float.player:action("Next") end,
+			{ description = "Next track", group = "Audio player" }
+		},
+		{
+			{}, "XF86AudioPrev", function() redflat.float.player:action("Previous") end,
+			{ description = "Previous track", group = "Audio player" }
+		},
+		{
+			{ "Shift" }, "XF86AudioRaiseVolume", function () redflat.float.player:change_volume(0.05) end,
+			{ description = "Play/Pause", group = "Media Controls" }
+		},
+		{
+			{ "Shift" }, "XF86AudioLowerVolume", function () redflat.float.player:change_volume(-0.05) end,
+			{ description = "Play/Pause", group = "Media Controls" }
+		},
+
+		{
+			{ env.mod, "Control" }, "s", function() for s in screen do env.wallpaper(s) end end,
+			{} -- hidden key
+		}
 	}
 
 	-- Client keys
