@@ -20,9 +20,9 @@ function menu:init(args)
 			{ "Terminal",      env.terminal, },
 			separator,
             { "Power", {
-                {"Shutdown", function () naughty.notify({text = "shutdown"}) end, key = "s" },
-                {"Reboot", function () naughty.notify({text = "reboot"}) end, key = "r" },
-                {"Sleep", function () naughty.notify({text = "sleep"}) end, key = "l" },
+                {"Shutdown", function () awful.spawn.with_shell("shutdown now") end, key = "s" },
+                {"Reboot", function () awful.spawn.with_shell("reboot") end, key = "r" },
+                {"Sleep", function () awful.spawn.with_shell("systemctl suspend") end, key = "l" },
             }},
             separator,
 			{ "Reload", awesome.restart, },

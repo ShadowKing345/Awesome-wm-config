@@ -42,6 +42,12 @@ function rules:init(args)
             rule_any = {type = {"normal", "dialog" }},
             properties = { titlebars_enabled = true }
         },
+
+        -- discord
+        {
+            rule = { class = "discord" },
+            properties = { tag = "Tag3" }
+        },
     }
 
     awful.rules.rules = rules.rules

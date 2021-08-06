@@ -6,6 +6,7 @@ function autostart.run()
     -- environment
 
     -- gnome environment
+    awful.spawn.with_shell("nvidia-settings --load-config-only") -- personal display config file. (recommened to use xrandar if you have no idea what it does)
     awful.spawn.with_shell("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
 
     -- utils
@@ -14,7 +15,7 @@ function autostart.run()
 
     -- apps
     awful.spawn.with_shell("discord")
-    awful.spawn.with_shell("mailspring")
+    awful.spawn.with_shell("mailspring -b")
 end
 
 function autostart.run_from_file(file_)

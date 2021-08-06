@@ -60,7 +60,6 @@ theme.fonts = {
 	notify   = "sans bold 14", -- redflat notify popup font
 	clock    = "sans bold 12", -- textclock widget font
 	qlaunch  = "sans bold 14", -- quick launch key label font
-	--logout   = "sans bold 14", -- logout screen labels
 	title    = "sans bold 12", -- widget titles font
 	tiny     = "sans bold 10", -- smallest font for widgets
 	keychain = "sans bold 14", -- key sequence tip font
@@ -199,7 +198,7 @@ function theme:init()
 	self.service.navigator.keytip["base"] = { geometry = { width = 600 }, exit = true }
 
 	-- styles for certain layouts
-	self.service.navigator.keytip["fairv"] = { geometry = { width = 600}, exit = true }
+	self.service.navigator.keytip["fairv"] = { geometry = { width = 400}, exit = true }
 	self.service.navigator.keytip["fairh"] = self.service.navigator.keytip["fairv"]
 	self.service.navigator.keytip["spiral"] = self.service.navigator.keytip["fairv"]
 	self.service.navigator.keytip["dwindle"] = self.service.navigator.keytip["fairv"]
@@ -233,7 +232,7 @@ function theme:init()
 		graceful_shutdown         = true,
 		double_key_activation     = true,
 		client_kill_timeout       = 5,
-		icons                     = {},
+		icons                     = self.wicon.logout,
 		color                     = self.color, -- colors (main used)
 	}
 
@@ -266,7 +265,7 @@ function theme:init()
 		screen_gap        = self.useless_gap + self.border_width, -- minimal space from screen edge on placement
 		height            = 32,  -- menu item height
 		width             = 250, -- menu item width
-		icon_margin       = { 8, 8, 8, 8 }, -- space around left icon in menu item
+		icon_margin       = { 4, 7, 7, 8 }, -- space around left icon in menu item
 		ricon_margin      = { 9, 9, 9, 9 }, -- space around right icon in menu item
 		nohide            = false, -- do not hide menu after item activation
 		auto_expand       = true,  -- show submenu on item selection (without item activation)
@@ -341,10 +340,10 @@ function theme:init()
 	-- Double icon indicator
 	--------------------------------------------------------------
 	self.gauge.icon.double = {
-		icon1       = self.icon.system,  -- first icon
-		icon2       = self.icon.system,  -- second icon
+		icon1       = self.wicon.down,  -- first icon
+		icon2       = self.wicon.up,  -- second icon
 		is_vertical = true,              -- use vertical gradient (horizontal if false)
-		igap        = 4,                 -- gap between icons
+		igap        = -6,                 -- gap between icons
 		step        = 0.02,              -- icon painting step
 		color       = self.color         -- colors (main used)
 	}
@@ -389,7 +388,7 @@ function theme:init()
 	self.gauge.audio.blue = {
 		width   = 75,               -- widget width
 		dmargin = { 10, 0, 2, 2 },  -- margins around dash area
-		icon    = self.icon.system, -- volume icon
+		icon    = self.wicon.headphones, -- volume icon
 
 		-- colors
 		color = { icon = self.color.icon, mute = self.color.urgent },
@@ -399,7 +398,7 @@ function theme:init()
 	}
 
 	self.gauge.audio.red = {
-		icon  = { volume = self.icon.system, mute = self.icon.warning },                   -- icons
+		icon  = { volume = self.wicon.audio, mute = self.wicon.mute },                   -- icons
 		step  = 0.05,                                                                      -- icon painting step
 		color = { main = self.color.main, icon = self.color.icon, mute = self.color.gray } -- custom colors
 	}
@@ -613,7 +612,7 @@ function theme:init()
 	-- Pulseaudio volume control
 	------------------------------------------------------------
 	self.widget.pulse = {
-		notify = {},  -- redflat notify style (see theme.float.notify)
+		notify = { icon = self.wicon.audio },  -- redflat notify style (see theme.float.notify)
 		widget = nil, -- audio gauge (usually setted by rc file)
 		audio  = {}   -- style for gauge
 	}
@@ -621,7 +620,7 @@ function theme:init()
 	-- Keyboard layout indicator
 	------------------------------------------------------------
 	self.widget.keyboard = {
-		icon         = self.icon.system,  -- widget icon
+		icon         = self.wicon.keyboard,  -- widget icon
 		micon        = self.icon,         -- some common menu icons
 
 		-- list of colors associated with keyboard layouts
@@ -634,8 +633,8 @@ function theme:init()
 	-- Mail indicator
 	------------------------------------------------------------
 	self.widget.mail = {
-		icon        = self.icon.system,  -- widget icon
-		notify      = {},                -- redflat notify style (see theme.float.notify)
+		icon        = self.wicon.mail,  -- widget icon
+		notify      = { icon = self.wicon.mail }, -- redflat notify style (see theme.float.notify)
 		need_notify = true,              -- show notification on new mail
 		firstrun    = true,              -- check mail on wm start/restart
 		color       = self.color,        -- colors (main used)
@@ -645,7 +644,7 @@ function theme:init()
 	------------------------------------------------------------
 	self.widget.updates = {
 		icon        = self.icon.system,  -- widget icon
-		notify      = {},                -- redflat notify style (see theme.float.notify)
+		notify      = { icon = self.wicon.package },                -- redflat notify style (see theme.float.notify)
 		need_notify = true,              -- show notification on updates
 		firstrun    = true,              -- check updates on wm start/restart
 		color       = self.color,        -- colors (main used)
@@ -668,12 +667,12 @@ function theme:init()
 
 			-- wibox icons
 			icon         = {
-				package = self.icon.system,                   -- main wibox image
+				package = self.wicon.package,                   -- main wibox image
 				close   = self.base .. "/titlebar/close.svg", -- close button
-				normal  = self.icon.system,                   -- regular notification
-				daily   = self.icon.system,                   -- defer notification for day
-				weekly  = self.icon.system,                   -- defer notification for 7 day
-				silent  = self.icon.system,                   -- disable notification
+				normal  = self.wicon.updates.normal,                   -- regular notification
+				daily   = self.wicon.updates.daily,                   -- defer notification for day
+				weekly  = self.wicon.updates.weekly,                   -- defer notification for 7 day
+				silent  = self.wicon.updates.silent,                   -- disable notification
 			},
 
 			-- widget areas height
@@ -696,7 +695,7 @@ function theme:init()
 	------------------------------------------------------------
 	self.widget.layoutbox = {
 		micon = self.icon,  -- some common menu icons (used: 'blank', 'check')
-		color = self.color  -- colors (main used)
+		color = self.color,  -- colors (main used)
 	}
 
 	-- layout icons
@@ -723,8 +722,8 @@ function theme:init()
 
 	-- redflat menu style (see theme.menu)
 	self.widget.layoutbox.menu = {
-		icon_margin  = { 8, 12, 8, 8 },
-		width        = 260,
+		icon_margin  = { 8, 12, 9, 9 },
+		width        = 200,
 		auto_hotkey  = true,
 		nohide       = false,
 		color        = { right_icon = self.color.icon, left_icon = self.color.icon }
@@ -790,11 +789,11 @@ function theme:init()
 		menu = { width = 200, color = { right_icon = self.color.icon }, ricon_margin = { 9, 9, 9, 9 } },
 
 		-- tag action submenu style (see theme.menu)
-		tagmenu = { width = 160, color = { right_icon = self.color.icon, left_icon = self.color.icon },
+		tagmenu = { width = 150, color = { right_icon = self.color.icon, left_icon = self.color.icon },
 		            icon_margin = { 9, 9, 9, 9 } },
 
 		-- set which action will hide menu after activate
-		hide_action = { min = true, move = true, max = false, add = false, floating = false, sticky = false,
+		hide_action = { min = false, move = false, max = false, add = false, floating = false, sticky = false,
 		                ontop = false, below = false, maximized = false },
 	}
 
@@ -815,7 +814,7 @@ function theme:init()
 	-- multiline task element tip
 	self.widget.tasklist.tasktip = {
 		border_width = 2,                -- tip border width
-		margin       = { 10, 10, 5, 5 }, -- margins around text in tip lines
+		margin       = { 8, 8, 4, 4 }, -- margins around text in tip lines
 		timeout      = 0.5,              -- hide timeout
 		shape        = nil,              -- wibox shape
 		sl_highlight = false,            -- highlight application state when it's single line tip
@@ -835,7 +834,7 @@ function theme:init()
 	-- Brightness control
 	------------------------------------------------------------
 	self.float.brightness = {
-		notify = {},  -- redflat notify style (see theme.float.notify)
+		notify = { icon = self.wicon.brightness },  -- redflat notify style (see theme.float.notify)
 	}
 
 	-- Client menu
@@ -858,9 +857,9 @@ function theme:init()
 		menu                 = self.widget.tasklist.winmenu.menu,
 		state_iconsize       = self.widget.tasklist.winmenu.state_iconsize,
 		tagmenu              = self.widget.tasklist.winmenu.tagmenu,
-		hide_action          = self.widget.tasklist.winmenu.hide_action,
+		hide_action          = { min = false, move = false},
 		enable_screen_switch = false,
-		enable_tagline       = false,
+		enable_tagline       = true,
 		color                = self.color,
 	}
 
@@ -926,7 +925,14 @@ function theme:init()
 		keytip        = { geometry = { width = 400 } },
 
 		-- placement function
-		set_position  = nil,
+		set_position  = function (wibox)
+			local geometry = {
+				x = mouse.screen.workarea.x + mouse.screen.workarea.width,
+				y = mouse.screen.workarea.y + mouse.screen.workarea.height,
+			}
+
+			wibox:geometry(geometry)
+		end,
 	}
 
 	-- Application runner
@@ -938,7 +944,7 @@ function theme:init()
 		icon_margin   = { 8, 16, 0, 0 },                   -- margins around widget icon
 		title_height  = 48,                                -- height of title (promt and icon) area
 		prompt_height = 35,                                -- prompt line height
-		title_icon    = self.icon.system,                  -- widget icon
+		title_icon    = self.wicon.search,                  -- widget icon
 		border_width  = 0,                                 -- widget border width
 		parser        = {},                                -- desktop file parser settings (see theme.service.dfparser)
 		field         = nil,                               -- redflat text field style(see theme.float.decoration.field)
@@ -1041,7 +1047,7 @@ function theme:init()
 	-- Hotkeys helper
 	------------------------------------------------------------
 	self.float.hotkeys = {
-		geometry      = { width = 1400 }, -- widget size
+		geometry      = { width = 1800 }, -- widget size
 		border_margin = { 20, 20, 8, 10 },              -- margins around widget content
 		border_width  = 0,                              -- widget border width
 		delim         = "   ",                          -- text separator between key and description
@@ -1057,8 +1063,8 @@ function theme:init()
 		-- manual setup for expected text line heights
 		-- used for auto adjust widget height
 		heights       = {
-			key   = 20, -- hotkey tip line height
-			title = 22  -- group title height
+			key   = 26, -- hotkey tip line height
+			title = 32  -- group title height
 		},
 	}
 
@@ -1110,8 +1116,12 @@ function theme:init()
 
 		-- widget icons
 		icon = {
-			onscreen = self.icon.system,
-			resize   = {},
+			onscreen = self.wicon.onscreen,
+			resize   = {
+				self.wicon.resize.full,
+				self.wicon.resize.horizontal,
+				self.wicon.resize.vertical,
+			},
 		},
 
 		-- redflat key tip settings
@@ -1123,12 +1133,12 @@ function theme:init()
 	self.float.keychain = {
 		geometry        = { width = 250, height = 56 }, -- default widget size
 		font            = self.fonts.keychain,          -- widget font
-		border_width    = 2,                            -- widget border width
+		border_width    = 0,                            -- widget border width
 		shape           = nil,                          -- wibox shape
 		color           = self.color,                   -- colors (main used)
 
 		-- redflat key tip settings
-		keytip          = { geometry = { width = 600 }, column = 1 },
+		keytip          = { geometry = { width = 1200 }, column = 2 },
 	}
 
 	-- Tooltip
@@ -1160,14 +1170,14 @@ function theme:init()
 	-- Floating calendar
 	------------------------------------------------------------
 	self.float.calendar = {
-		geometry                  = { width = 340, height = 420 },
+		geometry                  = { width = 364, height = 460 },
 		margin                    = { 20, 20, 20, 15 },
 		controls_margin           = { 0, 0, 5, 0 },
-		calendar_item_margin      = { 2, 5, 2, 2 },
-		spacing                   = { separator = 28, datetime = 5, controls = 5, calendar = 8 },
+		calendar_item_margin      = { 4, 8, 2, 2 },
+		spacing                   = { separator = 26, datetime = 5, controls = 5, calendar = 12 },
 		controls_icon_size        = { width = 18, height = 18 },
-		separator                 = {},
-		border_width              = 2,
+		separator                 = { margin = { 0, 0, 12, 12 } },
+		border_width              = 0,
 		days                      = {
 			weeknumber = { fg = self.color.gray, bg = "transparent" },
 			weekday    = { fg = self.color.gray, bg = "transparent" },
@@ -1182,7 +1192,7 @@ function theme:init()
 		date_format               = "%A, %d. %B",
 		clock_refresh_seconds     = 60,
 		weeks_start_sunday        = false,
-		show_week_numbers         = true,
+		show_week_numbers         = false,
 		show_weekday_header       = true,
 		long_weekdays             = false,
 		weekday_name_replacements = {},
@@ -1190,7 +1200,15 @@ function theme:init()
 		set_position              = nil,
 		shape                     = nil,
 		screen_gap                = 2 * self.useless_gap, -- screen edges gap on placement
-		color                     = self.color,           -- colors (main used)
+		color                     = {
+			border    = self.color.border,
+			wibox     = self.color.wibox,
+			icon      = self.color.icon,
+			main      = "transparent",
+			highlight = self.color.main,
+			gray      = self.color.gray,
+			text      = self.color.text,
+		},           -- colors (main used)
 	}
 
 	-- Notify (redflat notification widget)
@@ -1560,141 +1578,8 @@ function theme:init()
 		timeout = 0,
 		border_color = self.color.main
 	}
-end
 
-function theme:update()
-	theme:init()
 
-	-- Set hotkey helper size according current fonts and keys scheme
-	--------------------------------------------------------------------------------
-	self.service.navigator.keytip["fairv"] = { geometry = { width = 600 }, exit = true }
-	self.service.navigator.keytip["fairh"] = self.service.navigator.keytip["fairv"]
-
-	self.service.navigator.keytip["tile"]       = { geometry = { width = 600 }, exit = true }
-	self.service.navigator.keytip["tileleft"]   = self.service.navigator.keytip["tile"]
-	self.service.navigator.keytip["tiletop"]    = self.service.navigator.keytip["tile"]
-	self.service.navigator.keytip["tilebottom"] = self.service.navigator.keytip["tile"]
-
-	self.service.navigator.keytip["grid"]    = { geometry = { width = 1400 }, column = 2, exit = true }
-	self.service.navigator.keytip["usermap"] = { geometry = { width = 1400 }, column = 2, exit = true }
-
-	-- Log out screen
-	--------------------------------------------------------------------------------
-	self.service.logout.icons.logout = self.wicon.logout.logout
-	self.service.logout.icons.lock = self.wicon.logout.lock
-	self.service.logout.icons.poweroff = self.wicon.logout.poweroff
-	self.service.logout.icons.suspend = self.wicon.logout.suspend
-	self.service.logout.icons.reboot = self.wicon.logout.reboot
-	self.service.logout.icons.switch = self.wicon.logout.switch
-
-	-- Menu config
-	--------------------------------------------------------------------------------
-	self.menu.icon_margin  = { 4, 7, 7, 8 }
-	self.menu.keytip       = { geometry = { width = 400 } }
-
-	-- Panel widgets
-	--------------------------------------------------------------------------------
-
-	-- Double icon indicator
-	------------------------------------------------------------
-	self.gauge.icon.double.icon1 = self.wicon.down
-	self.gauge.icon.double.icon2 = self.wicon.up
-	self.gauge.icon.double.igap  = -6
-
-	-- Volume control
-	------------------------------------------------------------
-	self.gauge.audio.red.icon = { volume = self.wicon.audio, mute = self.wicon.mute }
-	self.gauge.audio.blue.icon = self.wicon.headphones
-
-	-- Pulseaudio volume control
-	------------------------------------------------------------
-	self.widget.pulse.notify = { icon = self.wicon.audio }
-
-	-- Keyboard layout indicator
-	------------------------------------------------------------
-	self.widget.keyboard.icon = self.wicon.keyboard
-
-	-- Mail indicator
-	------------------------------------------------------------
-	self.widget.mail.icon = self.wicon.mail
-	self.widget.mail.notify = { icon = self.wicon.mail }
-
-	-- System updates indicator
-	------------------------------------------------------------
-	self.widget.updates.notify = { icon = self.wicon.package }
-	self.widget.updates.wibox.icon.package = self.wicon.package
-	self.widget.updates.wibox.icon.normal = self.wicon.updates.normal
-	self.widget.updates.wibox.icon.silent = self.wicon.updates.silent
-	self.widget.updates.wibox.icon.weekly = self.wicon.updates.weekly
-	self.widget.updates.wibox.icon.daily = self.wicon.updates.daily
-
-	-- Layoutbox
-	------------------------------------------------------------
-	self.widget.layoutbox.menu.icon_margin  = { 8, 12, 9, 9 }
-	self.widget.layoutbox.menu.width = 200
-
-	-- Tasklist
-	------------------------------------------------------------
-	self.widget.tasklist.winmenu.hide_action = { min = false, move = false }
-	self.widget.tasklist.tasktip.margin = { 8, 8, 4, 4 }
-	self.widget.tasklist.winmenu.tagmenu.width = 150
-	self.widget.tasklist.winmenu.enable_tagline = true
-	self.widget.tasklist.winmenu.tagline = { height = 30 }
-	self.widget.tasklist.winmenu.tag_iconsize = { width = 16, height = 16 }
-
-	-- Floating widgets
-	--------------------------------------------------------------------------------
-
-	-- Client menu
-	------------------------------------------------------------
-	self.float.clientmenu.enable_tagline = true
-	self.float.clientmenu.hide_action = { min = false, move = false }
-
-	-- Top processes
-	------------------------------------------------------------
-	self.float.top.set_position  = function(wibox)
-		local geometry = { x = mouse.screen.workarea.x + mouse.screen.workarea.width,
-		                   y = mouse.screen.workarea.y + mouse.screen.workarea.height }
-		wibox:geometry(geometry)
-	end
-
-	-- Application runner
-	------------------------------------------------------------
-	self.float.apprunner.title_icon = self.wicon.search
-	self.float.apprunner.keytip = { geometry = { width = 400 } }
-
-	-- Application switcher
-	------------------------------------------------------------
-	self.float.appswitcher.keytip = { geometry = { width = 400 }, exit = true }
-
-	-- Quick launcher
-	------------------------------------------------------------
-	self.float.qlaunch.keytip = { geometry = { width = 600 } }
-
-	-- Hotkeys helper
-	------------------------------------------------------------
-	self.float.hotkeys.geometry = { width = 1800 }
-	self.float.hotkeys.heights = { key = 26, title = 32 }
-
-	-- Key sequence tip
-	------------------------------------------------------------
-	self.float.keychain.border_width = 0
-	self.float.keychain.keytip = { geometry = { width = 1200 }, column = 2 }
-
-	-- Brightness control
-	------------------------------------------------------------
-	self.float.brightness.notify = { icon = self.wicon.brightness }
-
-	-- Floating calendar
-	------------------------------------------------------------
-	self.float.calendar.geometry = { width = 364, height = 460 }
-	self.float.calendar.border_width = 0
-	self.float.calendar.show_week_numbers = false
-	self.float.calendar.calendar_item_margin = { 4, 8, 2, 2 }
-	self.float.calendar.spacing = { separator = 26, datetime = 5, controls = 5, calendar = 12 }
-	self.float.calendar.separator = { marginh = { 0, 0, 12, 12 } }
-
-	-- dirty colors correction
 	self.float.calendar.color = {
 		border    = self.color.border,
 		wibox     = self.color.wibox,
@@ -1705,22 +1590,9 @@ function theme:update()
 		text      = self.color.text,
 	}
 
-	-- Floating window control helper
-	------------------------------------------------------------
-	self.float.control.icon = {
-		onscreen = self.wicon.onscreen,
-		resize = {
-			self.wicon.resize.full,
-			self.wicon.resize.horizontal,
-			self.wicon.resize.vertical,
-		},
-	}
-
-	-- Default awesome theme vars
-	--------------------------------------------------------------------------------
 	self.enable_spawn_cursor = false
 end
 
-theme:update()
+theme:init()
 
 return theme

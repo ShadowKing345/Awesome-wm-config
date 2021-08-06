@@ -218,6 +218,10 @@ function hotkeys:init(args)
 			{ env.mod }, "Tab", focus_to_previous,
 			{ description = "Go to previos client", group = "Client focus" }
 		},
+		{
+			{ env.mod }, "o", awful.client.movetoscreen,
+			{ description = "Move client to next screen", group = "Client focus"}
+		},
 
 		{
 			{ env.mod }, "w", function() menu:show() end,
@@ -234,10 +238,6 @@ function hotkeys:init(args)
 		{
 			{ env.mod, "Control" }, "i", function() redflat.widget.minitray:toggle() end,
 			{ description = "Show minitray", group = "Widgets" }
-		},
-		{
-			{ env.mod }, "F3", function() redflat.float.qlaunch:show() end,
-			{ description = "Application quick launcher", group = "Main" }
 		},
 
 		{
@@ -285,18 +285,6 @@ function hotkeys:init(args)
 		{
 			{ env.mod }, "Left", awful.tag.viewprev,
 			{ description = "View previous tag", group = "Tag navigation" }
-		},
-		{
-			{ env.mod }, "y", function() laybox:toggle_menu(mouse.screen.selected_tag) end,
-			{ description = "Show layout menu", group = "Layouts" }
-		},
-		{
-			{ env.mod }, "Up", function() awful.layout.inc(1) end,
-			{ description = "Select next layout", group = "Layouts" }
-		},
-		{
-			{ env.mod }, "Down", function() awful.layout.inc(-1) end,
-			{ description = "Select previous layout", group = "Layouts" }
 		},
 
 		{
