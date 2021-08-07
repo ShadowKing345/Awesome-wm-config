@@ -140,6 +140,15 @@ awful.screen.connect_for_each_screen(function (s)
 	}
 end)
 
+-- Desktop
+if not lock.desktop then
+	local desktop = require("desktop-config")
+	desktop:init({
+		env = env,
+		buttons = awful.util.table.join(awful.button({}, 3, function () mymenu.mainmenu:toggle() end))
+	})
+end
+
 -- Key Bindings
 local hotkeys = require("keys-config")
 hotkeys:init({env = env, menu = mymenu.mainmenu, volume = volume.widget })
