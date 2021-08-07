@@ -10,14 +10,14 @@ local theme = {}
 -----------------------------------------------------------------------------------------------------------------------
 theme.color = {
 	-- main colors
-	main      = "#02606D",
+	main      = "#ff007f",
 	gray      = "#575757",
 	bg        = "#161616",
 	bg_second = "#181818",
 	wibox     = "#202020",
-	icon      = "#a0a0a0",
+	icon      = "#FF69B4",
 	text      = "#aaaaaa",
-	urgent    = "#B25500",
+	urgent    = "#e75480",
 	highlight = "#e0e0e0",
 	border    = "#404040",
 
@@ -49,7 +49,7 @@ theme.useless_gap         = 4  -- useless gap
 
 theme.cellnum = { x = 96, y = 58 } -- grid layout property
 
-theme.wallpaper = theme.path .. "/wallpaper/primary.png" -- wallpaper file
+theme.wallpaper = theme.path .. "/Wallpaper.png" -- wallpaper file
 
 -- Fonts
 ------------------------------------------------------------
@@ -93,7 +93,7 @@ theme.cairo_fonts = {
 	},
 
 	desktop = {
-		textbox = { font = "Sans", size = 24, face = 1 },
+		textbox = { font = "Sans", size = 22, face = 0 },
 	},
 }
 
@@ -147,7 +147,6 @@ theme.wicon = {
 		switch = theme.path .. "/widget/logout/switch.svg",
 	},
 }
-
 
 -- Main theme settings
 -- Make it updatabele since it may depends on common
@@ -1297,6 +1296,17 @@ function theme:init()
 		wibox = self.color.bg .. "00"
 	}
 
+	self.desktop.grid = {
+		width  = { 420, 1000, 420 },
+		height = { 210, 210, 210 },
+		edge   = { width = { 40, 40 }, height = { 40, 40 } }
+	}
+
+	self.desktop.places ={
+		clock 		= { 3, 1 },
+		netspeed 	= { 1, 3 },
+	}
+
 	-- Common (various elem, 0.20, 0.25ents that used as component for desktop widgets)
 	--------------------------------------------------------------------------------
 
@@ -1394,7 +1404,7 @@ function theme:init()
 	------------------------------------------------------------
 	self.desktop.textset = {
 		font  = "Sans 12",         -- font
-		spacing = 0,               -- space between lines
+		spacing = 1.15,            -- space between lines
 		color = self.desktop.color -- color (desktop used)
 	}
 
@@ -1409,8 +1419,8 @@ function theme:init()
 
 		-- direction icons
 		images = {
-			self.icon.system, -- up
-			self.icon.system  -- down
+			self.path .. "/desktop/up.svg", -- up
+			self.path .. "/desktop/down.svg"  -- down
 		},
 
 		-- !!! WARNING some missed style settings for elemets below will be overwritten by widget
@@ -1525,7 +1535,14 @@ function theme:init()
 
 	-- Individual styles for certain widgets
 	--------------------------------------------------------------------------------
-	self.individual = { desktop = {} }
+	self.individual = {
+		desktop = {
+			speedmeter = {},
+			multimeter = {},
+			multiline = {
+			}
+		}
+	}
 
 	-- Default awesome theme vars
 	--------------------------------------------------------------------------------
