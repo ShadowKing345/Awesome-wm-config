@@ -3,6 +3,7 @@ local redflat = require("redflat")
 local naughty = require("naughty")
 local awful = require("awful")
 local wibox = require("wibox")
+local clock_desktop = require("desktop.clock")
 
 local desktop = {}
 
@@ -35,6 +36,9 @@ function desktop:init(args)
         clock:geometry(wgeometry(grid, places.clock, workarea))
         clock:set_widget(main_layout)
     ]]
+        local clock = { geometry = wgeometry(grid, places.clock, workarea) }
+        clock.args = {}
+        clock.style = {}
 
         -- Audio
 
@@ -51,17 +55,16 @@ function desktop:init(args)
         netspeed.style = {}
 
         -- Init widgets
-        netspeed.body = redflat.desktop.speedmeter.normal(netspeed.args,
-                                                          netspeed.style)
+        netspeed.body = redflat.desktop.speedmeter.normal(netspeed.args, netspeed.style)
+        clock.body = clock_desktop(clock.args, clock.style)
 
         -- Desktop setup
-        local desktop_objects = {netspeed}
+        local desktop_objects = {netspeed, clock}
 
         if not autohide then
             redflat.util.desktop.build.static(desktop_objects)
         else
-            redflat.util.desktop.build.dynamic(desktop_objects, nil,
-                                               beautiful.desktopbg, arg.buttons)
+            redflat.util.desktop.build.dynamic(desktop_objects, nil, beautiful.desktopbg, arg.buttons)
         end
     end)
 end

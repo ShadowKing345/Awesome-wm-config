@@ -1533,6 +1533,12 @@ function theme:init()
 		},
 	}
 
+	-- Clock widget self written
+	self.desktop.clock = {
+		hands = { color = { fg = self.desktop.color.main } },
+		color = { main = self.desktop.color.main, gray = self.desktop.color.gray }
+	}
+
 	-- Individual styles for certain widgets
 	--------------------------------------------------------------------------------
 	self.individual = {
