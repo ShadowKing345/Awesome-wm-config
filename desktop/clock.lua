@@ -84,7 +84,7 @@ function clock.new(args, style)
     local hour_hand     = create_hand(redutil.table.merge(style.hands, redutil.table.check(style, "hours") or {} ))
 
     seconds_hand.min_value = 0
-    seconds_hand.max_value = 60
+    seconds_hand.max_value = 59
     seconds_hand.value = 45
 
     minutes_hand.min_value = 0
@@ -92,7 +92,7 @@ function clock.new(args, style)
     minutes_hand.value = 30
 
     hour_hand.min_value = 0
-    hour_hand.max_value = 24
+    hour_hand.max_value = 12
     hour_hand.value = 3
 
     minutes_hand:set_children({hour_hand, layout = wibox.layout.flex.horizontal})
@@ -128,9 +128,9 @@ function clock.new(args, style)
     local function update()
         local datetime = util.string.split(os.date("%H %M %S %A %d %B %Y"), " ")
 
-        local hours = tonumber(datetime[1])
-        local minutes = tonumber(datetime[2])
         local seconds = tonumber(datetime[3])
+        local minutes = tonumber(datetime[2]) + seconds / 60.0
+        local hours = (tonumber(datetime[1]) % 12) + minutes / 60.0
 
         hour_hand.value = hours
         minutes_hand.value = minutes

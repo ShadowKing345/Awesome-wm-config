@@ -250,7 +250,7 @@ function desktop.new(args)
 
         -- Clock widget, self written
         clock = {
-            hands = {color = {fg = desktop.color.main}},
+            hands = { rounded_edge = false, color = {fg = desktop.color.main}},
             color = {main = desktop.color.main, gray = desktop.color.gray}
         }
     }
