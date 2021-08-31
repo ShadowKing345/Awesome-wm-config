@@ -32,7 +32,6 @@ mymenu:init({ env = env })
 
 
 -- Panel Widgets
-
 -- Seperator
 local seperator = redflat.gauge.separator.vertical()
 
@@ -89,6 +88,31 @@ volume.buttons = awful.util.table.join(
 	awful.button({}, 9, function() redflat.float.player:action("Next")          end)
 )
 
+-- System monitoring widget.
+local sysmon = { widget = {}, buttons = {}, icon = {} }
+
+-- icons
+sysmon.icon.battery = redflat.util.table.check(beautiful, "wicon.battery")
+sysmon.icon.network = redflat.util.table.check(beautiful, "wicon.wireless")
+sysmon.icon.cpuram = redflat.util.table.check(beautiful, "wicon.monitor")
+
+-- batery
+sysmon.widget.battery = redflat.widget.sysmon(
+	{ func = redflat.system.pformatted.bat(25), arg = "BAT0" },
+	{ timeout = 60, widget = redflat.gauge.icon.single, monitor = { is_vertical = true, icon = sysmon.icon.battery } }
+)
+
+-- network
+sysmon.widget.network = redflat.widget.net(
+	{
+		interface = "wlp2s0",
+		alert = { up = 5 * 1024^2, down = 5 * 1024^2 },
+		speed = { up = 6 * 1024^2, down = 6 * 1024^2 },
+		autoscale = false
+	},
+	{ timeout = 2, widget = redflat.gauge.monitor.double, monitor = { icon = sysmon.icon.network } }
+)
+
 -- Screen setup
 awful.screen.connect_for_each_screen(function (s)
 	-- wallpaper	
@@ -131,7 +155,11 @@ awful.screen.connect_for_each_screen(function (s)
 			layout = wibox.layout.fixed.horizontal,
 			
 			seperator,
+			env.wrapper(sysmon.widget.battery, "battery"),
+			seperator,
 			env.wrapper(volume.widget, "volume", volume.buttons),
+			seperator,
+			env.wrapper(sysmon.widget.network, "network"),
 			seperator,
 			env.wrapper(textclock.widget, "textclock"),
 			seperator,
@@ -148,6 +176,10 @@ if not lock.desktop then
 		buttons = awful.util.table.join(awful.button({}, 3, function () mymenu.mainmenu:toggle() end))
 	})
 end
+
+-- Logout screen
+local logout = require('logout-config')
+logout:init()
 
 -- Key Bindings
 local hotkeys = require("keys-config")
