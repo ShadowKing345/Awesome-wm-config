@@ -8,7 +8,6 @@ local apprunner = redflat.float.apprunner
 local appswitcher = redflat.float.appswitcher
 local current = redflat.widget.tasklist.filter.currenttags
 local allscr = redflat.widget.tasklist.filter.allscreen
-local laybox = redflat.widget.layoutbox
 local redtip = redflat.float.hotkeys
 local redtitle = redflat.titlebar
 
@@ -80,6 +79,15 @@ local function client_numkey(i, mod, action)
 			end
 		end
 	)
+end
+
+-- brightness function
+local brightness = function(args)
+	redflat.float.brightness:change(args, {
+		increase = "brightnessctl s +%s%%",
+		decrease = "brightnessctl s %s%%-",
+		update = { awful.util.shell, "-c", "brightnessctl i | grep -P '(?<=\\()(.*?)(?=%)' -o --color=never" },
+	})
 end
 
 -- right bottom corner position
@@ -239,6 +247,10 @@ function hotkeys:init(args)
 			{ env.mod, "Control" }, "i", function() redflat.widget.minitray:toggle() end,
 			{ description = "Show minitray", group = "Widgets" }
 		},
+		{
+			{ env.mod }, "z", function() redflat.service.logout:show() end,
+			{ description = "Log out screen", group = "Widgets" }
+		},
 
 		{
 			{ env.mod }, "t", function() redtitle.toggle(client.focus) end,
@@ -323,6 +335,16 @@ function hotkeys:init(args)
 		{
 			{ "Shift" }, "XF86AudioLowerVolume", function () redflat.float.player:change_volume(-0.05) end,
 			{ description = "Play/Pause", group = "Media Controls" }
+		},
+
+
+		{
+			{}, "XF86MonBrightnessUp", function() brightness({ step = 2 }) end,
+			{ description = "Increase brightness", group = "Brightness control" }
+		},
+		{
+			{}, "XF86MonBrightnessDown", function() brightness({ step = 2, down = true }) end,
+			{ description = "Reduce brightness", group = "Brightness control" }
 		},
 
 		{
