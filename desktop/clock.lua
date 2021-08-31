@@ -77,7 +77,7 @@ function clock.new(args, style)
     local seperator = redflat.gauge.separator.horizontal(style.color)
 
     local time_label = textbox("03:30", style.label.time)
-    local date_label = textbox("Wednesday 29<span color='red'>th</span> 2021", style.label.date)
+    local date_label = textbox("Wednesday 29th 2021", style.label.date)
 
     local seconds_hand  = create_hand(redutil.table.merge(style.hands, redutil.table.check(style, "seconds") or {} ))
     local minutes_hand  = create_hand(redutil.table.merge(style.hands, redutil.table.check(style, "minutes") or {} ))
