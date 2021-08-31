@@ -39,7 +39,7 @@ function rules:init(args)
             properties = { floating = true }
         },
         {
-            rule_any = {type = {"normal", "dialog" }},
+            rule_any = { type = {"normal", "dialog" } },
             properties = { titlebars_enabled = true }
         },
 
@@ -47,6 +47,12 @@ function rules:init(args)
         {
             rule = { class = "discord" },
             properties = { tag = "Tag3" }
+        },
+
+        -- attempt to make the "splash screen" for Jetbrain IDE float. Shockingly worked.
+        {
+            rule = { name = "win0" },
+            properties = { floating = true }
         },
     }
 
