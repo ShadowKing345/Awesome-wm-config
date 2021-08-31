@@ -2,13 +2,16 @@ local awful = require("awful")
 local redflat = require("redflat")
 local beautiful = require("beautiful")
 
+--local binary_tree_layout = require("layouts.binary-tree-layout")
+
 local client = client
 
 local layouts = {}
 
 function layouts:init()
     local layset = {
-		awful.layout.suit.tile,
+      awful.layout.suit.tile,
+      --binary_tree_layout
     }
 
     awful.layout.layouts = layset
