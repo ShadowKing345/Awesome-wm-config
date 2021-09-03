@@ -1,6 +1,5 @@
 local awful = require("awful")
 local redflat = require("redflat")
-local binaryTreeLayout = require("layouts.binary-tree-layout")
 
 local hotkeys = { mouse = {}, raw = {}, keys = {}, fake = {} }
 
@@ -354,7 +353,7 @@ function hotkeys:init(args)
 		},
 
 		{
-			{ env.mod }, "v", function() binaryTreeLayout.toggleDirection() end,
+			{ env.mod }, "v", function() TREES.widget:toggleDirection() end,
 			{ description = "Toggles the layout direction", group = "Layout" }
 		}
 	}
