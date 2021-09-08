@@ -697,28 +697,6 @@ function theme:init()
 		color = self.color,  -- colors (main used)
 	}
 
-	-- layout icons
-	self.widget.layoutbox.icon = {
-		floating          = self.base .. "/layouts/floating.svg",
-		max               = self.base .. "/layouts/max.svg",
-		fullscreen        = self.base .. "/layouts/fullscreen.svg",
-		tilebottom        = self.base .. "/layouts/tilebottom.svg",
-		tileleft          = self.base .. "/layouts/tileleft.svg",
-		tile              = self.base .. "/layouts/tile.svg",
-		tiletop           = self.base .. "/layouts/tiletop.svg",
-		fairv             = self.base .. "/layouts/fair.svg",
-		fairh             = self.base .. "/layouts/fair.svg",
-		grid              = self.base .. "/layouts/grid.svg",
-		usermap           = self.base .. "/layouts/map.svg",
-		magnifier         = self.base .. "/layouts/magnifier.svg",
-		spiral            = self.base .. "/layouts/spiral.svg",
-		cornerne          = self.base .. "/layouts/cornerne.svg",
-		cornernw          = self.base .. "/layouts/cornernw.svg",
-		cornerse          = self.base .. "/layouts/cornerse.svg",
-		cornersw          = self.base .. "/layouts/cornersw.svg",
-		unknown           = self.icon.unknown,  -- this one used as fallback
-	}
-
 	-- redflat menu style (see theme.menu)
 	self.widget.layoutbox.menu = {
 		icon_margin  = { 8, 12, 9, 9 },
