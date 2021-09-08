@@ -383,7 +383,11 @@ function hotkeys:init(args)
 		{
 			{ env.mod }, "m", function(c) c.maximized = not c.maximized; c:raise() end,
 			{ description = "Maximize", group = "Client keys" }
-		}
+		},
+    {
+        {env.mod, "Shift"}, "v", function (c) require("layouts.binary-tree-layout").toggleNodeDirection(c) end,
+        { description = "Toggles direction of node", group = "Layout" }
+    }
 	}
 
 	self.keys.root = redflat.util.key.build(self.raw.root)
