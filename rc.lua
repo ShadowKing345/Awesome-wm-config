@@ -2,6 +2,7 @@
 -- awesome modules
 local awful = require("awful")
 local wibox = require("wibox")
+local gears = require("gears")
 
 local beautiful = require("beautiful")
 require("awful.autofocus")
@@ -158,8 +159,7 @@ awful.screen.connect_for_each_screen(function(s)
             -- right widgets
             layout = wibox.layout.fixed.horizontal,
 
-            seperator,
-            env.wrapper(sysmon.widget.battery, "battery"),
+            gears.filesystem.is_dir("/sys/class/power_supply/BAT0") and {seperator, env.wrapper(sysmon.widget.battery, "battery"), layout = wibox.layout.fixed.horizontal} or nil,
             seperator,
             env.wrapper(volume.widget, "volume", volume.buttons),
             seperator,
