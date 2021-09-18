@@ -112,7 +112,7 @@ sysmon.widget.battery = redflat.widget.sysmon({func = redflat.system.pformatted.
 
 -- network
 sysmon.widget.network = redflat.widget.net({
-    interface = "wlp2s0",
+    interface = env.network,
     alert = {up = 5 * 1024 ^ 2, down = 5 * 1024 ^ 2},
     speed = {up = 6 * 1024 ^ 2, down = 6 * 1024 ^ 2},
     autoscale = false,
