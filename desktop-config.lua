@@ -23,19 +23,6 @@ function desktop:init(args)
         local grid = beautiful.desktop.grid
         local places = beautiful.desktop.places
 
-        -- Clock
-        --[[
-        so it looks like textset returns a self updating textbox not a wibox that is setup correctly.
-        so if i want to create a clock i should create a base wibox widget before and send it to the builder or make my own.
-
-        local main_layout = wibox.layout.fixed.vertical()
-        main_layout:add(redflat.desktop.textset({{timeout = 1, action = function ()
-            return os.date()
-        end}}))
-        local clock = wibox({type = "desktop", visible = true, bg = "#00000000"})
-        clock:geometry(wgeometry(grid, places.clock, workarea))
-        clock:set_widget(main_layout)
-    ]]
         local clock = { geometry = wgeometry(grid, places.clock, workarea) }
         clock.args = {}
         clock.style = {}
@@ -45,7 +32,7 @@ function desktop:init(args)
         -- Network
         local netspeed = {geometry = wgeometry(grid, places.netspeed, workarea)}
         netspeed.args = {
-            interface = "enp3s0",
+            interface = env.network,
             maxspeed = {up = 6 * 1024 ^ 2, down = 6 * 1024 ^ 2},
             crit = {up = 6 * 1024 ^ 2, down = 6 * 1024 ^ 2},
             timeout = 2,
