@@ -47,17 +47,17 @@ tasklist.buttons = awful.util.table.join(awful.button({}, 1, redflat.widget.task
 local taglist = {}
 taglist.style = {widget = redflat.gauge.tag.orange.new, show_tip = true}
 taglist.buttons = awful.util.table.join(awful.button({}, 1, function(t)
-    t:view_only()
+  t:view_only()
 end), awful.button({env.mod}, 1, function(t)
-    if client.focus then client.focus:move_to_tag(t) end
+  if client.focus then client.focus:move_to_tag(t) end
 end), awful.button({}, 2, awful.tag.viewtoggle), awful.button({}, 3, function(t)
-    redflat.widget.layoutbox:toggle_menu(t)
+  redflat.widget.layoutbox:toggle_menu(t)
 end), awful.button({env.mod}, 3, function(t)
-    if client.focus then client.focus:toggle_tag(t) end
+  if client.focus then client.focus:toggle_tag(t) end
 end), awful.button({}, 4, function(t)
-    awful.tag.viewnext(t.screen)
+  awful.tag.viewnext(t.screen)
 end), awful.button({}, 5, function(t)
-    awful.tag.viewprev(t.screen)
+  awful.tag.viewprev(t.screen)
 end))
 
 -- Textclock widget
@@ -69,7 +69,7 @@ local tray = {}
 tray.widget = redflat.widget.minitray()
 
 tray.buttons = awful.util.table.join(awful.button({}, 1, function()
-    redflat.widget.minitray:toggle()
+  redflat.widget.minitray:toggle()
 end))
 
 -- PA volume control
@@ -80,19 +80,19 @@ volume.widget = redflat.widget.pulse(nil, {widget = redflat.gauge.audio.blue.new
 redflat.float.player:init({name = env.player})
 
 volume.buttons = awful.util.table.join(awful.button({}, 4, function()
-    volume.widget:change_volume()
+  volume.widget:change_volume()
 end), awful.button({}, 5, function()
-    volume.widget:change_volume({down = true})
+  volume.widget:change_volume({down = true})
 end), awful.button({}, 2, function()
-    volume.widget:mute()
+  volume.widget:mute()
 end), awful.button({}, 3, function()
-    redflat.float.player:show()
+  redflat.float.player:show()
 end), awful.button({}, 1, function()
-    redflat.float.player:action("PlayPause")
+  redflat.float.player:action("PlayPause")
 end), awful.button({}, 8, function()
-    redflat.float.player:action("Previous")
+  redflat.float.player:action("Previous")
 end), awful.button({}, 9, function()
-    redflat.float.player:action("Next")
+  redflat.float.player:action("Next")
 end))
 
 -- System monitoring widget.
@@ -105,84 +105,85 @@ sysmon.icon.cpuram = redflat.util.table.check(beautiful, "wicon.monitor")
 
 -- batery
 sysmon.widget.battery = redflat.widget.sysmon({func = redflat.system.pformatted.bat(25), arg = "BAT0"}, {
-    timeout = 60,
-    widget = redflat.gauge.icon.single,
-    monitor = {is_vertical = true, icon = sysmon.icon.battery},
+  timeout = 60,
+  widget = redflat.gauge.icon.single,
+  monitor = {is_vertical = true, icon = sysmon.icon.battery},
 })
 
 -- network
 sysmon.widget.network = redflat.widget.net({
-    interface = env.network,
-    alert = {up = 5 * 1024 ^ 2, down = 5 * 1024 ^ 2},
-    speed = {up = 6 * 1024 ^ 2, down = 6 * 1024 ^ 2},
-    autoscale = false,
+  interface = env.network,
+  alert = {up = 5 * 1024 ^ 2, down = 5 * 1024 ^ 2},
+  speed = {up = 6 * 1024 ^ 2, down = 6 * 1024 ^ 2},
+  autoscale = false,
 }, {timeout = 2, widget = redflat.gauge.monitor.double, monitor = {icon = sysmon.icon.network}})
 
 -- Screen setup
 awful.screen.connect_for_each_screen(function(s)
-    -- wallpaper
-    env.wallpaper(s)
+  -- wallpaper
+  env.wallpaper(s)
 
-    -- tags
-    awful.tag({"Tag1", "Tag2", "Tag3", "Tag4", "Tag5"}, s, awful.layout.layouts[1])
+  -- tags
+  awful.tag({"Tag1", "Tag2", "Tag3", "Tag4", "Tag5"}, s, awful.layout.layouts[1])
 
-    -- taglist widget
-    taglist[s] = redflat.widget.taglist({screen = s, buttons = taglist.buttons, hint = env.tagtip}, taglist.style)
+  -- taglist widget
+  taglist[s] = redflat.widget.taglist({screen = s, buttons = taglist.buttons, hint = env.tagtip}, taglist.style)
 
-    -- tasklist widget
-    tasklist[s] = redflat.widget.tasklist({screen = s, buttons = tasklist.buttons})
+  -- tasklist widget
+  tasklist[s] = redflat.widget.tasklist({screen = s, buttons = tasklist.buttons})
 
-    -- panel wibox
-    s.panel = awful.wibar({position = "top", screen = s, height = beautiful.pannel_height or 36})
+  -- panel wibox
+  s.panel = awful.wibar({position = "top", screen = s, height = beautiful.pannel_height or 36})
 
-    s.panel:setup{
-        layout = wibox.layout.align.horizontal,
-        {
-            -- left widgets
-            layout = wibox.layout.fixed.horizontal,
+  s.panel:setup{
+    layout = wibox.layout.align.horizontal,
+    {
+      -- left widgets
+      layout = wibox.layout.fixed.horizontal,
 
-            env.wrapper(mymenu.widget, "mainmenu", mymenu.buttons),
-            seperator,
-            env.wrapper(taglist[s], "taglist"),
-            seperator,
-            s.mypromptbox,
-        },
-        {
-            -- middle widget
-            layout = wibox.layout.align.horizontal,
-            expand = "outside",
+      env.wrapper(mymenu.widget, "mainmenu", mymenu.buttons),
+      seperator,
+      env.wrapper(taglist[s], "taglist"),
+      seperator,
+      s.mypromptbox,
+    },
+    {
+      -- middle widget
+      layout = wibox.layout.align.horizontal,
+      expand = "outside",
 
-            nil,
-            env.wrapper(tasklist[s], "tasklist"),
-        },
-        {
-            -- right widgets
-            layout = wibox.layout.fixed.horizontal,
+      nil,
+      env.wrapper(tasklist[s], "tasklist"),
+    },
+    {
+      -- right widgets
+      layout = wibox.layout.fixed.horizontal,
 
-            gears.filesystem.is_dir("/sys/class/power_supply/BAT0") and {seperator, env.wrapper(sysmon.widget.battery, "battery"), layout = wibox.layout.fixed.horizontal} or nil,
-            seperator,
-            env.wrapper(volume.widget, "volume", volume.buttons),
-            seperator,
-            env.wrapper(sysmon.widget.network, "network"),
-            seperator,
-            require("layouts.binary-tree-layout.widget")({}),
-            seperator,
-            env.wrapper(textclock.widget, "textclock"),
-            seperator,
-            env.wrapper(tray.widget, "tray", tray.buttons),
-        },
-    }
+      gears.filesystem.is_dir("/sys/class/power_supply/BAT0")
+          and {seperator, env.wrapper(sysmon.widget.battery, "battery"), layout = wibox.layout.fixed.horizontal} or nil,
+      seperator,
+      env.wrapper(volume.widget, "volume", volume.buttons),
+      seperator,
+      env.wrapper(sysmon.widget.network, "network"),
+      seperator,
+      require("layouts.binary-tree-layout.widget")({}),
+      seperator,
+      env.wrapper(textclock.widget, "textclock"),
+      seperator,
+      env.wrapper(tray.widget, "tray", tray.buttons),
+    },
+  }
 end)
 
 -- Desktop
 if not lock.desktop then
-    local desktop = require("desktop-config")
-    desktop:init({
-        env = env,
-        buttons = awful.util.table.join(awful.button({}, 3, function()
-            mymenu.mainmenu:toggle()
-        end)),
-    })
+  local desktop = require("desktop-config")
+  desktop:init({
+    env = env,
+    buttons = awful.util.table.join(awful.button({}, 3, function()
+      mymenu.mainmenu:toggle()
+    end)),
+  })
 end
 
 -- Logout screen
@@ -207,6 +208,6 @@ signals:init({env = env})
 
 -- Autostart user applications
 if redflat.startup.is_startup then
-    local autostart = require("autostart-config")
-    autostart.run()
+  local autostart = require("autostart-config")
+  autostart.run()
 end
