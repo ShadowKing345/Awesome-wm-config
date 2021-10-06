@@ -180,6 +180,10 @@ function hotkeys:init(args)
         redflat.service.logout:show()
       end, {description = "Log out screen", group = "Widgets"},
     }, {
+      {env.mod}, "d", function()
+        for s in screen do s.panel.visible = not s.panel.visible end
+      end, {description = "Toggle the main panel", group = "Widgets"},
+    }, {
       {env.mod}, "t", function()
         redtitle.toggle(client.focus)
       end, {description = "Show/hide titlebar for focused client", group = "Titlebar"},
