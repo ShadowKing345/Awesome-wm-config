@@ -6,12 +6,6 @@ local signals = {}
 
 local lastFocusedScreen = nil
 
-local function fixed_maximized_geometry(c, context)
-  if c.maximized and context ~= "fullscreen" then
-    c:geometry({x = c.screen.workarea.x, y = c.screen.workarea.y, width = c.screen.workarea.width - 2, height = c.screen.workarea.height - 2})
-  end
-end
-
 function signals:init(args)
   args = args or {}
   local env = args.env
@@ -27,9 +21,6 @@ function signals:init(args)
     -- put new floating windows to the center of screen
     if env.set_center and c.floating and not (c.maximized or c.fullscreen) then redutil.placement.centered(c, nil, mouse.screen.workarea) end
   end)
-
-  -- don't allow maximized windows move/resize themselves
-  client.connect_signal("request::geometry", fixed_maximized_geometry)
 
   -- wallpaper update on screen geometry change
   screen.connect_signal("property::geometry", env.wallpaper)
