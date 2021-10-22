@@ -1,5 +1,6 @@
 local awful = require("awful")
 local redflat = require("redflat")
+local player = redflat.float.player
 
 local hotkeys = {mouse = {}, raw = {}, keys = {}, fake = {}}
 
@@ -223,28 +224,28 @@ function hotkeys:init(args)
     {{}, "XF86AudioLowerVolume", volume_lower, {description = "Play/Pause", group = "Media Controls"}},
     {{}, "XF86AudioMute", volume_mute, {description = "Play/Pause", group = "Media Controls"}}, {
       {env.mod}, "e", function()
-        redflat.float.player:show(rt_corner())
+        player:show(rt_corner())
       end, {description = "Show/hide widget", group = "Audio player"},
     }, {
       {}, "XF86AudioPlay", function()
-        redflat.float.player:action("PlayPause")
+        player:action("PlayPause")
       end, {description = "Play/Pause track", group = "Audio player"},
     }, {
       {}, "XF86AudioNext", function()
-        redflat.float.player:action("Next")
+        player:action("Next")
       end, {description = "Next track", group = "Audio player"},
     }, {
       {}, "XF86AudioPrev", function()
-        redflat.float.player:action("Previous")
+        player:action("Previous")
       end, {description = "Previous track", group = "Audio player"},
     }, {
       {"Shift"}, "XF86AudioRaiseVolume", function()
-        redflat.float.player:change_volume(0.05)
-      end, {description = "Play/Pause", group = "Media Controls"},
+        player:change_volume(0.05)
+      end, {description = "Volume up", group = "Media Controls"},
     }, {
       {"Shift"}, "XF86AudioLowerVolume", function()
-        redflat.float.player:change_volume(-0.05)
-      end, {description = "Play/Pause", group = "Media Controls"},
+        player:change_volume(-0.05)
+      end, {description = "Volume down", group = "Media Controls"},
     }, {
       {}, "XF86MonBrightnessUp", function()
         brightness({step = 2})
