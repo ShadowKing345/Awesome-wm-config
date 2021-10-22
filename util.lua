@@ -1,4 +1,3 @@
-local string = string
 local table = table
 
 local util = { string = {}, table = {} }
@@ -30,6 +29,16 @@ function util.print_table(t)
     end
 
     print(text)
+end
+
+function util.table.indexOf(tbl, item)
+  local i = nil
+
+  for index, value in ipairs(tbl) do
+    if item == value then i = index end
+  end
+
+  return i
 end
 
 return util
