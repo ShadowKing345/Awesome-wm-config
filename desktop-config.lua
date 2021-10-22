@@ -52,11 +52,10 @@ function desktop:init(args)
     local grid = beautiful.desktop.grid
     local places = beautiful.desktop.places
 
+    -- Clock
     local clock = {geometry = wgeometry(grid, places.clock, workarea)}
     clock.args = {}
     clock.style = {}
-
-    -- Audio
 
     -- Network
     local netspeed = {geometry = wgeometry(grid, places.netspeed, workarea)}
