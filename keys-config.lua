@@ -262,6 +262,10 @@ function hotkeys:init(args)
       {env.mod}, "v", function()
         TREES.widget:toggleDirection()
       end, {description = "Toggles the layout direction", group = "Layout"},
+    }, {
+      {env.mod}, "y", function()
+        require "widget.controlPanel":show()
+      end, {description = "Toggle System Tray", group = "System"},
     },
   }
 
