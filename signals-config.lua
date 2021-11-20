@@ -1,6 +1,10 @@
 local awful = require("awful")
-
 local redutil = require("redflat.util")
+local shape = require("gears.shape")
+
+local function set_shape(cr, width, height)
+  shape.rounded_rect(cr, width, height, 8)
+end
 
 local signals = {}
 
@@ -18,11 +22,19 @@ function signals:init(args)
     -- startup placement
     if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then awful.placement.no_offscreen(c) end
 
-    -- put new floating windows to the center of screen
-    if env.set_center and c.floating and not (c.maximized or c.fullscreen) then redutil.placement.centered(c, nil, mouse.screen.workarea) end
+    if not (c.maximized or c.fullscreen) then
+
+      -- put new floating windows to the center of screen
+      if env.set_center and c.floating then redutil.placement.centered(c, nil, mouse.screen.workarea) end
+    end
+
+    c.shape = not (c.maximized or c.fullscreen) and set_shape or shape.rectangle
   end)
 
-  -- wallpaper update on screen geometry change
+  client.connect_signal("request::geometry", function(c)
+    c.shape = not (c.maximized or c.fullscreen) and set_shape or shape.rectangle
+  end)
+
   screen.connect_signal("property::geometry", env.wallpaper)
 
   -- Awesome v4.0 introduce screen handling without restart.
