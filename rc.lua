@@ -118,6 +118,8 @@ sysmon.widget.network = redflat.widget.net({
   autoscale = false,
 }, {timeout = 2, widget = redflat.gauge.monitor.double, monitor = {icon = sysmon.icon.network}})
 
+require "widget.controlPanel"()
+
 -- Screen setup
 awful.screen.connect_for_each_screen(function(s)
   -- wallpaper
