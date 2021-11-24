@@ -1,7 +1,9 @@
+----------------------------------------------------------------------------------------------------
 local gears = require("gears")
 local wibox = require("wibox")
 local redutil = require("redflat.util")
 local beautiful = require("beautiful")
+local svgbox = require("redflat.gauge.svgbox")
 
 local copi = {screen = screen, mouse = mouse}
 
@@ -27,6 +29,27 @@ local function check_table(tbl, string)
   return v
 end
 
+local function button(icon, style)
+  local _button = wibox.widget {
+    {{image = style.icons[icon], color = "#ffffff", widget = svgbox}, margins = 16, widget = wibox.container.margin},
+    bg = style.colors.button.bg,
+    shape = gears.shape.circle,
+    shape_clip = true,
+    forced_width = 64,
+    forced_height = 64,
+    widget = wibox.container.background,
+  }
+
+  _button:connect_signal("mouse::enter", function()
+    _button.bg = style.colors.button.hover
+  end)
+  _button:connect_signal("mouse::leave", function()
+    _button.bg = style.colors.button.bg
+  end)
+
+  return _button
+end
+
 local function default_style()
   local style = {
     icons = {
@@ -48,17 +71,18 @@ local function default_style()
     },
     margins = {wibox = 12},
     shape = gears.shape.rounded_rect,
+    spacing = 8,
   }
 
-  return merge_tables(style, check_table(beautiful, "widget.controlPanel") or {})
+  return merge_tables(style, check_table(beautiful, "widget.control_panel") or {})
 end
 
 local default_arguments = {
   profilePicturePath = os.getenv("HOME") .. "/" .. ".face.png",
   userName = os.getenv("USER"),
   modules = {
-    {name = "Wifi", image = "Wifi", buttons = nil, isToggle = true}, {name = "bluetooth", image = "bluetooth", buttons = nil, isToggle = true},
-    {name = "Flight", image = "airplane", buttons = nil, isToggle = true},
+    {name = "Wifi", icon = "wifi", buttons = nil, isToggle = true}, {name = "bluetooth", icon = "bluetooth", buttons = nil, isToggle = true},
+    {name = "Flight", icon = "airplane", buttons = nil, isToggle = true},
   },
   volume_controls = "pulse",
   placement = function(workarea, size)
@@ -92,44 +116,20 @@ function controlPanel:init()
     widget = wibox.widget.imagebox,
   }
   self.components.userName = wibox.widget {text = self.args.userName, forced_height = 64, widget = wibox.widget.textbox}
-  self.components.powerButton = wibox.widget {
-    {widget = wibox.widget.imagebox},
-    bg = "#ff0000",
-    forced_width = 64,
-    forced_height = 64,
-    widget = wibox.container.background,
-  }
+  self.components.powerButton = button("power", self.style)
 
   -- Content / Middle
-  local moduleGrid = {layout = wibox.layout.grid, orientation = "horizontal", spacing = 8}
-  for _, _ in ipairs(self.args.modules) do
-    local widget = wibox.widget {
-      {widget = wibox.widget.imagebox},
-      bg = "#f0f0f0",
-      forced_width = 64,
-      forced_height = 64,
-      widget = wibox.container.background,
-    }
+  local moduleGrid = {layout = wibox.layout.grid, orientation = "vertical", spacing = self.style.spacing, forced_num_cols = 4}
+  for _, module in ipairs(self.args.modules) do
+    local widget = button(module.icon, self.style)
 
     table.insert(self.components.modules, widget)
     table.insert(moduleGrid, widget)
   end
 
-  self.components.volume = {
-    mute = wibox.widget {{widget = wibox.widget.imagebox}, bg = "#00ff00", forced_width = 64, forced_height = 64, widget = wibox.container.background},
-    volume = wibox.widget {value = 64, widget = wibox.widget.slider},
-  }
+  self.components.volume = {mute = button("volume", self.style), volume = wibox.widget {value = 64, widget = wibox.widget.slider}}
 
-  self.components.brightness = {
-    stepper = wibox.widget {
-      {widget = wibox.widget.imagebox},
-      bg = "#0000ff",
-      forced_width = 64,
-      forced_height = 64,
-      widget = wibox.container.background,
-    },
-    slider = wibox.widget {value = 64, widget = wibox.widget.slider},
-  }
+  self.components.brightness = {stepper = button("brightness", self.style), slider = wibox.widget {value = 64, widget = wibox.widget.slider}}
 
   self.wibox = wibox {
     screen = copi.mouse.screen,
@@ -142,28 +142,29 @@ function controlPanel:init()
       {
         {
           self.components.profilePicture,
-          {self.components.userName, left = 8, right = 8, widget = wibox.container.margin},
+          {self.components.userName, left = self.style.spacing, right = self.style.spacing, widget = wibox.container.margin},
           self.components.powerButton,
           layout = wibox.layout.align.horizontal,
         },
+        {widget = wibox.widget.separator},
         {
           {
             nil,
-            {moduleGrid, bottom = 8, widget = wibox.container.margin},
+            {moduleGrid, bottom = self.style.spacing, widget = wibox.container.margin},
             {
               {
                 {
                   self.components.volume.mute,
-                  {self.components.volume.volume, left = 8, widget = wibox.container.margin},
+                  {self.components.volume.volume, left = self.style.spacing, widget = wibox.container.margin},
                   layout = wibox.layout.align.horizontal,
                   forced_height = 64,
                 },
-                bottom = 8,
+                bottom = self.style.spacing,
                 widget = wibox.container.margin,
               },
               {
                 self.components.brightness.stepper,
-                {self.components.brightness.slider, left = 8, widget = wibox.container.margin},
+                {self.components.brightness.slider, left = self.style.spacing, widget = wibox.container.margin},
                 layout = wibox.layout.align.horizontal,
                 forced_height = 64,
               },
@@ -171,8 +172,8 @@ function controlPanel:init()
             },
             layout = wibox.layout.align.vertical,
           },
-          top = 8,
-          bottom = 8,
+          top = self.style.spacing,
+          bottom = self.style.spacing,
           widget = wibox.container.margin,
         },
         {widget = wibox.widget.textclock},
@@ -198,8 +199,9 @@ function controlPanel:new(args)
   self.style = merge_tables(default_style(), self.args.style or {})
 
   self.size = {
-    width = 256 + 24 + (self.style.margins.wibox * 2),
-    height = 216 + 24 + (64 * math.ceil(#self.args.modules / 4)) + (self.style.margins.wibox * 2),
+    width = 256 + (self.style.spacing * 3) + (self.style.margins.wibox * 2),
+    height = 216 + (self.style.spacing * 3) + (64 * math.ceil(#self.args.modules / 4) + self.style.spacing * (math.ceil(#self.args.modules / 4) - 1))
+        + (self.style.margins.wibox * 2),
   }
 end
 
@@ -208,4 +210,3 @@ function controlPanel.mt:__call(...)
 end
 
 return setmetatable(controlPanel, controlPanel.mt)
-
