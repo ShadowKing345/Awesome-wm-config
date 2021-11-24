@@ -13,7 +13,7 @@ local env = {}
 function env:init(args)
   args = args or {}
 
-  self.terminal = "alacritty"
+  self.terminal = "kitty"
   self.mod = "Mod4"
   self.fm = "nemo"
   self.home = os.getenv("HOME")
