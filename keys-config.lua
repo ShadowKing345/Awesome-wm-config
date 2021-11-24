@@ -280,7 +280,7 @@ function hotkeys:init(args)
       {env.mod}, "F4", function(c)
         c:kill()
       end, {description = "Close", group = "Client keys"},
-    }, {{env.mod, "Control"}, "f", awful.client.floating.toggle, {description = "Toggle floating", group = "Client keys"}}, {
+    }, {{env.mod}, "space", awful.client.floating.toggle, {description = "Toggle floating", group = "Client keys"}}, {
       {env.mod, "Control"}, "o", function(c)
         c.ontop = not c.ontop
       end, {description = "Toggle keep on top", group = "Client keys"},
