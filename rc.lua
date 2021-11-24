@@ -18,9 +18,12 @@ redflat.startup:activate()
 -- Error handling
 require("erchec-config")
 
--- env variables
+-- Env variables
 local env = require("env-config")
 env:init()
+
+-- Helper functions
+require("util.pulse")()
 
 -- Layout Setup
 local layouts = require("layout-config")
