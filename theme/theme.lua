@@ -18,7 +18,7 @@ theme.color = {
   text = "#aaaaaa",
   urgent = "#e75480",
   highlight = "#e0e0e0",
-  border = "#404040",
+  border = "#00000000",
 
   -- secondary colors
   shadow1 = "#141414",
@@ -44,7 +44,7 @@ theme.homedir = os.getenv("HOME")
 
 theme.panel_height = 36 -- panel height
 theme.border_width = 0 -- window border width
-theme.useless_gap = 8 -- useless gap
+theme.useless_gap = 4 -- useless gap
 
 theme.cellnum = {x = 96, y = 58} -- grid layout property
 
@@ -61,12 +61,7 @@ theme.fonts = {
   qlaunch = "sans bold 14", -- quick launch key label font
   title = "sans bold 12", -- widget titles font
   tiny = "sans bold 10", -- smallest font for widgets
-  keychain = "sans bold 14", -- key sequence tip font
   titlebar = "sans bold 12", -- client titlebar font
-  logout = {
-    label = "sans bold 14", -- logout option labels
-    counter = "sans bold 24", -- logout counter
-  },
   hotkeys = {
     main = "sans 12", -- hotkeys helper main font
     key = "mono 12", -- hotkeys helper key font (use monospace for align)
@@ -75,17 +70,6 @@ theme.fonts = {
   player = {
     main = "sans bold 12", -- player widget main font
     time = "sans bold 14", -- player widget current time font
-  },
-  -- very custom calendar fonts
-  calendar = {
-    clock = "Sans 24",
-    date = "Sans 15",
-    week_numbers = "Sans 12",
-    weekdays_header = "Sans 11",
-    days = "Sans 12",
-    default = "Sans 10",
-    focus = "Sans 14 Bold",
-    controls = "Sans 13",
   },
 }
 
@@ -115,37 +99,34 @@ theme.icon = {
   unknown = theme.path .. "/common/unknown.svg",
 }
 
+local widget_path = theme.path .. "/widget/"
+
 -- Widget icons
 theme.wicon = {
-  battery = theme.path .. "/widget/battery.svg",
-  wireless = theme.path .. "/widget/wireless.svg",
-  monitor = theme.path .. "/widget/monitor.svg",
-  audio = theme.path .. "/widget/audio.svg",
-  headphones = theme.path .. "/widget/headphones.svg",
-  brightness = theme.path .. "/widget/brightness.svg",
-  search = theme.path .. "/widget/search.svg",
-  mute = theme.path .. "/widget/mute.svg",
-  up = theme.path .. "/widget/up.svg",
-  down = theme.path .. "/widget/down.svg",
-  onscreen = theme.path .. "/widget/onscreen.svg",
+  battery = widget_path .. "battery.svg",
+  wireless = widget_path .. "wireless.svg",
+  monitor = widget_path .. "monitor.svg",
+  audio = widget_path .. "audio.svg",
+  headphones = widget_path .. "headphones.svg",
+  brightness = widget_path .. "brightness.svg",
+  search = widget_path .. "search.svg",
+  mute = widget_path .. "mute.svg",
+  up = widget_path .. "up.svg",
+  down = widget_path .. "down.svg",
+  onscreen = widget_path .. "onscreen.svg",
   resize = {
-    full = theme.path .. "/widget/resize/full.svg",
-    horizontal = theme.path .. "/widget/resize/horizontal.svg",
-    vertical = theme.path .. "/widget/resize/vertical.svg",
+    full = widget_path .. "resize/full.svg",
+    horizontal = widget_path .. "resize/horizontal.svg",
+    vertical = widget_path .. "resize/vertical.svg",
   },
-  updates = {
-    normal = theme.path .. "/widget/updates/normal.svg",
-    silent = theme.path .. "/widget/updates/silent.svg",
-    weekly = theme.path .. "/widget/updates/weekly.svg",
-    daily = theme.path .. "/widget/updates/daily.svg",
-  },
-  logout = {
-    logout = theme.path .. "/widget/logout/logout.svg",
-    lock = theme.path .. "/widget/logout/lock.svg",
-    poweroff = theme.path .. "/widget/logout/poweroff.svg",
-    suspend = theme.path .. "/widget/logout/suspend.svg",
-    reboot = theme.path .. "/widget/logout/reboot.svg",
-    switch = theme.path .. "/widget/logout/switch.svg",
+  control_panel = {
+    power = widget_path .. "control_panel/power.svg",
+    airplane = widget_path .. "control_panel/airplane.svg",
+    wifi = widget_path .. "control_panel/wifi.svg",
+    bluetooth = widget_path .. "control_panel/bluetooth.svg",
+    mute = widget_path .. "control_panel/mute.svg",
+    volume = widget_path .. "control_panel/volume.svg",
+    brightness = widget_path .. "control_panel/brightness.svg",
   },
 }
 
@@ -156,79 +137,58 @@ function theme:init()
 
   -- Service utils config
   ----------------------------------------------------------------------------------
-  self.service = {}
+  self.service = {
 
-  -- Window control mode appearance
-  --------------------------------------------------------------------------------
-  self.service.navigator = {
-    border_width = 0, -- window placeholder border width
-    gradstep = 60, -- window placeholder background stripes width
-    marksize = { -- window information plate size
-      width = 160, -- width
-      height = 80, -- height
-      r = 20, -- corner roundness
+    -- Window control mode appearance
+    --------------------------------------------------------------------------------
+    navigator = {
+      border_width = 0, -- window placeholder border width
+      gradstep = 60, -- window placeholder background stripes width
+      marksize = { -- window information plate size
+        width = 160, -- width
+        height = 80, -- height
+        r = 20, -- corner roundness
+      },
+      linegap = 32, -- gap between two lines on window information plate
+      timeout = 1, -- highlight duration
+      notify = {}, -- redflat notify style (see theme.float.notify)
+      titlefont = self.cairo_fonts.navigator.title, -- first line font on window information plate
+      font = self.cairo_fonts.navigator.main, -- second line font on window information plate
+
+      -- array of hot key marks for window placeholders
+      num = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "F1", "F3", "F4", "F5"},
+
+      -- colors
+      color = {
+        border = self.color.main, -- window placeholder border color
+        mark = self.color.gray, -- window information plate background color
+        text = self.color.wibox, -- window information plate text color
+        fbg1 = self.color.main .. "40", -- first background color for focused window placeholder
+        fbg2 = self.color.main .. "20", -- second background color for focused window placeholder
+        hbg1 = self.color.urgent .. "40", -- first background color for highlighted window placeholder
+        hbg2 = self.color.urgent .. "20", -- second background color for highlighted window placeholder
+        bg1 = self.color.gray .. "40", -- first background color for window placeholder
+        bg2 = self.color.gray .. "20", -- second background color for window placeholder
+      },
+
+      -- this one used as fallback when style for certain layout missed
+      keytip = {["base"] = {geometry = {width = 600}, exit = true}},
     },
-    linegap = 32, -- gap between two lines on window information plate
-    timeout = 1, -- highlight duration
-    notify = {}, -- redflat notify style (see theme.float.notify)
-    titlefont = self.cairo_fonts.navigator.title, -- first line font on window information plate
-    font = self.cairo_fonts.navigator.main, -- second line font on window information plate
-
-    -- array of hot key marks for window placeholders
-    num = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "F1", "F3", "F4", "F5"},
-
-    -- colors
-    color = {
-      border = self.color.main, -- window placeholder border color
-      mark = self.color.gray, -- window information plate background color
-      text = self.color.wibox, -- window information plate text color
-      fbg1 = self.color.main .. "40", -- first background color for focused window placeholder
-      fbg2 = self.color.main .. "20", -- second background color for focused window placeholder
-      hbg1 = self.color.urgent .. "40", -- first background color for highlighted window placeholder
-      hbg2 = self.color.urgent .. "20", -- second background color for highlighted window placeholder
-      bg1 = self.color.gray .. "40", -- first background color for window placeholder
-      bg2 = self.color.gray .. "20", -- second background color for window placeholder
+    -- Desktop file parser
+    --------------------------------------------------------------------------------
+    dfparser = {
+      -- list of path to check desktop files
+      desktop_file_dirs = {"/usr/share/applications/", "/usr/local/share/applications/", "~/.local/share/applications"},
+      -- icon theme settings
+      icons = {
+        theme = "/usr/share/icons/candy-icons",
+        -- theme         = "/usr/share/icons/ACYLS", -- for example
+        df_icon = self.icon.system, -- default (fallback) icon
+        custom_only = true, -- use icons from user theme (no system fallback like 'hicolor' allowed) only
+        scalable_only = false, -- use vector(svg) icons (no raster icons allowed) only
+      },
+      wm_name = "Awesome Window Manager", -- window manager name
     },
-  }
-
-  -- layout hotkeys helper settings
-  self.service.navigator.keytip = {}
-
-  -- this one used as fallback when style for certain layout missed
-  self.service.navigator.keytip["base"] = {geometry = {width = 600}, exit = true}
-
-  -- Log out screen
-  --------------------------------------------------------------------------------
-  self.service.logout = {
-    button_size = {width = 128, height = 128},
-    icon_margin = 22,
-    text_margin = 18,
-    button_spacing = 64,
-    counter_top_margin = 800,
-    label_font = self.fonts.logout.label,
-    counter_font = self.fonts.logout.counter,
-    keytip = {geometry = {width = 400}},
-    graceful_shutdown = true,
-    double_key_activation = true,
-    client_kill_timeout = 5,
-    icons = self.wicon.logout,
-    color = self.color, -- colors (main used)
-  }
-
-  -- Desktop file parser
-  --------------------------------------------------------------------------------
-  self.service.dfparser = {
-    -- list of path to check desktop files
-    desktop_file_dirs = {"/usr/share/applications/", "/usr/local/share/applications/", "~/.local/share/applications"},
-    -- icon theme settings
-    icons = {
-      theme = nil, -- user icon theme path
-      -- theme         = "/usr/share/icons/ACYLS", -- for example
-      df_icon = self.icon.system, -- default (fallback) icon
-      custom_only = false, -- use icons from user theme (no system fallback like 'hicolor' allowed) only
-      scalable_only = false, -- use vector(svg) icons (no raster icons allowed) only
-    },
-    wm_name = nil, -- window manager name
   }
 
   -- Menu config
@@ -543,15 +503,6 @@ function theme:init()
     color = {text = self.color.icon}, -- colors
   }
 
-  -- Binary clock
-  ------------------------------------------------------------
-  self.widget.binclock = {
-    width = 52, -- widget width
-    tooltip = {}, -- redflat tooltip style (see theme.float.tooltip)
-    dot = {size = 5}, -- mark size
-    color = self.color, -- colors (main used)
-  }
-
   -- Battery indicator
   ------------------------------------------------------------
   self.widget.battery = {
@@ -587,28 +538,6 @@ function theme:init()
     audio = {}, -- style for gauge
   }
 
-  -- Layoutbox
-  ------------------------------------------------------------
-  self.widget.layoutbox = {
-    micon = self.icon, -- some common menu icons (used: 'blank', 'check')
-    color = self.color, -- colors (main used)
-  }
-
-  -- redflat menu style (see theme.menu)
-  self.widget.layoutbox.menu = {
-    icon_margin = {8, 12, 9, 9},
-    width = 200,
-    auto_hotkey = true,
-    nohide = false,
-    color = {right_icon = self.color.icon, left_icon = self.color.icon},
-  }
-
-  -- human readable aliases for layout names (displayed in menu and tooltip)
-  self.widget.layoutbox.name_alias = {binaryTreeLayout = "Binary Tree Layout"}
-
-  -- green tag icons
-  self.gauge.tag.green.icon = self.widget.layoutbox.icon
-
   -- Tasklist
   --------------------------------------------------------------
 
@@ -638,7 +567,6 @@ function theme:init()
     enable_tagline = false, -- tag marks instead of menu options
     stateline = {height = 30}, -- height of menu item with state icons
     state_iconsize = {width = 18, height = 18}, -- size for state icons
-    layout_icon = self.widget.layoutbox.icon, -- list of layout icons
     separator = {marginh = {3, 3, 5, 5}}, -- redflat separator style (see theme.gauge.separator)
     color = self.color, -- colors (main used)
 
@@ -686,10 +614,19 @@ function theme:init()
     color = self.color, -- colors (main used)
   }
 
-  -- task text aliases
-  self.widget.tasklist.appnames = {}
-  self.widget.tasklist.appnames["Firefox"] = "FIFOX"
-  self.widget.tasklist.appnames["Gnome-terminal"] = "GTERM"
+  -- Control Panel
+  --------------------------------------------------------------------------------
+  self.widget.control_panel = {
+    icons = {
+      power = self.wicon.control_panel.power,
+      airplane = self.wicon.control_panel.airplane,
+      wifi = self.wicon.control_panel.wifi,
+      bluetooth = self.wicon.control_panel.bluetooth,
+      volume = self.wicon.control_panel.volume,
+      mute = self.wicon.control_panel.mute,
+      brightness = self.wicon.control_panel.brightness,
+    },
+  }
 
   -- Floating widgets
   --------------------------------------------------------------------------------
@@ -717,7 +654,6 @@ function theme:init()
     -- same elements as for task list menu
     icon = self.widget.tasklist.winmenu.icon,
     micon = self.widget.tasklist.winmenu.micon,
-    layout_icon = self.widget.layoutbox.icon,
     menu = self.widget.tasklist.winmenu.menu,
     state_iconsize = self.widget.tasklist.winmenu.state_iconsize,
     tagmenu = self.widget.tasklist.winmenu.tagmenu,
@@ -975,19 +911,6 @@ function theme:init()
     keytip = {geometry = {width = 540}},
   }
 
-  -- Key sequence tip
-  ------------------------------------------------------------
-  self.float.keychain = {
-    geometry = {width = 250, height = 56}, -- default widget size
-    font = self.fonts.keychain, -- widget font
-    border_width = 0, -- widget border width
-    shape = nil, -- wibox shape
-    color = self.color, -- colors (main used)
-
-    -- redflat key tip settings
-    keytip = {geometry = {width = 1200}, column = 2},
-  }
-
   -- Tooltip
   ------------------------------------------------------------
   self.float.tooltip = {
@@ -1012,50 +935,6 @@ function theme:init()
     shape = nil, -- wibox shape
     naughty = {}, -- awesome notification style
     color = self.color, -- colors (main used)
-  }
-
-  -- Floating calendar
-  ------------------------------------------------------------
-  self.float.calendar = {
-    geometry = {width = 364, height = 460},
-    margin = {20, 20, 20, 15},
-    controls_margin = {0, 0, 5, 0},
-    calendar_item_margin = {4, 8, 2, 2},
-    spacing = {separator = 26, datetime = 5, controls = 5, calendar = 12},
-    controls_icon_size = {width = 18, height = 18},
-    separator = {margin = {0, 0, 12, 12}},
-    border_width = 0,
-    days = {
-      weeknumber = {fg = self.color.gray, bg = "transparent"},
-      weekday = {fg = self.color.gray, bg = "transparent"},
-      weekend = {fg = self.color.highlight, bg = self.color.gray},
-      today = {fg = self.color.highlight, bg = self.color.main},
-      day = {fg = self.color.text, bg = "transparent"},
-      default = {fg = "white", bg = "transparent"},
-    },
-    fonts = self.fonts.calendar,
-    icon = {next = self.icon.right, prev = self.icon.left},
-    clock_format = "%H:%M",
-    date_format = "%A, %d. %B",
-    clock_refresh_seconds = 60,
-    weeks_start_sunday = false,
-    show_week_numbers = false,
-    show_weekday_header = true,
-    long_weekdays = false,
-    weekday_name_replacements = {},
-    -- screen_gap                = 0,
-    set_position = nil,
-    shape = nil,
-    screen_gap = 2 * self.useless_gap, -- screen edges gap on placement
-    color = {
-      border = self.color.border,
-      wibox = self.color.wibox,
-      icon = self.color.icon,
-      main = "transparent",
-      highlight = self.color.main,
-      gray = self.color.gray,
-      text = self.color.text,
-    }, -- colors (main used)
   }
 
   -- Notify (redflat notification widget)
@@ -1128,7 +1007,7 @@ function theme:init()
     },
   }
 
-  self.desktop = require("theme.desktop")({color = self.color, cairo_fonts = self.cairo_fonts, path = self.path, icon = self.icon})
+  self.desktop = require "theme.desktop" {color = self.color, cairo_fonts = self.cairo_fonts, path = self.path, icon = self.icon}
 
   -- Individual styles for certain widgets
   --------------------------------------------------------------------------------
@@ -1148,7 +1027,7 @@ function theme:init()
   self.fg_urgent = self.color.highlight
   self.fg_minimize = self.color.highlight
 
-  self.border_normal = self.color.wibox
+  self.border_normal = self.color.border
   self.border_focus = self.color.wibox
   self.border_marked = self.color.main
 
@@ -1156,34 +1035,21 @@ function theme:init()
   self.font = self.fonts.main
 
   -- standart awesome notification widget
-  self.naughty = {}
+  self.naughty = {
+    base = {
+      timeout = 10,
+      margin = 12,
+      icon_size = 80,
+      font = self.fonts.main,
+      bg = self.color.wibox,
+      fg = self.color.text,
 
-  self.naughty.base = {
-    timeout = 10,
-    margin = 12,
-    icon_size = 80,
-    font = self.fonts.main,
-    bg = self.color.wibox,
-    fg = self.color.text,
-
-    border_width = 4,
-    border_color = self.color.wibox,
-  }
-
-  self.naughty.normal = {height = self.float.notify.geometry.height, width = self.float.notify.geometry.width}
-
-  self.naughty.low = {timeout = 5, height = self.float.notify.geometry.height, width = self.float.notify.geometry.width}
-
-  self.naughty.critical = {timeout = 0, border_color = self.color.main}
-
-  self.float.calendar.color = {
-    border = self.color.border,
-    wibox = self.color.wibox,
-    icon = self.color.icon,
-    main = "transparent",
-    highlight = self.color.main,
-    gray = self.color.gray,
-    text = self.color.text,
+      border_width = 4,
+      border_color = self.color.wibox,
+    },
+    normal = {height = self.float.notify.geometry.height, width = self.float.notify.geometry.width},
+    low = {timeout = 5, height = self.float.notify.geometry.height, width = self.float.notify.geometry.width},
+    critical = {timeout = 0, border_color = self.color.main},
   }
 
   self.enable_spawn_cursor = false
