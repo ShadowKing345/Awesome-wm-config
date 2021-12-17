@@ -184,7 +184,7 @@ function theme:init()
         theme = "/usr/share/icons/candy-icons",
         -- theme         = "/usr/share/icons/ACYLS", -- for example
         df_icon = self.icon.system, -- default (fallback) icon
-        custom_only = true, -- use icons from user theme (no system fallback like 'hicolor' allowed) only
+        custom_only = false, -- use icons from user theme (no system fallback like 'hicolor' allowed) only
         scalable_only = false, -- use vector(svg) icons (no raster icons allowed) only
       },
       wm_name = "Awesome Window Manager", -- window manager name
