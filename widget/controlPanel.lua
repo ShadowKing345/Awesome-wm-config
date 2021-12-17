@@ -4,6 +4,7 @@ local wibox = require("wibox")
 local redutil = require("redflat.util")
 local beautiful = require("beautiful")
 local svgbox = require("redflat.gauge.svgbox")
+local pulse = require("services.pulse")
 
 local copi = {screen = screen, mouse = mouse}
 
@@ -97,6 +98,7 @@ function controlPanel:show()
     self:hide()
   else
     self:set_position()
+    self:update()
     self.wibox.visible = true
   end
 end
@@ -105,6 +107,12 @@ function controlPanel:hide()
   if not self.wibox then self:init() end
 
   self.wibox.visible = false
+end
+
+function controlPanel:update()
+  if not self.wibox then self:init() end
+
+  self.components.volume.volume.value = pulse:get_volume()
 end
 
 function controlPanel:init()
@@ -127,7 +135,21 @@ function controlPanel:init()
     table.insert(moduleGrid, widget)
   end
 
-  self.components.volume = {mute = button("volume", self.style), volume = wibox.widget {value = 64, widget = wibox.widget.slider}}
+  self.components.volume = {
+    mute = button("volume", self.style),
+    volume = wibox.widget {
+      bar_shape = gears.shape.rounded_rect,
+      bar_height = 3,
+      bar_color = "#ff0000",
+      handle_shape = gears.shape.circle,
+      handle_color = "#ffffff",
+      widget = wibox.widget.slider,
+    },
+  }
+
+  self.components.volume.volume:connect_signal("property::value", function(slider)
+    pulse:change_volume_exact(slider.value)
+  end)
 
   self.components.brightness = {stepper = button("brightness", self.style), slider = wibox.widget {value = 64, widget = wibox.widget.slider}}
 
