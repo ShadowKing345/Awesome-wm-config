@@ -1,0 +1,32 @@
+local colors = {
+  bg              = "#292d3e",
+  fg              = "#a6accd",
+  text            = "#676e95",
+  selected_bg     = "#717cb4",
+  selected_fg     = "#ffffff",
+  buttons         = "#303348",
+  second_bg       = "#34324a",
+  disabled        = "#515772",
+  contrast        = "#202331",
+  active          = "#414863",
+  borders         = "#2b2a3e",
+  hightlight      = "#444267",
+  tree            = "#676e95",
+  notifications   = "#202331",
+  accent          = "#ab47bc",
+  excluded        = "#2f2e43",
+
+  green           = "#c3e88d",
+  yellow          = "#ffcb6b",
+  blue            = "#82aaff",
+  red             = "#f07178",
+  purple          = "#c792ea",
+  orange          = "#f78c6c",
+  cyan            = "#89ddff",
+  gray            = "#676e95",
+  white           = "#eeffff",
+  black           = "#eeffff",
+  error           = "#ff5370",
+}
+
+return colors
