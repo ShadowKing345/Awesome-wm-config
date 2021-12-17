@@ -22,8 +22,8 @@ require("erchec-config")
 local env = require("env-config")
 env:init()
 
--- Helper functions
-require("util.pulse")()
+-- Services
+require("services")()
 
 -- Layout Setup
 local layouts = require("layout-config")
