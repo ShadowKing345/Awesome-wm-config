@@ -235,7 +235,11 @@ function desktop.new(args)
     },
 
     -- Clock widget, self written
-    clock = {hands = {rounded_edge = false, color = {fg = desktop.color.main}}, color = {main = desktop.color.main, gray = desktop.color.gray}},
+    clock = {
+      hands = {rounded_edge = false, color = {fg = desktop.color.gray}},
+      seconds = {color = {fg = desktop.color.main}},
+      color = {main = desktop.color.main, gray = desktop.color.gray, wibox = desktop.color.wibox},
+    },
   }
 end
 
