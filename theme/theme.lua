@@ -1,54 +1,79 @@
--- Copy of the colorless theme from worron awesome-config
--- kinda alot of settings that i cannot manually type...
 local awful = require("awful")
 
 local theme = {}
--- local wa = mouse.screen.workarea
 
 -- Color scheme
 -----------------------------------------------------------------------------------------------------------------------
+local colors = {
+  bg = "#292d3e",
+  fg = "#a6accd",
+  text = "#676e95",
+  selected_bg = "#717cb4",
+  selected_fg = "#ffffff",
+  buttons = "#303348",
+  second_bg = "#34324a",
+  disabled = "#515772",
+  contrast = "#202331",
+  active = "#414863",
+  borders = "#2b2a3e",
+  hightlight = "#444267",
+  tree = "#676e95",
+  notifications = "#202331",
+  accent = "#ab47bc",
+  excluded = "#2f2e43",
+
+  green = "#c3e88d",
+  yellow = "#ffcb6b",
+  blue = "#82aaff",
+  red = "#f07178",
+  purple = "#c792ea",
+  orange = "#f78c6c",
+  cyan = "#89ddff",
+  gray = "#676e95",
+  white = "#eeffff",
+  black = "#eeffff",
+  error = "#ff5370",
+}
+
 theme.color = {
   -- main colors
-  main = "#ff007f",
-  gray = "#575757",
-  bg = "#161616",
-  bg_second = "#181818",
-  wibox = "#202020",
-  icon = "#FF69B4",
-  text = "#aaaaaa",
-  urgent = "#e75480",
-  highlight = "#e0e0e0",
-  border = "#00000000",
+  main = colors.accent,
+  gray = colors.gray,
+  bg = colors.contrast,
+  bg_second = colors.second_bg,
+  wibox = colors.bg,
+  icon = colors.purple,
+  text = colors.fg,
+  urgent = colors.red,
+  highlight = colors.selected_fg,
+  border = colors.borders,
 
   -- secondary colors
-  shadow1 = "#141414",
+  shadow1 = colors.gray,
   shadow2 = "#313131",
   shadow3 = "#1c1c1c",
   shadow4 = "#767676",
 
-  button = "#575757",
-  pressed = "#404040",
+  button = colors.buttons,
+  pressed = colors.selected_bg,
 
-  desktop_gray = "#404040",
-  desktop_icon = "#606060",
+  desktop_gray = colors.gray,
+  desktop_icon = colors.purple,
 }
 
 -- Common
 -----------------------------------------------------------------------------------------------------------------------
 theme.path = awful.util.get_configuration_dir() .. "theme"
-theme.base = awful.util.get_configuration_dir() .. "theme"
+theme.base = theme.path
 theme.homedir = os.getenv("HOME")
 
 -- Main config
 ------------------------------------------------------------
-
 theme.panel_height = 36 -- panel height
 theme.border_width = 0 -- window border width
 theme.useless_gap = 4 -- useless gap
 
-theme.cellnum = {x = 96, y = 58} -- grid layout property
-
-theme.wallpaper = theme.path .. "/Wallpaper.png" -- wallpaper file
+theme.wallpaper = theme.path .. "/Wallpaper.svg" -- wallpaper file
 
 -- Fonts
 ------------------------------------------------------------
@@ -1012,6 +1037,10 @@ function theme:init()
   -- Individual styles for certain widgets
   --------------------------------------------------------------------------------
   self.individual = {desktop = {speedmeter = {}, multimeter = {}, multiline = {}}}
+
+  -- Layout widget.
+  --------------------------------------------------------------------------------
+  self.binaryTreeLayoutWidget = {tooltip = {color = {border = colors.borders, text = colors.text, wibox = colors.bg}}}
 
   -- Default awesome theme vars
   --------------------------------------------------------------------------------
