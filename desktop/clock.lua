@@ -19,8 +19,6 @@ local function default_style()
       color = {fg = "#b1222b", bg = nil},
       thickness = 10,
     },
-    minutes = {color = {fg = "#404040"}},
-    hours = {color = {fg = "#404040"}},
     label = {
       time = {gap = 12, font = {font = "Sans", size = 66, face = 1, slant = 0}, sep = "-", draw = "lower_right"},
       date = {height = 50, gap = 12, font = {font = "Sans", size = 20, face = 1, slant = 0}, sep = "-", draw = "upper_right"},
