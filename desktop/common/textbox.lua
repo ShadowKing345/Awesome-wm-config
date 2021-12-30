@@ -18,7 +18,7 @@ local function default_style()
         font = {font = "Sans", size = 20, face = 0, slant = 0}
     }
 
-    return redutil.table.merge(style, redutil.table.check(beautiful, "desktop.common.personal.textbox") or {})
+    return redutil.table.merge(style, redutil.table.check(beautiful, "desktop.common.textbox") or {})
 end
 
 local align = {}
