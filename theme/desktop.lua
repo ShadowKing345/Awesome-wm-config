@@ -238,7 +238,7 @@ function desktop.new(args)
     clock = {
       hands = {rounded_edge = false, color = {fg = desktop.color.gray}},
       seconds = {color = {fg = desktop.color.main}},
-      color = {main = desktop.color.main, gray = desktop.color.gray, wibox = desktop.color.wibox},
+      color = {main = desktop.color.main, gray = desktop.color.gray, wibox = desktop.color.wibox .. "00"},
     },
   }
 end
