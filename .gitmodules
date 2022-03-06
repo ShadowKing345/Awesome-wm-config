@@ -1,7 +1,0 @@
-[submodule "redflat"]
-	path = redflat
-	url = https://github.com/worron/redflat.git
-  ignore = dirty
-[submodule "awesomewm-binary-tree-layout"]
-	path = layouts/binary-tree-layout
-	url = git@github.com:ShadowKing345/awesomewm-binary-tree-layout.git
