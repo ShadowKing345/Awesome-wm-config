@@ -1,14 +1,19 @@
----@module'gears'
+--------------------------------------------------
+--
+--      Environment configuration setup.
+--
+--------------------------------------------------
+local beautiful = require "beautiful"
 local gears = require "gears"
 
 ---@class EnvConfig
----@field terminal string
----@field editor string
----@field editorCmd string
----@field modKey string
----@field themePath string
-local env = {metatable = {}}
-env.metatable.__index = env
+---@field terminal string #Name of terminal application
+---@field editor string #Name of editor
+---@field editorCmd string #Full application call for editor.
+---@field modKey string #Super modifiter.
+---@field themePath string #Path to theme.lua file for beautiful setup.
+---@field tags string[] #Names for tags to be used.
+local env = { mt = {} }
 
 ---@class EnvArgs
 ---@field terminal? string #Name of the terminal application.
@@ -19,8 +24,7 @@ env.metatable.__index = env
 ---@param args? EnvArgs #Optional arguments for environment configuration.
 ---@return EnvConfig
 function env:new(args)
-  args = args or {}
-  self = {}
+    args = args or {}
     self.terminal = args.terminal or "kitty"
     self.editor = args.editor or os.getenv "EDITOR" or "nvim"
     self.editorCmd = self.terminal .. "-e" .. self.editor
@@ -29,14 +33,20 @@ function env:new(args)
 
     self.themePath = args.themePath or gears.filesystem.get_xdg_config_home() .. "awesome/" .. "theme/theme.lua"
 
-    return setmetatable(self, self.metatable)
+    beautiful.init(env.themePath)
+
+    return setmetatable(self, self.mt)
 end
 
----@param args? EnvArgs #Optional arguments for environment configuration.
----@return EnvConfig
-function env.metatable:__call(args)
-  return env:new(args)
+--------------------------------------------------
+-- Metadata setup
+--------------------------------------------------
+function env.mt:__call(args)
+    return env:new(args)
 end
 
----@type EnvConfig
-return setmetatable(env, env.metatable)
+return setmetatable(env, env.mt)
+
+--------------------------------------------------
+-- EoF
+--------------------------------------------------

@@ -1,26 +1,16 @@
----@module'menubar'
 local menubar = require "menubar"
----@module'gears.table.join'
-local gTJoin = require("gears.table").join
+local gTJoin = require "gears.table".join
 local awful = require "awful"
 local hotkeysPopup = require "awful.hotkeys_popup"
+
+local utils = require "utils"
+local aKey = utils.aKey
+local aButton = utils.aButton
 
 ---@class BindingConfig
 ---@field keys table
 ---@field button table
 local bindingConfig = { mt = {} }
-
-local function aKey(args)
-    args = args or {}
-
-    return awful.key(args.modifier, args.key, args.callback, args.description)
-end
-
-local function aButton(args)
-    args = args or {}
-
-    return awful.button(args.modifier, args.button, args.callback)
-end
 
 ---@param env EnvConfig #The environment configurations.
 ---@return BindingConfig
@@ -31,20 +21,20 @@ function bindingConfig:new(env)
         global = gTJoin(table.unpack {
             -- Tags
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "Left",
                 callback = awful.tag.viewprev,
                 description = { description = "View previous", group = "Tag" },
             },
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "Right",
                 callback = awful.tag.viewnext,
                 description = { description = "View next", group = "Tag" },
             },
             -- Launcher
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "Return",
                 callback = function()
                     awful.spawn(env.terminal)
@@ -52,7 +42,7 @@ function bindingConfig:new(env)
                 description = { description = "Opens a terminal", group = "Launcher" },
             },
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "p",
                 callback = function()
                     menubar.show()
@@ -61,7 +51,7 @@ function bindingConfig:new(env)
             },
             -- Client
             aKey {
-                modifier = { env.modKey, "Control" },
+                modifiers = { env.modKey, "Control" },
                 key = "n",
                 callback = function()
                     local c = awful.client.restore()
@@ -73,19 +63,19 @@ function bindingConfig:new(env)
             },
             -- Awesome
             aKey {
-                modifier = { env.modKey, "Control" },
+                modifiers = { env.modKey, "Control" },
                 key = "r",
                 callback = awesome.restart,
                 description = { description = "Reload Awesome", group = "Awesome" },
             },
             aKey {
-                modifier = { env.modKey, "Shift" },
+                modifiers = { env.modKey, "Shift" },
                 key = "q",
                 callback = awesome.quit,
                 description = { description = "Quit Awesome", group = "Awesome" },
             },
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "s",
                 callback = hotkeysPopup.show_help,
                 description = { description = "Show help", group = "Awesome" },
@@ -93,7 +83,7 @@ function bindingConfig:new(env)
         }),
         client = gTJoin(table.unpack {
             aKey {
-                modifier = { "Mod1" },
+                modifiers = { "Mod1" },
                 key = "F4",
                 callback = function(c)
                     c:kill()
@@ -101,7 +91,7 @@ function bindingConfig:new(env)
                 description = { description = "Kill application", group = "Client" },
             },
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "f",
                 callback = function(c)
                     c.fullscreen = not c.fullscreen
@@ -110,13 +100,13 @@ function bindingConfig:new(env)
                 description = { description = "Toggle fullscreen", group = "Client" },
             },
             aKey {
-                modifier = { env.modKey, "Shift" },
+                modifiers = { env.modKey, "Shift" },
                 key = "f",
                 callback = awful.client.floating.toggle,
                 description = { description = "Toggle floating", group = "Client" },
             },
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "t",
                 callback = function(c)
                     c.ontop = not c.ontop
@@ -124,7 +114,7 @@ function bindingConfig:new(env)
                 description = { description = "Toggle keep on top", group = "Client" },
             },
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "n",
                 callback = function(c)
                     c.minimized = true
@@ -132,7 +122,7 @@ function bindingConfig:new(env)
                 description = { description = "Minimize", group = "Client" },
             },
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "m",
                 callback = function(c)
                     c.maximized = not c.maximized
@@ -141,7 +131,7 @@ function bindingConfig:new(env)
                 description = { description = "(Un)maximize", group = "Client" },
             },
             aKey {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 key = "o",
                 callback = function(c)
                     c:move_to_screen()
@@ -156,7 +146,7 @@ function bindingConfig:new(env)
             self.keys.global,
             table.unpack {
                 aKey {
-                    modifier = { env.modKey },
+                    modifiers = { env.modKey },
                     key = ("#" .. i + 9),
                     callback = function()
                         local tag = awful.screen.focused().tags[i]
@@ -168,7 +158,7 @@ function bindingConfig:new(env)
                 },
                 -- Toggle tag display.
                 aKey {
-                    modifier = { env.modKey, "Control" },
+                    modifiers = { env.modKey, "Control" },
                     key = ("#" .. i + 9),
                     callback = function()
                         local tag = awful.screen.focused().tags[i]
@@ -180,28 +170,24 @@ function bindingConfig:new(env)
                 },
                 -- Move client to tag.
                 aKey {
-                    modifier = { env.modKey, "Shift" },
+                    modifiers = { env.modKey, "Shift" },
                     key = ("#" .. i + 9),
                     callback = function()
                         if client.focus then
                             local tag = client.focus.screen.tags[i]
-                            if tag then
-                                client.focus:move_to_tag(tag)
-                            end
+                            if tag then client.focus:move_to_tag(tag) end
                         end
                     end,
                     description = { description = "Move focused client to tag #" .. i, group = "Tag" },
                 },
                 -- Toggle tag on focused client.
                 aKey {
-                    modifier = { env.modKey, "Control", "Shift" },
+                    modifiers = { env.modKey, "Control", "Shift" },
                     key = ("#" .. i + 9),
                     callback = function()
                         if client.focus then
                             local tag = client.focus.screen.tags[i]
-                            if tag then
-                                client.focus:toggle_tag(tag)
-                            end
+                            if tag then client.focus:toggle_tag(tag) end
                         end
                     end,
                     description = { description = "Toggle focused client on tag #" .. i, group = "Tag" },
@@ -212,19 +198,17 @@ function bindingConfig:new(env)
 
     self.mouse = {
         global = gTJoin(
-            aButton { modifier = {}, button = 4, callback = awful.tag.viewnext },
-            aButton { modifier = {}, button = 5, callback = awful.tag.viewprev }
+            aButton { modifiers = {}, button = 4, callback = awful.tag.viewnext },
+            aButton { modifiers = {}, button = 5, callback = awful.tag.viewprev }
         ),
         client = gTJoin(
             aButton {
-                modifier = {},
+                modifiers = {},
                 button = 1,
-                callback = function(client)
-                    client:emit_signal("request::activate", "mouse_click", { raise = true })
-                end,
+                callback = function(client) client:emit_signal("request::activate", "mouse_click", { raise = true }) end,
             },
             aButton {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 button = 1,
                 callback = function(client)
                     client:emit_signal("request::activate", "mouse_click", { raise = true })
@@ -232,14 +216,12 @@ function bindingConfig:new(env)
                 end,
             },
             aButton {
-                modifier = {},
+                modifiers = {},
                 button = 3,
-                callback = function(client)
-                    client:emit_signal("request::activate", "mouse_click", { raise = true })
-                end,
+                callback = function(client) client:emit_signal("request::activate", "mouse_click", { raise = true }) end,
             },
             aButton {
-                modifier = { env.modKey },
+                modifiers = { env.modKey },
                 button = 3,
                 callback = function(client)
                     client:emit_signal("request::activate", "mouse_click", { raise = true })

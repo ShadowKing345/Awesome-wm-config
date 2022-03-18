@@ -1,8 +1,10 @@
 local table = table
 
-local util = { string = {}, table = {} }
+local awful = require "awful"
 
-function util.string.split(s, sep)
+local utils = { string = {}, table = {} }
+
+function utils.string.split(s, sep)
     local result = {}
 
     for match in (s .. sep):gmatch("(.-)" .. sep) do
@@ -12,7 +14,7 @@ function util.string.split(s, sep)
     return result
 end
 
-function util.table.subset(t, i, j)
+function utils.table.subset(t, i, j)
     local result = {}
 
     for x = i, j, 1 do
@@ -22,7 +24,7 @@ function util.table.subset(t, i, j)
     return result
 end
 
-function util.tblToJson(tbl, indent, isObj)
+function utils.tblToJson(tbl, indent, isObj)
     if not indent then
         indent = 0
     end
@@ -37,7 +39,7 @@ function util.tblToJson(tbl, indent, isObj)
         toprint = toprint .. string.rep(" ", indent + 2) .. (kt == "number" and "[" .. k .. "]" or k) .. " = "
 
         if vt == "table" then
-            toprint = toprint .. util.tblToJson(v, indent + 4, true) .. ",\n"
+            toprint = toprint .. utils.tblToJson(v, indent + 4, true) .. ",\n"
         else
             toprint = toprint .. (vt == "string" and '"' .. v .. '"' or tostring(v)) .. ",\n"
         end
@@ -47,7 +49,7 @@ function util.tblToJson(tbl, indent, isObj)
     return toprint
 end
 
-function util.table.indexOf(tbl, item)
+function utils.table.indexOf(tbl, item)
     local i = nil
 
     for index, value in ipairs(tbl) do
@@ -59,7 +61,7 @@ function util.table.indexOf(tbl, item)
     return i
 end
 
-function util.table.merge(tbl1, tbl2)
+function utils.table.merge(tbl1, tbl2)
     for k, v in pairs(tbl2) do
         tbl1[k] = v
     end
@@ -70,4 +72,29 @@ function util.table.merge(tbl1, tbl2)
     return tbl1
 end
 
-return util
+---@class AButton
+---@field modifier string[] #Collection of modifier keys.
+---@field button number #The number of mouse button.
+---@field callback function #Function called when key is pressed.
+
+---Creates a Awful Button Object
+---@param args AButton
+---@return Object
+function utils.aButton(args)
+    return awful.button(args.modifier, args.button, args.callback)
+end
+
+---@class AKey
+---@field modifiers string[] #Collection of modifier keys.
+---@field key string #The key of the keyboard.
+---@field callback function #Function called when key is pressed.
+---@field description {description: string, group: string} #Description of the key.
+
+---Creates a Awful Key Object
+---@param arg AKey
+---@return Object
+function utils.aKey(arg)
+    return awful.key(arg.modifiers, arg.key, arg.callback, arg.description)
+end
+
+return utils
