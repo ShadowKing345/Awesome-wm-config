@@ -73,7 +73,7 @@ function utils.table.merge(tbl1, tbl2)
 end
 
 ---@class AButton
----@field modifier string[] #Collection of modifier keys.
+---@field modifiers string[] #Collection of modifier keys.
 ---@field button number #The number of mouse button.
 ---@field callback function #Function called when key is pressed.
 
@@ -81,7 +81,7 @@ end
 ---@param args AButton
 ---@return Object
 function utils.aButton(args)
-    return awful.button(args.modifier, args.button, args.callback)
+    return awful.button(args.modifiers, args.button, args.callback)
 end
 
 ---@class AKey
