@@ -12,6 +12,7 @@ local hotkeysPopup = require "awful.hotkeys_popup"
 local wibox = require "wibox"
 
 --local minitray = require "ui.widgets.minitray"
+local mainMenu = require "ui.widgets.mainMenu"
 local taglist = require "ui.widgets.taglist"
 local tasklist = require "ui.widgets.tasklist"
 
@@ -19,11 +20,11 @@ local tasklist = require "ui.widgets.tasklist"
 
 ---@class ScreenConfig
 ---@field mainMenuEntries table<string, function>[] #The collection of entires in the main menu entires.
----@field mainMenu Object #The main menu object.
----@field launcher Object #Launcher object.
----@field textClock Object #Text clock object.
----@field tagListButtons Object[] #Collection of buttons used for taglist
----@field tasklistButtons Object[] #Collection of buttons used for tasklist
+---@field mainMenu table #The main menu object.
+---@field launcher table #Launcher object.
+---@field textClock table #Text clock object.
+---@field tagListButtons table[] #Collection of buttons used for taglist
+---@field tasklistButtons table[] #Collection of buttons used for tasklist
 local screenConfig = { mt = {} }
 
 function screenConfig.set_wallpaper(s)
@@ -48,7 +49,7 @@ function screenConfig:new(env)
         { "restart", awesome.restart, },
         { "quit", function() awesome.quit() end, },
     }
-    self.mainMenu = awful.menu { items = { { "awesome", self.mainMenuEntries, beautiful.awesome_icon }, { "open terminal", env.terminal } }, }
+    self.mainMenu = mainMenu(env)
     self.launcher = awful.widget.launcher { image = beautiful.awesome_icon, menu = self.mainMenu }
 
     self.textClock = wibox.widget.textclock()

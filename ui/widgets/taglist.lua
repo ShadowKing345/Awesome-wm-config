@@ -74,7 +74,7 @@ function taglist.default_template()
     }
 end
 
----@param args {buttons:Object,screen:Object}
+---@param args {buttons:table,screen:table}
 function taglist:new(args)
     args = args or {}
 
@@ -99,7 +99,3 @@ function taglist.mt:__call(...)
 end
 
 return setmetatable(taglist, taglist.mt)
-
---------------------------------------------------
--- EoF
---------------------------------------------------

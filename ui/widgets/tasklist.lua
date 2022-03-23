@@ -81,7 +81,7 @@ function tasklist.default_template()
     }
 end
 
----@param args {buttons:Object,screen:Object}
+---@param args {buttons:table,screen:table}
 function tasklist:new(args)
     args = args or {}
 
@@ -107,7 +107,3 @@ function tasklist.mt:__call(...)
 end
 
 return setmetatable(tasklist, tasklist.mt)
-
---------------------------------------------------
--- EoF
---------------------------------------------------
