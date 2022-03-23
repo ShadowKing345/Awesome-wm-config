@@ -1,6 +1,6 @@
 ---@class DefaultTemplate
----@field layout Object
----@field template Object
+---@field layout table
+---@field template table
 
 ---@class WidgetModule
 ---@field mt table

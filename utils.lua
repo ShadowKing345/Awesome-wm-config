@@ -77,9 +77,9 @@ end
 ---@field button number #The number of mouse button.
 ---@field callback function #Function called when key is pressed.
 
----Creates a Awful Button Object
+---Creates a Awful Button table
 ---@param args AButton
----@return Object
+---@return table
 function utils.aButton(args)
     return awful.button(args.modifiers, args.button, args.callback)
 end
@@ -90,9 +90,9 @@ end
 ---@field callback function #Function called when key is pressed.
 ---@field description {description: string, group: string} #Description of the key.
 
----Creates a Awful Key Object
+---Creates a Awful Key table
 ---@param arg AKey
----@return Object
+---@return table
 function utils.aKey(arg)
     return awful.key(arg.modifiers, arg.key, arg.callback, arg.description)
 end
