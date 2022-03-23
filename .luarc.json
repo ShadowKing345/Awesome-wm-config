@@ -1,0 +1,14 @@
+{
+    "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+    "diagnostics.globals": [
+        "awesome",
+        "client",
+        "mouse",
+        "mousegrabber",
+        "screen",
+        "root"
+    ],
+    "workspace.library": [
+        "/usr/share/awesome/lib"
+    ]
+}
