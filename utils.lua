@@ -1,100 +1,81 @@
-local table = table
+--------------------------------------------------
+--
+--      A collection of utility function used throught the project.
+--
+--------------------------------------------------
+local math = math
+local pairs = pairs
+local type = type
 
-local awful = require "awful"
+local aButton = require"awful.button"
+local aKey = require "awful.key"
+local gTable = require "gears.table"
 
-local utils = { string = {}, table = {} }
+--------------------------------------------------
+local utils = {}
 
-function utils.string.split(s, sep)
-    local result = {}
+---Creates a pretty JSON string from an object recursively.
+---*NOTE: Lua tables with array values will have the index of the value be printed as the raw number.
+---Eg. {"test"} = {1: "test"}*
+---@param tbl table #Table to be turned into a JSON object.
+---@param opt TblToJsonOptions #Settings for the parser.
+---@return string
+function utils.tblToJson(tbl, opt)
+    ---@type TblToJsonOptions
+    local _opt = gTable.clone(opt or { indent = 4, pretty = true })
+    _opt.offset = _opt.indent + (_opt.offset or 0)
 
-    for match in (s .. sep):gmatch("(.-)" .. sep) do
-        table.insert(result, match)
-    end
+    local newChar = _opt.pretty and "\n" or ""
+    local iString = _opt.pretty and (" "):rep(_opt.offset) or ""
 
-    return result
-end
+    local result = "{" .. newChar
 
-function utils.table.subset(t, i, j)
-    local result = {}
-
-    for x = i, j, 1 do
-        table.insert(result, t[x])
-    end
-
-    return result
-end
-
-function utils.tblToJson(tbl, indent, isObj)
-    if not indent then
-        indent = 0
-    end
-    if not isObj then
-        isObj = false
-    end
-    local toprint = (isObj and "" or string.rep(" ", indent)) .. "{\n"
     for k, v in pairs(tbl) do
-        local kt = type(k)
-        local vt = type(v)
-
-        toprint = toprint .. string.rep(" ", indent + 2) .. (kt == "number" and "[" .. k .. "]" or k) .. " = "
-
-        if vt == "table" then
-            toprint = toprint .. utils.tblToJson(v, indent + 4, true) .. ",\n"
-        else
-            toprint = toprint .. (vt == "string" and '"' .. v .. '"' or tostring(v)) .. ",\n"
-        end
+        local t = type(v)
+        k = type(k) == "string" and "\"" .. k .. "\"" or k
+        result = ("%s%s%s:%s,%s"):format(result, iString, k, (_opt.pretty and " " or "") .. (t == "table" and utils.tblToJson(v, _opt) or (t == "string" and "\"" .. v .. "\"" or tostring(v))), newChar)
     end
 
-    toprint = toprint .. string.rep(" ", indent - 2) .. "}"
-    return toprint
+    return result:sub(1, (_opt.pretty and -3 or -2)) .. (_opt.pretty and "\n" or "") .. (_opt.pretty and (" "):rep(math.max(_opt.offset - _opt.indent, 0)) or "") .. "}"
 end
 
-function utils.table.indexOf(tbl, item)
-    local i = nil
-
-    for index, value in ipairs(tbl) do
-        if item == value then
-            i = index
-        end
-    end
-
-    return i
+---Clamps a number between two values
+---@param number number #The number to be clamped
+---@param min number #Minimum number
+---@param max number #Maximum number
+---@return number
+function utils.clamp(number, min, max)
+    return math.max(math.min(number, max), min)
 end
-
-function utils.table.merge(tbl1, tbl2)
-    for k, v in pairs(tbl2) do
-        tbl1[k] = v
-    end
-    for i, v in ipairs(tbl2) do
-        tbl1[i] = v
-    end
-
-    return tbl1
-end
-
----@class AButton
----@field modifiers string[] #Collection of modifier keys.
----@field button number #The number of mouse button.
----@field callback function #Function called when key is pressed.
 
 ---Creates a Awful Button table
 ---@param args AButton
 ---@return table
 function utils.aButton(args)
-    return awful.button(args.modifiers, args.button, args.callback)
+    return aButton(args.modifiers, args.button, args.callback)
 end
 
+---Creates a Awful Key table
+---@param arg AKey
+---@return table
+function utils.aKey(arg)
+    return aKey(arg.modifiers, arg.key, arg.callback, arg.description)
+end
+
+return utils
+--------------------------------------------------
 ---@class AKey
 ---@field modifiers string[] #Collection of modifier keys.
 ---@field key string #The key of the keyboard.
 ---@field callback function #Function called when key is pressed.
 ---@field description {description: string, group: string} #Description of the key.
 
----Creates a Awful Key table
----@param arg AKey
----@return table
-function utils.aKey(arg)
-    return awful.key(arg.modifiers, arg.key, arg.callback, arg.description)
-end
+---@class AButton
+---@field modifiers string[] #Collection of modifier keys.
+---@field button number #The number of mouse button.
+---@field callback function #Function called when key is pressed.
 
-return utils
+---@class TblToJsonOptions #Settings for the parser.
+---@field offset number #The offset of indent.
+---@field indent number #Sets the indent from the left. Use to offset the text.
+---@field pretty boolean #If true indents and new lines will be applied. Default: true
