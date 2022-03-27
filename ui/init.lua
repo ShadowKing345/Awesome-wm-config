@@ -18,14 +18,9 @@ function uiConfig:new(env)
     awful.screen.connect_for_each_screen(sc.init)
 end
 
--- Metadata setup.
 --------------------------------------------------
 function uiConfig.mt:__call(...)
     return uiConfig:new(...)
 end
 
 return setmetatable(uiConfig, uiConfig.mt)
-
---------------------------------------------------
--- EoF
---------------------------------------------------
