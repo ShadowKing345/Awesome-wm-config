@@ -1,12 +1,21 @@
-local menubar = require "menubar"
-local gTJoin = require "gears.table".join
+--------------------------------------------------
+--
+--      Mouse and Keybindings configurations
+--
+--------------------------------------------------
+local setmetatable = setmetatable
+local unpack = unpack or table.unpack
+
 local awful = require "awful"
 local hotkeysPopup = require "awful.hotkeys_popup"
+local gTJoin = require "gears.table".join
+local menubar = require "menubar"
 
 local utils = require "utils"
 local aKey = utils.aKey
 local aButton = utils.aButton
 
+--------------------------------------------------
 ---@class BindingConfig
 ---@field keys table
 ---@field button table
@@ -18,7 +27,7 @@ function bindingConfig:new(env)
     env = env or {}
 
     self.keys = {
-        global = gTJoin(table.unpack {
+        global = gTJoin(unpack {
             -- Tags
             aKey {
                 modifiers = { env.modKey },
@@ -234,7 +243,7 @@ function bindingConfig:new(env)
     return self
 end
 
--- @param env EnvConfig
+--------------------------------------------------
 function bindingConfig.mt:__call(env)
     return bindingConfig:new(env)
 end
