@@ -3,9 +3,12 @@
 --      Environment configuration setup.
 --
 --------------------------------------------------
+local setmetatable = setmetatable
+
 local beautiful = require "beautiful"
 local gears = require "gears"
 
+--------------------------------------------------
 ---@class EnvConfig
 ---@field terminal string #Name of terminal application
 ---@field editor string #Name of editor
@@ -35,18 +38,12 @@ function env:new(args)
 
     beautiful.init(env.themePath)
 
-    return setmetatable(self, self.mt)
+    return self
 end
 
---------------------------------------------------
--- Metadata setup
 --------------------------------------------------
 function env.mt:__call(args)
     return env:new(args)
 end
 
 return setmetatable(env, env.mt)
-
---------------------------------------------------
--- EoF
---------------------------------------------------
