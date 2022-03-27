@@ -36,7 +36,7 @@ function utils.tblToJson(tbl, opt)
         result = ("%s%s%s:%s,%s"):format(result, iString, k, (_opt.pretty and " " or "") .. (t == "table" and utils.tblToJson(v, _opt) or (t == "string" and "\"" .. v .. "\"" or tostring(v))), newChar)
     end
 
-    return result:sub(1, (_opt.pretty and -3 or -2)) .. (_opt.pretty and "\n" or "") .. (_opt.pretty and (" "):rep(math.max(_opt.offset - _opt.indent, 0)) or "") .. "}"
+    return result:sub(1, (_opt.pretty and -3 or -2)) .. newChar .. (_opt.pretty and (" "):rep(math.max(_opt.offset - _opt.indent, 0)) or "") .. "}"
 end
 
 ---Clamps a number between two values
