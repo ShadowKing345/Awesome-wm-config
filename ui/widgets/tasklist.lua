@@ -100,7 +100,6 @@ function tasklist:new(args)
     return w
 end
 
--- Metadata setup
 --------------------------------------------------
 function tasklist.mt:__call(...)
     return tasklist:new(...)

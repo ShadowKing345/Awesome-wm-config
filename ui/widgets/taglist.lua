@@ -92,7 +92,6 @@ function taglist:new(args)
     return w
 end
 
--- Metadata setup
 --------------------------------------------------
 function taglist.mt:__call(...)
     return taglist:new(...)
