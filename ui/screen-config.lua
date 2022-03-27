@@ -11,13 +11,11 @@ local gears = require "gears"
 local hotkeysPopup = require "awful.hotkeys_popup"
 local wibox = require "wibox"
 
---local minitray = require "ui.widgets.minitray"
 local mainMenu = require "ui.widgets.mainMenu"
 local taglist = require "ui.widgets.taglist"
 local tasklist = require "ui.widgets.tasklist"
 
 --------------------------------------------------
-
 ---@class ScreenConfig
 ---@field mainMenuEntries table<string, function>[] #The collection of entires in the main menu entires.
 ---@field mainMenu table #The main menu object.
@@ -56,6 +54,8 @@ function screenConfig:new(env)
 
     self.taglistButtons = taglist.default_buttons(env)
     self.tasklistButtons = tasklist.default_buttons()
+
+    self.systray = wibox.widget.systray()
 
     return self
 end
@@ -96,7 +96,7 @@ function screenConfig:_init(s)
         {
             self.textClock,
             seperator,
-            wibox.widget.systray(),
+            self.systray,
             seperator,
             s.layoutbox,
             layout = wibox.layout.fixed.horizontal,
@@ -109,14 +109,9 @@ function screenConfig.init(screen)
     screenConfig:_init(screen)
 end
 
--- Metadata setup
 --------------------------------------------------
 function screenConfig.mt:__call(...)
     return screenConfig:new(...)
 end
 
 return setmetatable(screenConfig, screenConfig.mt)
-
---------------------------------------------------
--- EoF
---------------------------------------------------
