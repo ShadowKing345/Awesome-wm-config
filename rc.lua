@@ -5,7 +5,6 @@
 --------------------------------------------------
 pcall(require, "luarocks.loader")
 
--- Imports
 --------------------------------------------------
 require "awful.autofocus"
 require "awful.hotkeys_popup.keys"
