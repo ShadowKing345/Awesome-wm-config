@@ -25,14 +25,9 @@ function layoutConfiguration:new(_)
     return self
 end
 
--- Metadata setup
 --------------------------------------------------
 function layoutConfiguration.mt:__call(...)
     return layoutConfiguration:new(...)
 end
 
 return setmetatable(layoutConfiguration, layoutConfiguration.mt)
-
---------------------------------------------------
--- EoF
---------------------------------------------------
