@@ -8,12 +8,12 @@ local setmetatable = setmetatable
 local awful = require "awful"
 local beautiful = require "beautiful"
 local gears = require "gears"
-local hotkeysPopup = require "awful.hotkeys_popup"
 local wibox = require "wibox"
 
 local mainMenu = require "ui.widgets.mainMenu"
 local taglist = require "ui.widgets.taglist"
 local tasklist = require "ui.widgets.tasklist"
+local utils = require "utils"
 
 --------------------------------------------------
 ---@class ScreenConfig
@@ -40,15 +40,24 @@ function screenConfig:new(env)
     screen.connect_signal("property::geometry", screenConfig.set_wallpaper)
     env = env or {}
 
-    self.mainMenuEntries = {
-        { "hotkeys", function() hotkeysPopup.show_help(nil, awful.screen.focused()) end, },
-        { "manual", env.terminal .. " -e man awesome", },
-        { "edit config", env.editorCmd .. " " .. awesome.conffile, },
-        { "restart", awesome.restart, },
-        { "quit", function() awesome.quit() end, },
-    }
     self.mainMenu = mainMenu(env)
-    self.launcher = awful.widget.launcher { image = beautiful.awesome_icon, menu = self.mainMenu }
+    self.launcher = awful.widget.button {
+        image = beautiful.awesome_icon,
+        buttons = {
+            utils.aButton {
+                modifiers = {},
+                button = 1,
+                callback = function()
+                    local geometry = mouse.screen.geometry
+                    geometry.y = geometry.height
+                    self.mainMenu:toggle {
+                        coords = geometry,
+                        screen = mouse.screen
+                    }
+                end,
+            }
+        }
+    }
 
     self.textClock = wibox.widget.textclock()
 
