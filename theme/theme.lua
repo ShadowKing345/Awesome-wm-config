@@ -106,11 +106,6 @@ local config = {
             shutdown = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg),
         },
     },
-    menu           = {
-        submenu_icon = default_theme_path .. "default/submenu.png",
-        height = dpi(30),
-        width = dpi(200),
-    },
     taglist        = {
         disable_icon = true,
         bg_occupied = theme.bg_minimize,
