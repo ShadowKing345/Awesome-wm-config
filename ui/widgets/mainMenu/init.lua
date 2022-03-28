@@ -9,7 +9,6 @@ local awful = require "awful"
 local beautiful = require "beautiful"
 local capi = { screen = screen, mouse = mouse, client = client }
 local gTable = require "gears.table"
-local screen = require "awful.screen"
 local wibox = require "wibox"
 
 local button = require((...):match ".*" .. ".button")
@@ -235,7 +234,7 @@ end
 function mainMenu:show(args)
     args = args or {}
     local coords = args.coords or nil
-    local s = capi.screen[screen.focused()]
+    local s = args.screen or capi.mouse.screen
 
     self:set_coords(s, coords)
 
