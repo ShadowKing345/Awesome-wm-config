@@ -73,7 +73,6 @@ function screenConfig:_init(s)
     screenConfig.set_wallpaper(s)
 
     awful.tag({ "1", "2", "3", "4", "5", "6" }, s, awful.layout.layouts[1])
-    s.prompt = awful.widget.prompt()
 
     s.layoutbox = awful.widget.layoutbox(s)
     s.taglist = taglist { buttons = self.taglistButtons, screen = s, }
