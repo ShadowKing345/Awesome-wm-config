@@ -7,9 +7,8 @@ local setmetatable = setmetatable
 
 local awful = require "awful"
 local beautiful = require "beautiful"
-local gColor = require "gears.color"
-local gString = require "gears.string"
 local gTable = require "gears.table"
+local gfs = require "gears.filesystem"
 local rounded_rect = require "gears.shape".rounded_rect
 local wibox = require "wibox"
 
@@ -33,103 +32,20 @@ function inputField.default_theme()
     }
 end
 
----Helper function to determine if there is more then 1 character.
-function inputField.have_multibyte_char_at(text, position)
-    return text:sub(position, position):wlen() == -1
-end
-
----Gets a textbox markup friendly string.
----Based on the method prompt_text_with_cursor from awful.prompt
----@param args TextSanitizerArgs #The table of arguments.
----@return string #Parsed string.
-function inputField.sanitize_text(args)
-    args.placeholder = args.placeholder or ""
-
-    local char, text_start, text_end
-    local text = args.text or ""
-
-    if #text < args.cursor_pos then
-        char = args.cursor_hide and "" or " "
-        text_start = gString.xml_escape(text)
-        text_end = ""
-    else
-        if #text == 0 then
-            char = ""
-            text_start = args.placeholder and ("<i>" .. args.placeholder .. "</i>") or ""
-            text_end = ""
-        else
-            local offset = 0
-            if inputField.have_multibyte_char_at(text, args.cursor_pos) then
-                offset = 1
-            end
-            char = gString.xml_escape(text:sub(args.cursor_pos, args.cursor_pos + offset))
-            text_start = gString.xml_escape(text:sub(1, args.cursor_pos - 1))
-            text_end = gString.xml_escape(text:sub(args.cursor_pos + 1 + offset))
-        end
-    end
-
-    local cursor_color = gColor.ensure_pango_color(args.style.cursor_bg)
-    local text_color = gColor.ensure_pango_color(args.style.cursor_fg)
-
-    return text_start .. "<span background=\"" .. cursor_color .. "\" foreground=\"" .. text_color .. "\" >" .. char .. "</span>" .. text_end
-end
-
----The keypress callback function used to parse the input into text.
----Based on the awful.prompt version.
----@param self {stop:function} #The keygrabber itself.
----@param _ table #Modifier keys.
----@param key string #The actual key pressed.
----@param widget table #The input field widget the callback was called for.
-function inputField.keypressed_callback(self, _, key, widget)
-    local text = widget.text or ""
-    ---@type TextSanitizerArgs
-    local markupParseArgs = {
-        text = text,
-        placeholder = widget.placeholder,
-        cursor_pos = #text + 1,
-        style = widget._private.style,
-    }
-
-    if key == "Return" or key == "Escape" then
-        markupParseArgs.cursor_hide = true
-        widget:get_children_by_id "text_role"[1]:set_markup(inputField.sanitize_text(markupParseArgs))
-        self:stop()
-        return
-    end
-
-    if key == "BackSpace" then
-        text = text:sub(1, -2)
-    else
-        text = text .. key
-    end
-
-    widget.text = text
-    markupParseArgs.text = text
-    markupParseArgs.cursor_pos = #text + 1
-    widget:get_children_by_id "text_role"[1]:set_markup(inputField.sanitize_text(markupParseArgs))
-end
-
 ---@param args inputFieldNewArgs #Arguments for function.
 ---@return table #Widget object.
 function inputField.new(args)
     args = args or {}
     args.style = gTable.merge(inputField.default_theme(), args.style or {})
+    args.prompt_args = args.prompt_args or {}
+
+    local prompt = awful.widget.prompt {
+        bg = args.style.bg
+    }
 
     local ret = wibox.widget {
         {
-            {
-                id = "text_role",
-                markup = inputField.sanitize_text {
-                    text = args.text or "",
-                    placeholder = args.placeholder or "",
-                    cursor_pos = #(args.text or ""),
-                    style = args.style,
-                },
-                font = args.style.font,
-                fg = args.style.fg,
-                ellipsize = "start",
-                widget = wibox.widget.textbox,
-            },
+            prompt,
             left = 10,
             right = 10,
             widget = wibox.container.margin,
@@ -143,22 +59,6 @@ function inputField.new(args)
 
     gTable.crush(ret, inputField, true)
 
-    ret._private.style = args.style
-    ret._private.grabber = awful.keygrabber {
-        keypressed_callback = function(self, modifiers, key) inputField.keypressed_callback(self, modifiers, key, ret) end,
-        mask_modkeys = true,
-    }
-
-    if args.placeholder then
-        ret._private.placeholder = args.placeholder
-    end
-    if args.text then
-        ret._private.text = args.text
-    end
-    if args.change_callback then
-        ret._private.change_callback = args.change_callback
-    end
-
 
     ret:buttons {
         utils.aButton {
@@ -166,7 +66,15 @@ function inputField.new(args)
             button = 1,
             callback = function()
                 ret._private.inputActive = true
-                ret._private.grabber:start()
+                awful.prompt.run {
+                    prompt = args.prompt_args.prompt or "",
+                    textbox = prompt.widget,
+                    completion_callback = args.prompt_args.completion_callback,
+                    history_path = args.prompt_args.history_path or gfs.get_cache_dir() .. "/history_inputfield",
+                    done_callback = args.prompt_args.done_callback,
+                    change_callback = args.prompt_args.change_callback,
+                    keypress_callback = args.prompt_args.keypress_callback,
+                }
             end
         }
     }
@@ -181,7 +89,7 @@ function inputField.new(args)
                         ret._private.inputActive = false
                         ret._private.triggerReady = false
 
-                        ret._private.grabber:stop()
+                        awful.keygrabber.stop()
 
                         return false
                     end
@@ -212,6 +120,10 @@ return setmetatable(inputField, inputField.mt)
 --------------------------------------------------
 -- Class definitions
 
+---@class inputFieldNewArgs
+---@field style? InputFieldStyle #Style overwrite.
+---@field prompt_args? InputFieldPromptArgs #Arguments for the prompt used.
+
 ---@class InputFieldStyle
 ---@field bg string #Background color.
 ---@field fg string #Foreground color.
@@ -222,15 +134,10 @@ return setmetatable(inputField, inputField.mt)
 ---@field border_color string #Border color.
 ---@field shape function #Gears shape function used to create the edge.
 
----@class inputFieldNewArgs
----@field style? InputFieldStyle #Style overwrite.
----@field text? string #Default text to be put.
----@field placeholder? string #Placeholder text that will appear if there is no text.
----@field change_callback? function #Callback function when input changes.
-
----@class TextSanitizerArgs
----@field text string #The text.
----@field placeholder string #The placeholder text that appears if there is no text.
----@field cursor_hide boolean #Hide the cursor.
----@field cursor_pos number #The cursor position.
----@field style InputFieldStyle #Style to be used.
+---@class InputFieldPromptArgs
+---@field prompt? string #The prompt message.
+---@field completion_callback? function #Completion callback function.
+---@field history_path? string #Path to history file for prompt.
+---@field done_callback? function #Callback function for when the prompt is done.
+---@field change_callback? function #Callback function for when the input changes.
+---@field keypress_callback? function #Callback function for when a key has been pressed.
