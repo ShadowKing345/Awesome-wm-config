@@ -10,9 +10,9 @@ local beautiful = require "beautiful"
 local gears = require "gears"
 local wibox = require "wibox"
 
-local mainMenu = require "ui.widgets.mainMenu"
-local taglist = require "ui.widgets.taglist"
-local tasklist = require "ui.widgets.tasklist"
+local mainMenu = require "ui.widget.mainMenu"
+local taglist = require "ui.widget.taglist"
+local tasklist = require "ui.widget.tasklist"
 local utils = require "utils"
 
 --------------------------------------------------

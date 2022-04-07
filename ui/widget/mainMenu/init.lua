@@ -10,7 +10,6 @@ local beautiful = require "beautiful"
 local capi = { screen = screen, mouse = mouse, client = client }
 local gfs = require "gears.filesystem"
 local gTable = require "gears.table"
-local gShape = require "gears.shape"
 local menu_gen = require "menubar.menu_gen"
 local wibox = require "wibox"
 
@@ -18,7 +17,8 @@ local relPath = (...):match ".*"
 local application = require(relPath .. ".application")
 local category = require(relPath .. ".category")
 local button = require(relPath .. ".button")
-local inputField = require "ui.widgets.inputField"
+local inputField = require "ui.widget.inputField"
+local overflow = require "ui.layouts.overflow"
 local utils = require "utils"
 
 --------------------------------------------------
@@ -205,19 +205,7 @@ function mainMenu:init(args)
                                 },
                                 widget = wibox.container.background,
                             },
-                            {
-                                {
-                                    bar_color = "#ff0000",
-                                    handle_color = "#ffff00",
-                                    handle_width = 100,
-                                    value = 25,
-                                    widget = wibox.widget.slider,
-                                },
-                                direction = "west",
-                                widget = wibox.container.rotate,
-                            },
-                            expand = "outer",
-                            layout = wibox.layout.align.horizontal,
+                            layout = overflow,
                         },
                         bg = args.style.bg_right,
                         widget = wibox.container.background,
@@ -322,8 +310,15 @@ function mainMenu:new(args)
 
     if #self.applications < 1 then
         menu_gen.generate(function(result)
-            self.applications = result
-            table.sort(self.applications, function(a, b) return a.name < b.name end)
+            table.sort(result, function(a, b) return a.name < b.name end)
+
+            local out = {}
+            for k, v in pairs(result) do
+                if k <= 50 then
+                    out[k] = v
+                end
+            end
+            self.applications = out
         end)
     end
 
