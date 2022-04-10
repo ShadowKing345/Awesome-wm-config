@@ -44,7 +44,7 @@ function category.new(args)
     args = args or {}
     args.style = gTable.merge(category.default_style(), args.style or {})
 
-    local w = wibox.widget {
+    local ret = wibox.widget {
         {
 
             {
@@ -84,8 +84,19 @@ function category.new(args)
         fg = args.style.fg,
         widget = wibox.container.background,
     }
-    w.category = args.category
-    return w
+
+    gTable.crush(ret, category, true)
+    gTable.crush(ret, args, true)
+
+    if args.callback then
+        ret:connect_signal("button::press", function(self, _, _, button)
+            if button == 1 then
+                self.callback(self)
+            end
+        end)
+    end
+
+    return ret
 end
 
 --------------------------------------------------
@@ -99,6 +110,7 @@ return setmetatable(category, category.mt)
 ---@class CategoryArgs
 ---@field category Category #Category used.
 ---@field style CategoryStyle #Style used for category.
+---@field callback function #Function callback for when the category is clicked.
 
 ---@class Category
 ---@field name string #Name of the category.

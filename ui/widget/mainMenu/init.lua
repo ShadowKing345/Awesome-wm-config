@@ -10,19 +10,21 @@ local beautiful = require "beautiful"
 local capi = { screen = screen, mouse = mouse, client = client }
 local gfs = require "gears.filesystem"
 local gTable = require "gears.table"
+local gString = require "gears.string"
 local menu_gen = require "menubar.menu_gen"
 local wibox = require "wibox"
 
 local relPath = (...):match ".*"
 local application = require(relPath .. ".application")
-local category = require(relPath .. ".category")
+local categoryWidget = require(relPath .. ".category")
 local button = require(relPath .. ".button")
 local inputField = require "ui.widget.inputField"
-local overflow = require "ui.layouts.overflow"
+-- NOTE: Remove when overflow layout comes out.
+wibox.layout.overflow = require "ui.layouts.overflow"
 local utils = require "utils"
 
 --------------------------------------------------
-local mainMenu = { applications = {}, widget = nil, mt = {} }
+local mainMenu = { pattern = gString.query_to_pattern "", category = nil, categories = nil, applications = {}, widget = nil, mt = {} }
 
 local vSeperator = wibox.widget {
     orientation = "vertical",
@@ -60,6 +62,48 @@ function mainMenu:set_coords(s, coords)
     self.widget.y = utils.clamp(coords.y, workarea.y, workarea.y + workarea.height - self.widget.height)
 end
 
+function mainMenu:genSideCategories(categories)
+    self.categories = self.categories or wibox.widget {
+        spacing = 1,
+        layout = wibox.layout.overflow.vertical,
+    }
+
+    local w = self.categories
+    w:reset()
+    w:add(categoryWidget { category = { icon_name = "", name = "All" }, callback = function() mainMenu:setCategory(nil) end })
+
+    for k, v in pairs(categories) do
+        local index = 2
+        while index <= #w.children and w.children[index].category.name < v.name do
+            index = index + 1
+        end
+        w:insert(index, categoryWidget { category = v, callback = function() mainMenu:setCategory(k) end })
+    end
+end
+
+function mainMenu:setCategory(category)
+    if self.category == category then
+        return
+    end
+
+    self.category = category
+    self:resetApplicationsWidget()
+end
+
+function mainMenu:resetApplicationsWidget()
+    self.widget.shownItems:reset()
+    for _, v in ipairs(self.applications) do
+        if (not self.category or (v.category == self.category)) and (v.name:match("^" .. self.pattern) or v.cmdline:match("^" .. self.pattern)) then
+            self.widget.shownItems:add(application { application = v, callback = self.appliction_callback })
+        end
+    end
+end
+
+function mainMenu.appliction_callback(application_widget)
+    awful.spawn(application_widget.application.cmdline)
+    mainMenu:hide()
+end
+
 function mainMenu:init(args)
     args = args or {}
     args.style = gTable.merge(mainMenu.default_style(), args.style or {})
@@ -70,21 +114,11 @@ function mainMenu:init(args)
         height = 550,
     }
 
-    local categories = {
-        category { category = { icon_name = "", name = "All" } },
-        spacing = 1,
-        layout = wibox.layout.flex.vertical,
-    }
-
-    for _, v in pairs(menu_gen.all_categories) do
-        local index = 1
-        while index <= #categories and (categories[index].category.name == "All" or categories[index].category.name < v.name) do
-            index = index + 1
-        end
-        table.insert(categories, index, category { category = v })
+    if not self.categories then
+        self:genSideCategories(menu_gen.all_categories)
     end
 
-    self.widget.applications = wibox.widget {
+    self.widget.shownItems = self.widget.shownItems or wibox.widget {
         spacing = 10,
         forced_num_cols = 5,
         horizontal_expand = true,
@@ -121,7 +155,7 @@ function mainMenu:init(args)
                 {
                     hSeperator,
                     {
-                        categories,
+                        self.categories,
                         bg = args.style.bg_left,
                         widget = wibox.container.background,
                     },
@@ -174,15 +208,16 @@ function mainMenu:init(args)
                     {
                         inputField {
                             prompt_args = {
-                                prompt = "Search: ",
+                                prompt = self.pattern,
                                 completion_callback = awful.completion.shell,
                                 history_path = gfs.get_cache_dir() .. "/history_menu",
-                                done_callback = function()
-                                    mainMenu:hide()
-                                end,
-                                change_callback = function(query)
-                                    require "naughty".notify { text = tostring(query) }
+                                changed_callback = function(query)
+                                    if self.pattern == query then
+                                        return
+                                    end
 
+                                    self.pattern = gString.query_to_pattern(query)
+                                    self:resetApplicationsWidget()
                                 end
                             }
                         },
@@ -199,13 +234,13 @@ function mainMenu:init(args)
                         {
                             {
                                 {
-                                    self.widget.applications,
+                                    self.widget.shownItems,
                                     margins = 10,
                                     widget = wibox.container.margin,
                                 },
                                 widget = wibox.container.background,
                             },
-                            layout = overflow,
+                            layout = wibox.layout.overflow.vertical,
                         },
                         bg = args.style.bg_right,
                         widget = wibox.container.background,
@@ -283,13 +318,7 @@ function mainMenu:show(args)
     local coords = args.coords or nil
     local s = args.screen or capi.mouse.screen
 
-    self.widget.applications:reset()
-    for _, v in ipairs(self.applications) do
-        self.widget.applications:add(wibox.widget {
-            application { application = v },
-            widget = wibox.container.place,
-        })
-    end
+    self:resetApplicationsWidget()
 
     self:set_coords(s, coords)
     self.widget.visible = true
@@ -311,14 +340,7 @@ function mainMenu:new(args)
     if #self.applications < 1 then
         menu_gen.generate(function(result)
             table.sort(result, function(a, b) return a.name < b.name end)
-
-            local out = {}
-            for k, v in pairs(result) do
-                if k <= 50 then
-                    out[k] = v
-                end
-            end
-            self.applications = out
+            self.applications = result
         end)
     end
 
