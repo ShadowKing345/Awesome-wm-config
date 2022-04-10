@@ -39,13 +39,14 @@ function inputField.new(args)
     args.style = gTable.merge(inputField.default_theme(), args.style or {})
     args.prompt_args = args.prompt_args or {}
 
-    local prompt = awful.widget.prompt {
-        bg = args.style.bg
+    local textbox = wibox.widget {
+        text = args.text or "",
+        widget = wibox.widget.textbox,
     }
 
     local ret = wibox.widget {
         {
-            prompt,
+            textbox,
             left = 10,
             right = 10,
             widget = wibox.container.margin,
@@ -68,12 +69,17 @@ function inputField.new(args)
                 ret._private.inputActive = true
                 awful.prompt.run {
                     prompt = args.prompt_args.prompt or "",
-                    textbox = prompt.widget,
                     completion_callback = args.prompt_args.completion_callback,
                     history_path = args.prompt_args.history_path or gfs.get_cache_dir() .. "/history_inputfield",
-                    done_callback = args.prompt_args.done_callback,
-                    change_callback = args.prompt_args.change_callback,
+                    done_callback = function()
+                        -- TODO: Kill the mouse grabber.
+                        args.prompt_args.done_callback()
+                    end,
+                    changed_callback = args.prompt_args.changed_callback,
                     keypress_callback = args.prompt_args.keypress_callback,
+                    bg = args.style.bg,
+                    textbox = textbox,
+                    exe_callback = function(text) textbox:set_text(text) end,
                 }
             end
         }
@@ -90,6 +96,10 @@ function inputField.new(args)
                         ret._private.triggerReady = false
 
                         awful.keygrabber.stop()
+                        textbox:set_text ""
+                        if args.prompt_args.changed_callback then
+                            args.prompt_args.changed_callback ""
+                        end
 
                         return false
                     end
@@ -123,6 +133,7 @@ return setmetatable(inputField, inputField.mt)
 ---@class inputFieldNewArgs
 ---@field style? InputFieldStyle #Style overwrite.
 ---@field prompt_args? InputFieldPromptArgs #Arguments for the prompt used.
+---@field text? string #Default text.
 
 ---@class InputFieldStyle
 ---@field bg string #Background color.
@@ -139,5 +150,5 @@ return setmetatable(inputField, inputField.mt)
 ---@field completion_callback? function #Completion callback function.
 ---@field history_path? string #Path to history file for prompt.
 ---@field done_callback? function #Callback function for when the prompt is done.
----@field change_callback? function #Callback function for when the input changes.
+---@field changed_callback? function #Callback function for when the input changes.
 ---@field keypress_callback? function #Callback function for when a key has been pressed.
