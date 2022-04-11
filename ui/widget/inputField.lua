@@ -5,12 +5,12 @@
 --------------------------------------------------
 local setmetatable = setmetatable
 
-local awful = require "awful"
-local beautiful = require "beautiful"
-local gTable = require "gears.table"
-local gfs = require "gears.filesystem"
+local awful        = require "awful"
+local beautiful    = require "beautiful"
+local gTable       = require "gears.table"
+local gfs          = require "gears.filesystem"
 local rounded_rect = require "gears.shape".rounded_rect
-local wibox = require "wibox"
+local wibox        = require "wibox"
 
 local utils = require "utils"
 
