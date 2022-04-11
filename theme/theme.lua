@@ -21,61 +21,65 @@ local theme_path = gfs.get_xdg_config_home() .. "awesome/theme/"
 --  Main colors
 --------------------------------------------------
 local colors = {
-    flamingo = "#F2CDCD",
-    mauve = "#DDB6F2",
-    pink = "#F5C2E7",
-    maroon = "#E8A2AF",
-    red = "#F28FAD",
-    peach = "#F8BD96",
-    yellow = "#FAE3B0",
-    green = "#ABE9B3",
-    teal = "#B5E8E0",
-    blue = "#96CDFB",
-    sky = "#89DCEB",
-    black_0 = "#161320",
-    black_1 = "#1A1826",
-    black_2 = "#1E1E2E",
-    black_3 = "#302D41",
-    black_4 = "#575268",
-    gray_0 = "#6E6C7E",
-    gray_1 = "#988BA2",
-    gray_2 = "#C3BAC6",
-    white = "#D9E0EE",
-    lavender = "#C9CBFF",
+    flamingo  = "#F2CDCD",
+    mauve     = "#DDB6F2",
+    pink      = "#F5C2E7",
+    maroon    = "#E8A2AF",
+    red       = "#F28FAD",
+    peach     = "#F8BD96",
+    yellow    = "#FAE3B0",
+    green     = "#ABE9B3",
+    teal      = "#B5E8E0",
+    blue      = "#96CDFB",
+    sky       = "#89DCEB",
+    black_0   = "#161320",
+    black_1   = "#1A1826",
+    black_2   = "#1E1E2E",
+    black_3   = "#302D41",
+    black_4   = "#575268",
+    gray_0    = "#6E6C7E",
+    gray_1    = "#988BA2",
+    gray_2    = "#C3BAC6",
+    white     = "#D9E0EE",
+    lavender  = "#C9CBFF",
     rosewater = "#F5E0DC",
 }
 
 local theme = {
     main = colors.mauve,
-    bg = colors.black_2,
-    bg_focus = colors.mauve,
-    bg_urgent = colors.red,
-    bg_minimize = colors.black_4,
-    fg = colors.white,
-    fg_focus = colors.gray_0,
-    fg_urgent = colors.rosewater,
-    fg_minimize = colors.lavender,
+    bg   = {
+        normal   = colors.black_2,
+        focus    = colors.mauve,
+        urgent   = colors.red,
+        minimize = colors.black_4,
+    },
+    fg   = {
+        normal   = colors.white,
+        focus    = colors.gray_0,
+        urgent   = colors.rosewater,
+        minimize = colors.lavender,
+    },
 }
 
 local config = {
-    awesome_icon   = theme_assets.awesome_icon(dpi(30), colors.flamingo, theme.bg),
+    awesome_icon   = theme_assets.awesome_icon(dpi(30), colors.flamingo, theme.bg.normal),
     bg             = {
-        normal = theme.bg,
-        focus = theme.bg_focus,
-        urgent = theme.bg_urgent,
-        minimize = theme.bg_minimize,
+        normal   = theme.bg.normal,
+        focus    = theme.bg.focus,
+        urgent   = theme.bg.urgent,
+        minimize = theme.bg.minimize,
     },
     fg             = {
-        normal = theme.fg,
-        focus = theme.fg_focus,
-        urgent = theme.fg_urgent,
-        minimize = theme.fg_minimize,
+        normal   = theme.fg.normal,
+        focus    = theme.fg.focus,
+        urgent   = theme.fg.urgent,
+        minimize = theme.fg.minimize,
     },
     border         = {
-        width = dpi(1),
-        normal = theme.bg,
-        focus = theme.bg_focus,
-        marked = theme.bg_urgent,
+        width  = dpi(1),
+        normal = theme.bg.normal,
+        focus  = theme.bg.focus,
+        marked = theme.bg.urgent,
     },
     font           = "sans 10",
     icon_theme     = "Papirus-Dark",
@@ -85,63 +89,75 @@ local config = {
     },
     main_menu      = {
         image = {
-            reload = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg),
-            quit = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg),
-            sleep = gColor.recolor_image(theme_path .. "mainMenu/sleep.svg", theme.fg),
-            reboot = gColor.recolor_image(theme_path .. "mainMenu/reboot.svg", theme.fg),
-            shutdown = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg),
+            reload   = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
+            quit     = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
+            sleep    = gColor.recolor_image(theme_path .. "mainMenu/sleep.svg", theme.fg.normal),
+            reboot   = gColor.recolor_image(theme_path .. "mainMenu/reboot.svg", theme.fg.normal),
+            shutdown = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
         },
     },
     taglist        = {
         disable_icon = true,
-        bg_occupied = theme.bg_minimize,
-        fg_occupied = theme.fg_minimize,
+        bg_occupied  = theme.bg.minimize,
+        fg_occupied  = theme.fg.minimize,
     },
     tasklist       = {
         plain_task_name = true,
     },
     titlebar       = {
-        close_button = {
+        close_button     = {
             normal = default_theme_path .. "default/titlebar/close_normal.png",
-            focus = default_theme_path .. "default/titlebar/close_focus.png",
+            focus  = default_theme_path .. "default/titlebar/close_focus.png",
         },
-        minimize_button = {
+        minimize_button  = {
             normal = default_theme_path .. "default/titlebar/minimize_normal.png",
-            focus = default_theme_path .. "default/titlebar/minimize_focus.png",
+            focus  = default_theme_path .. "default/titlebar/minimize_focus.png",
         },
-        ontop_button = {
+        ontop_button     = {
             normal = {
-                active = default_theme_path .. "default/titlebar/ontop_normal_active.png",
+                active   = default_theme_path .. "default/titlebar/ontop_normal_active.png",
                 inactive = default_theme_path .. "default/titlebar/ontop_normal_inactive.png",
             },
-            focus = {
-                active = default_theme_path .. "default/titlebar/ontop_focus_active.png",
+            focus  = {
+                active   = default_theme_path .. "default/titlebar/ontop_focus_active.png",
                 inactive = default_theme_path .. "default/titlebar/ontop_focus_inactive.png",
             },
         },
-        sticky_button = {
-            normal_inactive = default_theme_path .. "default/titlebar/sticky_normal_inactive.png",
-            focus_inactive = default_theme_path .. "default/titlebar/sticky_focus_inactive.png",
-            normal_active = default_theme_path .. "default/titlebar/sticky_normal_active.png",
-            focus_active = default_theme_path .. "default/titlebar/sticky_focus_active.png",
+        sticky_button    = {
+            normal = {
+                active   = default_theme_path .. "default/titlebar/sticky_normal_active.png",
+                inactive = default_theme_path .. "default/titlebar/sticky_normal_inactive.png",
+            },
+            focus  = {
+                active   = default_theme_path .. "default/titlebar/sticky_focus_active.png",
+                inactive = default_theme_path .. "default/titlebar/sticky_focus_inactive.png",
+            },
         },
-        floating_button = {
-            normal_inactive = default_theme_path .. "default/titlebar/floating_normal_inactive.png",
-            focus_inactive = default_theme_path .. "default/titlebar/floating_focus_inactive.png",
-            normal_active = default_theme_path .. "default/titlebar/floating_normal_active.png",
-            focus_active = default_theme_path .. "default/titlebar/floating_focus_active.png",
+        floating_button  = {
+            normal = {
+                active   = default_theme_path .. "default/titlebar/floating_normal_active.png",
+                inactive = default_theme_path .. "default/titlebar/floating_normal_inactive.png",
+            },
+            focus  = {
+                active   = default_theme_path .. "default/titlebar/floating_focus_active.png",
+                inactive = default_theme_path .. "default/titlebar/floating_focus_inactive.png",
+            },
         },
         maximized_button = {
-            normal_inactive = default_theme_path .. "default/titlebar/maximized_normal_inactive.png",
-            focus_inactive = default_theme_path .. "default/titlebar/maximized_focus_inactive.png",
-            normal_active = default_theme_path .. "default/titlebar/maximized_normal_active.png",
-            focus_active = default_theme_path .. "default/titlebar/maximized_focus_active.png",
+            normal = {
+                active   = default_theme_path .. "default/titlebar/maximized_normal_active.png",
+                inactive = default_theme_path .. "default/titlebar/maximized_normal_inactive.png",
+            },
+            focus  = {
+                active   = default_theme_path .. "default/titlebar/maximized_focus_active.png",
+                inactive = default_theme_path .. "default/titlebar/maximized_focus_inactive.png",
+            },
         },
     },
     useless_gap    = dpi(0),
     wallpaper      = theme_path .. "background.svg",
     wibar          = {
-        height = dpi(30),
+        height   = dpi(30),
         position = "bottom",
     },
 }
