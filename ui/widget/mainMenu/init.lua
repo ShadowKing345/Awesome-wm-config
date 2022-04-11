@@ -5,51 +5,51 @@
 --------------------------------------------------
 local setmetatable = setmetatable
 
-local awful = require "awful"
+local awful     = require "awful"
 local beautiful = require "beautiful"
-local capi = { screen = screen, mouse = mouse, client = client }
-local gfs = require "gears.filesystem"
-local gTable = require "gears.table"
-local gString = require "gears.string"
-local menu_gen = require "menubar.menu_gen"
-local wibox = require "wibox"
+local capi      = { screen = screen, mouse = mouse, client = client }
+local gfs       = require "gears.filesystem"
+local gTable    = require "gears.table"
+local gString   = require "gears.string"
+local menu_gen  = require "menubar.menu_gen"
+local wibox     = require "wibox"
 
-local relPath = (...):match ".*"
-local application = require(relPath .. ".application")
-local categoryWidget = require(relPath .. ".category")
-local button = require(relPath .. ".button")
-local inputField = require "ui.widget.inputField"
+local relPath           = (...):match ".*"
+local applicationWidget = require(relPath .. ".application")
+local categoryWidget    = require(relPath .. ".category")
+local button            = require(relPath .. ".button")
+local inputField        = require "ui.widget.inputField"
 -- NOTE: Remove when overflow layout comes out.
-wibox.layout.overflow = require "ui.layouts.overflow"
-local utils = require "utils"
+wibox.layout.overflow   = require "ui.layouts.overflow"
+local utils             = require "utils"
 
 --------------------------------------------------
 local mainMenu = { pattern = gString.query_to_pattern "", category = nil, categories = nil, applications = {}, widget = nil, mt = {} }
 
 local vSeperator = wibox.widget {
-    orientation = "vertical",
+    orientation  = "vertical",
     forced_width = 1,
-    widget = wibox.widget.separator,
+    widget       = wibox.widget.separator,
 }
 
 local hSeperator = wibox.widget {
-    orientation = "horizontal",
+    orientation   = "horizontal",
     forced_height = 1,
-    widget = wibox.widget.separator,
+    widget        = wibox.widget.separator,
 }
 
 function mainMenu.default_style()
     return {
         profile_picture = beautiful["profile_picture"] or os.getenv "HOME" .. "/.face",
-        username = beautiful["username"] or os.getenv "HOME":match "/home/(%w+)",
-        bg = beautiful["main_menu_bg"] or beautiful.bg,
-        bg_left = beautiful["main_menu_bg_left"] or beautiful.bg_minimize,
-        bg_right = beautiful["main_menu_bg_right"] or beautiful.bg_minimize,
-        img_reload = beautiful["main_menu_image_reload"] or beautiful.awesome_icon,
-        img_quit = beautiful["main_menu_image_quit"] or beautiful.awesome_icon,
-        img_sleep = beautiful["main_menu_image_sleep"] or beautiful.awesome_icon,
-        img_reboot = beautiful["main_menu_image_reboot"] or beautiful.awesome_icon,
-        img_shutdown = beautiful["main_menu_image_shutdown"] or beautiful.awesome_icon,
+        username        = beautiful["username"] or os.getenv "HOME":match "/home/(%w+)",
+        bg              = beautiful["main_menu_bg"] or beautiful.bg,
+        bg_left         = beautiful["main_menu_bg_left"] or beautiful.bg_minimize,
+        bg_right        = beautiful["main_menu_bg_right"] or beautiful.bg_minimize,
+        img_reload      = beautiful["main_menu_image_reload"] or beautiful.awesome_icon,
+        img_quit        = beautiful["main_menu_image_quit"] or beautiful.awesome_icon,
+        img_sleep       = beautiful["main_menu_image_sleep"] or beautiful.awesome_icon,
+        img_reboot      = beautiful["main_menu_image_reboot"] or beautiful.awesome_icon,
+        img_shutdown    = beautiful["main_menu_image_shutdown"] or beautiful.awesome_icon,
     }
 end
 
@@ -65,7 +65,7 @@ end
 function mainMenu:genSideCategories(categories)
     self.categories = self.categories or wibox.widget {
         spacing = 1,
-        layout = wibox.layout.overflow.vertical,
+        layout  = wibox.layout.overflow.vertical,
     }
 
     local w = self.categories
@@ -94,13 +94,13 @@ function mainMenu:resetApplicationsWidget()
     self.widget.shownItems:reset()
     for _, v in ipairs(self.applications) do
         if (not self.category or (v.category == self.category)) and (v.name:match("^" .. self.pattern) or v.cmdline:match("^" .. self.pattern)) then
-            self.widget.shownItems:add(application { application = v, callback = self.appliction_callback })
+            self.widget.shownItems:add(applicationWidget { application = v, callback = self.appliction_callback })
         end
     end
 end
 
-function mainMenu.appliction_callback(application_widget)
-    awful.spawn(application_widget.application.cmdline)
+function mainMenu.appliction_callback(application)
+    awful.spawn(application.cmdline)
     mainMenu:hide()
 end
 
@@ -109,8 +109,8 @@ function mainMenu:init(args)
     args.style = gTable.merge(mainMenu.default_style(), args.style or {})
 
     self.widget = wibox {
-        ontop = true,
-        width = 720,
+        ontop  = true,
+        width  = 720,
         height = 550,
     }
 
@@ -119,10 +119,10 @@ function mainMenu:init(args)
     end
 
     self.widget.shownItems = self.widget.shownItems or wibox.widget {
-        spacing = 10,
-        forced_num_cols = 5,
+        spacing           = 10,
+        forced_num_cols   = 5,
         horizontal_expand = true,
-        layout = wibox.layout.grid.vertical,
+        layout            = wibox.layout.grid.vertical,
     }
 
     self.widget:setup {
@@ -132,31 +132,31 @@ function mainMenu:init(args)
                     {
                         {
                             {
-                                image = args.style.profile_picture,
-                                forced_width = 26,
+                                image         = args.style.profile_picture,
+                                forced_width  = 26,
                                 forced_height = 26,
-                                widget = wibox.widget.imagebox,
+                                widget        = wibox.widget.imagebox,
                             },
                             {
-                                text = args.style.username,
+                                text   = args.style.username,
                                 widget = wibox.widget.textbox,
                             },
                             fill_space = true,
-                            spacing = 10,
-                            layout = wibox.layout.fixed.horizontal,
+                            spacing    = 10,
+                            layout     = wibox.layout.fixed.horizontal,
                         },
                         margins = 12,
-                        widget = wibox.container.margin,
+                        widget  = wibox.container.margin,
                     },
                     forced_height = 50,
-                    bg = args.style.bg,
-                    widget = wibox.container.background,
+                    bg            = args.style.bg,
+                    widget        = wibox.container.background,
                 },
                 {
                     hSeperator,
                     {
                         self.categories,
-                        bg = args.style.bg_left,
+                        bg     = args.style.bg_left,
                         widget = wibox.container.background,
                     },
                     hSeperator,
@@ -166,41 +166,41 @@ function mainMenu:init(args)
                     {
                         {
                             button {
-                                text = "Reload",
-                                image = args.style.img_reload,
+                                text    = "Reload",
+                                image   = args.style.img_reload,
                                 buttons = {
                                     utils.aButton {
                                         modifiers = {},
-                                        button = 1,
-                                        callback = awesome.restart,
+                                        button    = 1,
+                                        callback  = awesome.restart,
                                     }
                                 }
                             },
                             button {
-                                text = "Quit",
-                                image = args.style.img_quit,
+                                text    = "Quit",
+                                image   = args.style.img_quit,
                                 buttons = {
                                     utils.aButton {
                                         modifiers = {},
-                                        button = 1,
-                                        callback = function() awesome.quit() end,
+                                        button    = 1,
+                                        callback  = function() awesome.quit() end,
                                     }
                                 }
                             },
                             spacing = 10,
-                            layout = wibox.layout.flex.horizontal,
+                            layout  = wibox.layout.flex.horizontal,
                         },
                         margins = 12,
-                        widget = wibox.container.margin,
+                        widget  = wibox.container.margin,
                     },
                     forced_height = 50,
-                    bg = args.style.bg,
-                    widget = wibox.container.background,
+                    bg            = args.style.bg,
+                    widget        = wibox.container.background,
                 },
                 layout = wibox.layout.align.vertical,
             },
             forced_width = 240,
-            widget = wibox.container.background,
+            widget       = wibox.container.background,
         },
         {
             {
@@ -208,10 +208,10 @@ function mainMenu:init(args)
                     {
                         inputField {
                             prompt_args = {
-                                prompt = self.pattern,
+                                prompt              = self.pattern,
                                 completion_callback = awful.completion.shell,
-                                history_path = gfs.get_cache_dir() .. "/history_menu",
-                                changed_callback = function(query)
+                                history_path        = gfs.get_cache_dir() .. "/history_menu",
+                                changed_callback    = function(query)
                                     if self.pattern == query then
                                         return
                                     end
@@ -222,11 +222,11 @@ function mainMenu:init(args)
                             }
                         },
                         margins = 12,
-                        widget = wibox.container.margin,
+                        widget  = wibox.container.margin,
                     },
                     forced_height = 50,
-                    bg = args.style.bg,
-                    widget = wibox.container.background,
+                    bg            = args.style.bg,
+                    widget        = wibox.container.background,
                 },
                 {
                     hSeperator,
@@ -236,13 +236,13 @@ function mainMenu:init(args)
                                 {
                                     self.widget.shownItems,
                                     margins = 10,
-                                    widget = wibox.container.margin,
+                                    widget  = wibox.container.margin,
                                 },
                                 widget = wibox.container.background,
                             },
                             layout = wibox.layout.overflow.vertical,
                         },
-                        bg = args.style.bg_right,
+                        bg     = args.style.bg_right,
                         widget = wibox.container.background,
                     },
                     hSeperator,
@@ -252,35 +252,35 @@ function mainMenu:init(args)
                     {
                         {
                             button {
-                                text = "Sleep",
-                                image = args.style.img_sleep,
+                                text    = "Sleep",
+                                image   = args.style.img_sleep,
                                 buttons = {
                                     utils.aButton {
                                         modifiers = {},
-                                        button = 1,
-                                        callback = function() awful.spawn.with_shell "systemctl suspend" end,
+                                        button    = 1,
+                                        callback  = function() awful.spawn.with_shell "systemctl suspend" end,
                                     }
                                 }
                             },
                             button {
-                                text = "Restart",
-                                image = args.style.img_reboot,
+                                text    = "Restart",
+                                image   = args.style.img_reboot,
                                 buttons = {
                                     utils.aButton {
                                         modifiers = {},
-                                        button = 1,
-                                        callback = function() awful.spawn.with_shell "reboot" end,
+                                        button    = 1,
+                                        callback  = function() awful.spawn.with_shell "reboot" end,
                                     }
                                 }
                             },
                             button {
-                                text = "Shutdown",
-                                image = args.style.img_shutdown,
+                                text    = "Shutdown",
+                                image   = args.style.img_shutdown,
                                 buttons = {
                                     utils.aButton {
                                         modifiers = {},
-                                        button = 1,
-                                        callback = function() awful.spawn.with_shell "shutdown now" end,
+                                        button    = 1,
+                                        callback  = function() awful.spawn.with_shell "shutdown now" end,
                                     }
                                 }
                             },
@@ -288,24 +288,24 @@ function mainMenu:init(args)
                                 widget = wibox.container.background,
                             },
                             fill_space = true,
-                            spacing = 10,
-                            layout = wibox.layout.fixed.horizontal,
+                            spacing    = 10,
+                            layout     = wibox.layout.fixed.horizontal,
                         },
                         margins = 12,
-                        widget = wibox.container.margin,
+                        widget  = wibox.container.margin,
                     },
                     forced_height = 50,
-                    bg = args.style.bg,
-                    widget = wibox.container.background,
+                    bg            = args.style.bg,
+                    widget        = wibox.container.background,
                 },
                 layout = wibox.layout.align.vertical,
             },
             widget = wibox.container.background,
         },
         spacing_widget = vSeperator,
-        spacing = 1,
-        fill_space = true,
-        layout = wibox.layout.fixed.horizontal,
+        spacing        = 1,
+        fill_space     = true,
+        layout         = wibox.layout.fixed.horizontal,
     }
 end
 
@@ -353,3 +353,14 @@ function mainMenu.mt:__call(...)
 end
 
 return setmetatable(mainMenu, mainMenu.mt)
+
+--------------------------------------------------
+---@class BgStyle #Background style for anything that acts like a button.
+---@field normal string #Normal color or default when nothing is meant to happen.
+---@field hover string #Color for when mouse is over button.
+---@field active string #Color for when the button is pressed.
+
+---@class FgStyle #Foreground style for anything that acts like a button.
+---@field normal string #Normal background or default when nothing is meant to happen.
+---@field hover string #Color for when mouse is over button.
+---@field active string #Color for when the button is pressed.
