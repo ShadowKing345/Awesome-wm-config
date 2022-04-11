@@ -6,13 +6,14 @@
 local math = math
 local pairs = pairs
 local type = type
+local unpack = unpack or table.unpack
 
-local aButton = require"awful.button"
+local aButton = require "awful.button"
 local aKey = require "awful.key"
 local gTable = require "gears.table"
 
 --------------------------------------------------
-local utils = {}
+local utils = { button_names = aButton.names }
 
 ---Creates a pretty JSON string from an object recursively.
 ---*NOTE: Lua tables with array values will have the index of the value be printed as the raw number.
@@ -52,7 +53,7 @@ end
 ---@param args AButton
 ---@return table
 function utils.aButton(args)
-    return aButton(args.modifiers, args.button, args.callback)
+    return aButton(args.modifiers, args.button, args.press and args.press or args.callback, args.release)
 end
 
 ---Creates a Awful Key table
@@ -73,7 +74,9 @@ return utils
 ---@class AButton
 ---@field modifiers string[] #Collection of modifier keys.
 ---@field button number #The number of mouse button.
----@field callback function #Function called when key is pressed.
+---@field callback? fun():nil #Function called when key is pressed.
+---@field press? fun():nil #Function called when key is pressed.
+---@field release? fun():nil #Function called when key is released.
 
 ---@class TblToJsonOptions #Settings for the parser.
 ---@field offset number #The offset of indent.
