@@ -19,7 +19,13 @@ function tasklist.default_buttons()
         aButton {
             modifiers = {},
             button = 1,
-            callback = function(c) if c == client.focus then c.minimized = true else c:emit_signal("request::activate", "tasklist", { raise = true }) end end,
+            callback = function(c)
+                if c == client.focus then
+                    c.minimized = true
+                else
+                    c:emit_signal("request::activate", "tasklist", { raise = true })
+                end
+            end,
         },
         aButton {
             modifiers = {},
@@ -39,7 +45,6 @@ function tasklist.default_buttons()
     }
 end
 
----@return DefaultTemplate
 function tasklist.default_template()
     return {
         layout = {
@@ -81,11 +86,8 @@ function tasklist.default_template()
     }
 end
 
----@param args {buttons:table,screen:table}
 function tasklist:new(args)
     args = args or {}
-
-    ---@type DefaultTemplate
     local template = self.default_template()
 
     local w = awful.widget.tasklist {
