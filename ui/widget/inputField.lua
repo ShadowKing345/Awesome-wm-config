@@ -21,41 +21,42 @@ local inputField = { mt = {} }
 ---@return InputFieldStyle
 function inputField.default_theme()
     return {
-        bg = beautiful["input_field_bg"] or beautiful.bg_normal,
-        fg = beautiful["input_field_fg"] or beautiful.fg_normal,
-        cursor_fg = beautiful["input_field_fg_cursor"] or beautiful.prompt_fg_cursor,
-        cursor_bg = beautiful["input_field_bg_cursor"] or beautiful.prompt_bg_cursor,
-        font = beautiful["input_field_font"] or beautiful.prompt_font,
+        bg           = beautiful["input_field_bg"] or beautiful.bg_normal,
+        fg           = beautiful["input_field_fg"] or beautiful.fg_normal,
+        cursor_fg    = beautiful["input_field_fg_cursor"] or beautiful.prompt_fg_cursor,
+        cursor_bg    = beautiful["input_field_bg_cursor"] or beautiful.prompt_bg_cursor,
+        font         = beautiful["input_field_font"] or beautiful.prompt_font,
         border_width = beautiful["input_field_border_width"] or beautiful.border_width,
         border_color = beautiful["input_field_border_color"] or beautiful.border_focus,
-        shape = beautiful["input_field_shape"] or function(cr, width, height) rounded_rect(cr, width, height, 2) end,
+        shape        = beautiful["input_field_shape"] or
+            function(cr, width, height) rounded_rect(cr, width, height, 2) end,
     }
 end
 
 ---@param args inputFieldNewArgs #Arguments for function.
 ---@return table #Widget object.
 function inputField.new(args)
-    args = args or {}
-    args.style = gTable.merge(inputField.default_theme(), args.style or {})
+    args             = args or {}
+    args.style       = gTable.merge(inputField.default_theme(), args.style or {})
     args.prompt_args = args.prompt_args or {}
 
     local textbox = wibox.widget {
-        text = args.text or "",
+        text   = args.text or "",
         widget = wibox.widget.textbox,
     }
 
     local ret = wibox.widget {
         {
             textbox,
-            left = 10,
-            right = 10,
+            left   = 10,
+            right  = 10,
             widget = wibox.container.margin,
         },
-        bg = args.style.bg,
+        bg           = args.style.bg,
         border_width = args.style.border_width,
         border_color = args.style.border_color,
-        shape = args.style.shape,
-        widget = wibox.container.background,
+        shape        = args.style.shape,
+        widget       = wibox.container.background,
     }
 
     gTable.crush(ret, inputField, true)
@@ -64,57 +65,45 @@ function inputField.new(args)
     ret:buttons {
         utils.aButton {
             modifiers = {},
-            button = 1,
-            callback = function()
-                ret._private.inputActive = true
+            button    = 1,
+            callback  = function()
+                ret._private.active = true
                 awful.prompt.run {
-                    prompt = args.prompt_args.prompt or "",
-                    completion_callback = args.prompt_args.completion_callback,
-                    history_path = args.prompt_args.history_path or gfs.get_cache_dir() .. "/history_inputfield",
-                    done_callback = function()
-                        -- TODO: Kill the mouse grabber.
-                        args.prompt_args.done_callback()
-                    end,
-                    changed_callback = args.prompt_args.changed_callback,
-                    keypress_callback = args.prompt_args.keypress_callback,
-                    bg = args.style.bg,
+                    prompt  = args.prompt_args.prompt or "",
+                    text    = textbox.text,
                     textbox = textbox,
-                    exe_callback = function(text) textbox:set_text(text) end,
+                    bg      = args.style.bg,
+
+                    completion_callback = args.prompt_args.completion_callback,
+                    history_path        = args.prompt_args.history_path or gfs.get_cache_dir() .. "/history_inputfield",
+
+                    done_callback     = function()
+                        if args.prompt_args.done_callback then
+                            args.prompt_args.done_callback()
+                        end
+                        ret._private.active = false
+                    end,
+                    changed_callback  = args.prompt_args.changed_callback,
+                    keypress_callback = args.prompt_args.keypress_callback,
+                    exe_callback      = function(text) textbox:set_text(text) end,
                 }
+                mousegrabber.run(function(_mouse)
+                    for _, v in ipairs(_mouse.buttons) do
+                        if v then
+                            awful.keygrabber.stop()
+                            if args.prompt_args.changed_callback then
+                                args.prompt_args.changed_callback(textbox.text)
+                            end
+
+                            return false
+                        end
+                    end
+
+                    return true and ret._private.active
+                end, "left_ptr")
             end
         }
     }
-
-    ret:connect_signal("mouse::leave", function(self)
-        if self == ret and self._private.inputActive and not self._private.triggerReady then
-            self._private.triggerReady = true
-
-            mousegrabber.run(function(_mouse)
-                for _, v in ipairs(_mouse.buttons) do
-                    if v then
-                        ret._private.inputActive = false
-                        ret._private.triggerReady = false
-
-                        awful.keygrabber.stop()
-                        textbox:set_text ""
-                        if args.prompt_args.changed_callback then
-                            args.prompt_args.changed_callback ""
-                        end
-
-                        return false
-                    end
-                end
-
-                return true
-            end, "left_ptr")
-        end
-    end)
-
-    ret:connect_signal("mouse::enter", function(self)
-        if self._private.inputActive and self._private.triggerReady then
-            self._private.triggerReady = false
-        end
-    end)
 
     return ret
 end
