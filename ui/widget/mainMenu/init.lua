@@ -5,14 +5,14 @@
 --------------------------------------------------
 local setmetatable = setmetatable
 
-local awful     = require "awful"
-local beautiful = require "beautiful"
-local capi      = { screen = screen, mouse = mouse, client = client }
-local gfs       = require "gears.filesystem"
-local gTable    = require "gears.table"
-local gString   = require "gears.string"
-local menu_gen  = require "menubar.menu_gen"
-local wibox     = require "wibox"
+local awful       = require "awful"
+local beautiful   = require "beautiful"
+local capi        = { screen = screen, mouse = mouse, client = client }
+local gFilesystem = require "gears.filesystem"
+local gTable      = require "gears.table"
+local gString     = require "gears.string"
+local menu_gen    = require "menubar.menu_gen"
+local wibox       = require "wibox"
 
 local relPath           = (...):match ".*"
 local applicationWidget = require(relPath .. ".application")
@@ -24,7 +24,14 @@ wibox.layout.overflow   = require "ui.layouts.overflow"
 local utils             = require "utils"
 
 --------------------------------------------------
-local mainMenu = { pattern = gString.query_to_pattern "", category = nil, categories = nil, applications = {}, widget = nil, mt = {} }
+local mainMenu = {
+    pattern = gString.query_to_pattern "",
+    category = nil,
+    categories = nil,
+    applications = {},
+    widget = nil,
+    mt = {},
+}
 
 local vSeperator = wibox.widget {
     orientation  = "vertical",
@@ -70,7 +77,13 @@ function mainMenu:genSideCategories(categories)
 
     local w = self.categories
     w:reset()
-    w:add(categoryWidget { category = { icon_name = "", name = "All" }, callback = function() mainMenu:setCategory(nil) end })
+    w:add(categoryWidget {
+        category = {
+            icon_name = "",
+            name      = "All"
+        },
+        callback = function() mainMenu:setCategory(nil) end
+    })
 
     for k, v in pairs(categories) do
         local index = 2
@@ -93,7 +106,8 @@ end
 function mainMenu:resetApplicationsWidget()
     self.widget.shownItems:reset()
     for _, v in ipairs(self.applications) do
-        if (not self.category or (v.category == self.category)) and (v.name:match("^" .. self.pattern) or v.cmdline:match("^" .. self.pattern)) then
+        if (not self.category or (v.category == self.category))
+            and (v.name:match("^" .. self.pattern) or v.cmdline:match("^" .. self.pattern)) then
             self.widget.shownItems:add(applicationWidget { application = v, callback = self.appliction_callback })
         end
     end
@@ -210,7 +224,7 @@ function mainMenu:init(args)
                             prompt_args = {
                                 prompt              = self.pattern,
                                 completion_callback = awful.completion.shell,
-                                history_path        = gfs.get_cache_dir() .. "/history_menu",
+                                history_path        = gFilesystem.get_cache_dir() .. "/history_menu",
                                 changed_callback    = function(query)
                                     if self.pattern == query then
                                         return
