@@ -24,5 +24,6 @@ root.keys(bindingConfig.keys.global)
 root.buttons(bindingConfig.mouse.global)
 
 require "rules-config":init { hotkeys = { keys = bindingConfig.keys, mouse = bindingConfig.mouse } }
+require "service.pulseMixer" {}
 require "signals".init(env)
 require "autostart-config".run()
