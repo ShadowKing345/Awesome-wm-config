@@ -94,10 +94,7 @@ function bindingConfig:new(env)
             aKey {
                 modifiers   = {},
                 key         = "XF86AudioMute",
-                callback    = function()
-                    pulseMixer:toggleMute()
-                    require "naughty".notify { text = tostring(pulseMixer:getMuted()) }
-                end,
+                callback    = function() pulseMixer:toggleMute() end,
                 description = { description = "Toggle Mute", group = "Multimedia" },
             },
             aKey {
