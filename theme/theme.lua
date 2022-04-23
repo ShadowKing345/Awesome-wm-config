@@ -1,10 +1,9 @@
---------------------------------------------------
---
---      Theme file.
---      Based on Catppuccin color scheme with lots of assumptions on what is what.
---
---------------------------------------------------
---  Imports
+--[[
+
+    Theme file.
+    Based on Catppuccin color scheme with lots of assumptions on what is what.
+
+--]]
 --------------------------------------------------
 local gears = require "gears"
 local gColor = require "gears.color"
@@ -45,6 +44,8 @@ local colors = {
     rosewater = "#F5E0DC",
 }
 
+-- Main Theme
+--------------------------------------------------
 local theme = {
     main = colors.mauve,
     bg   = {
@@ -61,6 +62,8 @@ local theme = {
     },
 }
 
+-- Actual configs
+--------------------------------------------------
 local config = {
     awesome_icon   = theme_assets.awesome_icon(dpi(30), colors.flamingo, theme.bg.normal),
     bg             = {
@@ -103,6 +106,7 @@ local config = {
     },
     tasklist       = {
         plain_task_name = true,
+        width           = 150,
     },
     titlebar       = {
         close_button     = {
