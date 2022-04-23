@@ -1,13 +1,14 @@
---------------------------------------------------
---
---      Custom Tasklist
---
+--[[
+
+    Custom Tasklist
+
+--]]
 --------------------------------------------------
 local setmetatable = setmetatable
-local table = table
 
-local awful = require "awful"
-local wibox = require "wibox"
+local awful     = require "awful"
+local beautiful = require "beautiful"
+local wibox     = require "wibox"
 
 local aButton = require "utils".aButton
 
@@ -66,7 +67,7 @@ function tasklist.default_template()
                         {
                             id           = "text_role",
                             widget       = wibox.widget.textbox,
-                            forced_width = 100,
+                            forced_width = beautiful["tasklist_width"] or 100,
                         },
                         layout = wibox.layout.fixed.horizontal,
                     },
