@@ -1,19 +1,21 @@
---------------------------------------------------
---
---      Screen configuration
---
+--[[
+
+    Screen configuration
+
+--]]
 --------------------------------------------------
 local setmetatable = setmetatable
 
-local awful = require "awful"
-local beautiful = require "beautiful"
-local gears = require "gears"
-local wibox = require "wibox"
+local awful      = require "awful"
+local beautiful  = require "beautiful"
+local wibox      = require "wibox"
+local xresources = require "beautiful.xresources"
+local dpi        = xresources.apply_dpi
 
 local mainMenu = require "ui.widget.mainMenu"
-local taglist = require "ui.widget.taglist"
+local taglist  = require "ui.widget.taglist"
 local tasklist = require "ui.widget.tasklist"
-local utils = require "utils"
+local utils    = require "utils"
 
 --------------------------------------------------
 ---@class ScreenConfig
@@ -23,21 +25,41 @@ local utils = require "utils"
 ---@field textClock table #Text clock object.
 ---@field tagListButtons table[] #Collection of buttons used for taglist
 ---@field tasklistButtons table[] #Collection of buttons used for tasklist
-local screenConfig = { mt = {} }
+local M = {
+    mt         = {},
+    wallpapers = {},
+}
 
-function screenConfig.set_wallpaper(s)
-    if beautiful.wallpaper then
-        local wallpaper = beautiful.wallpaper
-        if type(wallpaper) == "function" then
-            wallpaper = wallpaper(s)
-        end
-        gears.wallpaper.maximized(tostring(wallpaper), s, true)
+function M.createWallpaper()
+    local wallpaper = beautiful.wallpaper
+
+    if type(wallpaper) == "function" then
+        wallpaper = wallpaper()
     end
+
+    local w = awful.wallpaper {
+        widget = {
+            bg             = beautiful.bg_normal,
+            honor_workarea = true,
+            image          = wallpaper,
+            widget         = wibox.widget.imagebox,
+        },
+    }
+
+    return w
 end
 
 ---@param env EnvConfig
-function screenConfig:new(env)
-    screen.connect_signal("property::geometry", screenConfig.set_wallpaper)
+function M:new(env)
+    screen.connect_signal("request::wallpaper", function(ctx)
+        local wallpaper = self.wallpapers[ctx]
+        if not wallpaper then
+            wallpaper = self.createWallpaper()
+            self.wallpapers[ctx] = wallpaper
+        end
+
+        wallpaper.screen = ctx
+    end)
     env = env or {}
 
     self.mainMenu = mainMenu(env)
@@ -66,60 +88,70 @@ function screenConfig:new(env)
 
     self.systray = wibox.widget.systray()
 
+    beautiful.wibar_height = beautiful.wibar_height + dpi(1)
+
     return self
 end
 
-function screenConfig:_init(s)
-    screenConfig.set_wallpaper(s)
-
+function M:_init(s)
     awful.tag({ "1", "2", "3", "4", "5", "6" }, s, awful.layout.layouts[1])
 
     s.layoutbox = awful.widget.layoutbox(s)
     s.taglist = taglist { buttons = self.taglistButtons, screen = s, }
     s.tasklist = tasklist { buttons = self.tasklistButtons, screen = s, }
 
-    local seperator = wibox.widget {
+    local separator = wibox.widget {
         {
             orientation = "vertical",
             span_ratio = 0.8,
-            thickness = 1,
+            thickness = dpi(1),
             widget = wibox.widget.separator,
         },
-        left = 3,
-        right = 3,
-        forced_width = 7,
+        left = dpi(3),
+        right = dpi(3),
+        forced_width = dpi(7),
         widget = wibox.container.margin,
     }
 
-    s.wibox = awful.wibar { position = beautiful["wibar_position"], screen = s }
-    s.wibox:setup {
-        {
-            self.launcher,
-            seperator,
-            s.taglist,
-            seperator,
-            layout = wibox.layout.fixed.horizontal,
-        },
-        s.tasklist,
-        {
-            self.textClock,
-            seperator,
-            self.systray,
-            seperator,
-            s.layoutbox,
-            layout = wibox.layout.fixed.horizontal,
-        },
-        layout = wibox.layout.align.horizontal,
+    s.wibox = awful.wibar {
+        position = beautiful["wibar_position"],
+        screen   = s,
+        widget   = {
+            {
+                forced_height = dpi(1),
+                widget        = wibox.widget.separator,
+            },
+            {
+                {
+                    self.launcher,
+                    separator,
+                    s.taglist,
+                    separator,
+                    layout = wibox.layout.fixed.horizontal,
+                },
+                s.tasklist,
+                {
+                    self.textClock,
+                    separator,
+                    self.systray,
+                    separator,
+                    s.layoutbox,
+                    layout = wibox.layout.fixed.horizontal,
+                },
+                layout = wibox.layout.align.horizontal,
+            },
+            layout = wibox.layout.fixed.vertical,
+        }
     }
 end
 
-function screenConfig.init(screen)
-    screenConfig:_init(screen)
+function M.init(screen)
+    M:_init(screen)
 end
 
 --------------------------------------------------
-function screenConfig.mt:__call(...)
-    return screenConfig:new(...)
+function M.mt:__call(...)
+    return M:new(...)
 end
 
-return setmetatable(screenConfig, screenConfig.mt)
+return setmetatable(M, M.mt)
