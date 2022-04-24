@@ -6,15 +6,16 @@
 --------------------------------------------------
 local setmetatable = setmetatable
 
-local awful      = require "awful"
-local beautiful  = require "beautiful"
-local wibox      = require "wibox"
-local xresources = require "beautiful.xresources"
-local dpi        = xresources.apply_dpi
+local awful     = require "awful"
+local beautiful = require "beautiful"
+local dpi       = require "beautiful.xresources".apply_dpi
+local wibox     = require "wibox"
 
 local mainMenu = require "ui.widget.mainMenu"
 local taglist  = require "ui.widget.taglist"
 local tasklist = require "ui.widget.tasklist"
+local systray  = require "ui.widget.systray"
+local wibar    = require "ui.widget.wibar"
 local utils    = require "utils"
 
 --------------------------------------------------
@@ -49,18 +50,24 @@ function M.createWallpaper()
     return w
 end
 
+--- Sets up a new instance of a wallpaper.
+--- Will just update the widget if one already exists.
+---@param ctx any
+function M.setupWallpaper(ctx)
+    local wallpaper = M.wallpapers[ctx]
+    if not wallpaper then
+        wallpaper = M.createWallpaper()
+        M.wallpapers[ctx] = wallpaper
+    end
+
+    wallpaper.screen = ctx
+end
+
 ---@param env EnvConfig
 function M:new(env)
-    screen.connect_signal("request::wallpaper", function(ctx)
-        local wallpaper = self.wallpapers[ctx]
-        if not wallpaper then
-            wallpaper = self.createWallpaper()
-            self.wallpapers[ctx] = wallpaper
-        end
-
-        wallpaper.screen = ctx
-    end)
     env = env or {}
+
+    screen.connect_signal("request::wallpaper", M.setupWallpaper)
 
     self.mainMenu = mainMenu(env)
     self.launcher = awful.widget.button {
@@ -86,62 +93,28 @@ function M:new(env)
     self.taglistButtons = taglist.default_buttons(env)
     self.tasklistButtons = tasklist.default_buttons()
 
-    self.systray = wibox.widget.systray()
-
-    beautiful.wibar_height = beautiful.wibar_height + dpi(1)
+    beautiful.wibar_height = beautiful.wibar_height + (beautiful["wibar_border_width_top"] or dpi(1))
 
     return self
 end
 
 function M:_init(s)
-    awful.tag({ "1", "2", "3", "4", "5", "6" }, s, awful.layout.layouts[1])
+    local tags = { "1", "2", "3", "4", "5", "6" }
+    awful.tag(tags, s, awful.layout.layouts[1])
 
     s.layoutbox = awful.widget.layoutbox(s)
-    s.taglist = taglist { buttons = self.taglistButtons, screen = s, }
-    s.tasklist = tasklist { buttons = self.tasklistButtons, screen = s, }
+    s.taglist   = taglist { buttons = self.taglistButtons, screen = s, }
+    s.tasklist  = tasklist { buttons = self.tasklistButtons, screen = s, }
+    s.systray   = systray {}
 
-    local separator = wibox.widget {
-        {
-            orientation = "vertical",
-            span_ratio = 0.8,
-            thickness = dpi(1),
-            widget = wibox.widget.separator,
-        },
-        left = dpi(3),
-        right = dpi(3),
-        forced_width = dpi(7),
-        widget = wibox.container.margin,
-    }
-
-    s.wibox = awful.wibar {
-        position = beautiful["wibar_position"],
-        screen   = s,
-        widget   = {
-            {
-                forced_height = dpi(1),
-                widget        = wibox.widget.separator,
-            },
-            {
-                {
-                    self.launcher,
-                    separator,
-                    s.taglist,
-                    separator,
-                    layout = wibox.layout.fixed.horizontal,
-                },
-                s.tasklist,
-                {
-                    self.textClock,
-                    separator,
-                    self.systray,
-                    separator,
-                    s.layoutbox,
-                    layout = wibox.layout.fixed.horizontal,
-                },
-                layout = wibox.layout.align.horizontal,
-            },
-            layout = wibox.layout.fixed.vertical,
-        }
+    s.wibox = wibar {
+        screen    = s,
+        taglist   = s.taglist,
+        tasklist  = s.tasklist,
+        launcher  = self.launcher,
+        clock     = self.textClock,
+        systray   = s.systray,
+        layoutbox = s.layoutbox,
     }
 end
 

@@ -6,6 +6,7 @@
 pcall(require, "luarocks.loader")
 
 --------------------------------------------------
+local awful = require "awful"
 require "awful.autofocus"
 require "awful.hotkeys_popup.keys"
 
@@ -17,7 +18,8 @@ require "error-config"
 --------------------------------------------------
 local env = require "env-config" {}
 require "layouts-config" (env)
-require "ui" (env)
+local screenConfig = require "ui.screen-config" (env)
+awful.screen.connect_for_each_screen(screenConfig.init)
 
 local bindingConfig = require "binding-config" (env)
 root.keys(bindingConfig.keys.global)
