@@ -20,15 +20,25 @@ local aButton    = utils.aButton
 ---@class BindingConfig
 ---@field keys table
 ---@field button table
-local bindingConfig = { mt = {} }
+local M = { mt = {} }
+
+function M:focus_switch_by_dir(dir)
+    return function()
+        awful.client.focus.bydirection(dir)
+        if client.focus then
+            client.focus:raise()
+        end
+    end
+end
 
 ---@param env EnvConfig #The environment configurations.
 ---@return BindingConfig
-function bindingConfig:new(env)
+function M:new(env)
     env = env or {}
 
     self.keys = {
         global = gTJoin(unpack {
+
             -- Tags
             aKey {
                 modifiers   = { env.modKey },
@@ -42,6 +52,7 @@ function bindingConfig:new(env)
                 callback    = awful.tag.viewnext,
                 description = { description = "View next", group = "Tag" },
             },
+
             -- Launcher
             aKey {
                 modifiers   = { env.modKey },
@@ -59,6 +70,7 @@ function bindingConfig:new(env)
                 end,
                 description = { description = "Opens application launcher", group = "Launcher" },
             },
+
             -- Client
             aKey {
                 modifiers   = { env.modKey, "Control" },
@@ -71,6 +83,33 @@ function bindingConfig:new(env)
                 end,
                 description = { description = "Restore minimized", group = "Client" },
             },
+
+            -- Movement
+            aKey {
+                modifiers = { env.modKey },
+                key = "l",
+                callback = M:focus_switch_by_dir "right",
+                description = { description = "Go to rigth client.", group = "Client Focus" }
+            },
+            aKey {
+                modifiers = { env.modKey },
+                key = "h",
+                callback = M:focus_switch_by_dir "left",
+                description = { description = "Go to left client.", group = "Client Focus" }
+            },
+            aKey {
+                modifiers = { env.modKey },
+                key = "k",
+                callback = M:focus_switch_by_dir "up",
+                description = { description = "Go to upper client.", group = "Client Focus" }
+            },
+            aKey {
+                modifiers = { env.modKey },
+                key = "j",
+                callback = M:focus_switch_by_dir "down",
+                description = { description = "Go to lower client.", group = "Client Focus" }
+            },
+
             -- Awesome
             aKey {
                 modifiers   = { env.modKey, "Control" },
@@ -90,6 +129,7 @@ function bindingConfig:new(env)
                 callback    = hotkeysPopup.show_help,
                 description = { description = "Show help", group = "Awesome" },
             },
+
             -- Audio
             aKey {
                 modifiers   = {},
@@ -265,8 +305,8 @@ function bindingConfig:new(env)
 end
 
 --------------------------------------------------
-function bindingConfig.mt:__call(env)
-    return bindingConfig:new(env)
+function M.mt:__call(env)
+    return M:new(env)
 end
 
-return setmetatable(bindingConfig, bindingConfig.mt)
+return setmetatable(M, M.mt)
