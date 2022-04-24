@@ -166,8 +166,8 @@ return setmetatable(category, category.mt)
 ---@field icon_name string #Name of the icon used. (Can be sort or long.)
 
 ---@class CategoryStyle
----@field bg BgStyle #The background color.
----@field fg FgStyle #The foreground color.
+---@field bg ButtonStyle #The background color.
+---@field fg ButtonStyle #The foreground color.
 ---@field padding|{left:number,right:number,top:number,bottom:number} number #The amount of padding used.
 ---@field spacing number #The amount of space between elements.
 ---@field default_icon string #The icon used if none can be found.

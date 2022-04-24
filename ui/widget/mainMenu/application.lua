@@ -160,8 +160,8 @@ return setmetatable(application, application.mt)
 ---@field icon string #Name of the icon used. (Can be sort or long.)
 
 ---@class ApplicationStyle
----@field bg BgStyle #The background color.
----@field fg FgStyle #The foreground color.
+---@field bg ButtonStyle #The background color.
+---@field fg ButtonStyle #The foreground color.
 ---@field width number #The widget of the widget.
 ---@field height number #The height of the widget.
 ---@field padding number|{left:number,right:number,top:number,bottom:number} #The amount of padding used.

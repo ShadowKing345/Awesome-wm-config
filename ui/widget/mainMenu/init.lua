@@ -369,12 +369,3 @@ end
 return setmetatable(mainMenu, mainMenu.mt)
 
 --------------------------------------------------
----@class BgStyle #Background style for anything that acts like a button.
----@field normal string #Normal color or default when nothing is meant to happen.
----@field hover string #Color for when mouse is over button.
----@field active string #Color for when the button is pressed.
-
----@class FgStyle #Foreground style for anything that acts like a button.
----@field normal string #Normal background or default when nothing is meant to happen.
----@field hover string #Color for when mouse is over button.
----@field active string #Color for when the button is pressed.
