@@ -1,7 +1,8 @@
---------------------------------------------------
---
---      Application button widget for main menu.
---
+--[[
+
+    Application button widget for main menu.
+
+--]]
 --------------------------------------------------
 local setmetatable = setmetatable
 local unpack       = unpack or table.unpack
@@ -37,7 +38,9 @@ function application.default_style()
         default_application_icon = beautiful["mainmenu_application_default_application_icon"] or nil,
         padding                  = beautiful["mainmenu_application_padding"] or 5,
         image_padding            = beautiful["mainmenu_application_image_padding"] or 5,
-        font                     = beautiful["mainmenu_application_image_font"] or beautiful.font
+        font                     = beautiful["mainmenu_application_image_font"] or beautiful.font,
+
+        shape = beautiful["mainmenu_application_shape"],
     }
     return style
 end
@@ -107,6 +110,8 @@ function application.new(args)
         bg = args.style.bg.normal,
         fg = args.style.fg.normal,
 
+        shape = args.style.shape,
+
         widget = wibox.container.background,
     }
 
@@ -123,7 +128,12 @@ function application.new(args)
             modifiers = {},
             button    = utils.button_names.LEFT,
             press     = function() application.on_button_pressed(ret) end,
-            release   = function() application.on_mouse_enter(ret) if args.callback then args.callback(args.application) end end,
+            release   = function()
+                application.on_mouse_enter(ret)
+                if args.callback then
+                    args.callback(args.application)
+                end
+            end,
         },
         unpack(args.buttons or {})
     ))
@@ -168,3 +178,4 @@ return setmetatable(application, application.mt)
 ---@field image_padding number|{left:number,right:number,top:number,bottom:number} #The amount of padding used for the image.
 ---@field default_application_icon string #The icon used if none can be found.
 ---@field font string #Font for the text.
+---@field shape function #Shape for the button.

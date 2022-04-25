@@ -1,9 +1,11 @@
---------------------------------------------------
---
---      A button with an image and text.
---
+--[[
+
+    A button with an image and text.
+
+--]]
 --------------------------------------------------
 local setmetatable = setmetatable
+local unpack       = unpack or table.unpack
 
 local aButton      = require "awful.button"
 local beautiful    = require "beautiful"
@@ -29,7 +31,7 @@ function button.default_style()
         },
 
         font    = beautiful["button_font"] or beautiful.font,
-        padding = beautiful["button_padding"] or 3,
+        padding = beautiful["button_padding"] or 5,
         shape   = function(cr, width, height) rounded_rect(cr, width, height, 2) end
     }
 end
@@ -46,6 +48,8 @@ function button.new(args)
             {
                 {
                     image  = args.image,
+                    valign = "center",
+                    halign = "center",
                     widget = wibox.widget.imagebox,
                 },
                 {
@@ -65,28 +69,22 @@ function button.new(args)
         widget = wibox.container.background,
     }
 
+    ret._private.bg = args.style.bg
+    ret._private.fg = args.style.fg
+
+
+    function ret:change_state(state)
+        ret.bg = self._private.bg[state]
+        ret.fg = self._private.fg[state]
+    end
+
     ret:buttons(gTable.join(
-        table.unpack(args.buttons or {}),
-        aButton({}, 1,
-            function()
-                ret.bg = args.style.bg.active
-                ret.fg = args.style.fg.active
-            end,
-            function()
-                ret.bg = args.style.bg.hover
-                ret.fg = args.style.fg.hover
-            end
-        )
+        unpack(args.buttons or {}),
+        aButton({}, 1, function() ret:change_state "active" end, function() ret:change_state "hover" end)
     ))
 
-    ret:connect_signal("mouse::enter", function()
-        ret.bg = args.style.bg.hover
-        ret.fg = args.style.fg.hover
-    end)
-    ret:connect_signal("mouse::leave", function()
-        ret.bg = args.style.bg_normal
-        ret.fg = args.style.fg_normal
-    end)
+    ret:connect_signal("mouse::enter", function() ret:change_state "hover" end)
+    ret:connect_signal("mouse::leave", function() ret:change_state "normal" end)
 
     gTable.crush(ret, button, true)
     return ret
