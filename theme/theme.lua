@@ -53,19 +53,46 @@ local theme = {
         focus    = colors.mauve,
         urgent   = colors.red,
         minimize = colors.black_4,
+        button   = {
+            normal = colors.black_3,
+            hover  = colors.black_4,
+            active = colors.black_1,
+        },
     },
     fg   = {
         normal   = colors.white,
         focus    = colors.gray_0,
         urgent   = colors.rosewater,
         minimize = colors.lavender,
+        button   = {
+            normal = colors.white,
+            hover  = colors.lavender,
+            active = colors.rosewater,
+        },
     },
 }
 
 -- Actual configs
 --------------------------------------------------
+local bg_prime_colors = {
+    colors.flamingo,
+    colors.mauve,
+    colors.pink,
+    colors.maroon,
+    colors.red,
+    colors.peach,
+    colors.yellow,
+    colors.green,
+    colors.teal,
+    colors.blue,
+    colors.sky,
+    colors.white,
+    colors.lavender,
+    colors.rosewater,
+}
+
 local config = {
-    awesome_icon   = theme_assets.awesome_icon(dpi(30), colors.flamingo, theme.bg.normal),
+    awesome_icon   = theme_assets.awesome_icon(dpi(30), colors.mauve, theme.bg.normal),
     bg             = {
         normal   = theme.bg.normal,
         focus    = theme.bg.focus,
@@ -84,29 +111,95 @@ local config = {
         focus  = theme.bg.focus,
         marked = theme.bg.urgent,
     },
+    button         = {
+        bg = {
+            normal = theme.bg.button.normal,
+            hover  = theme.bg.button.hover,
+            active = theme.bg.button.active,
+        },
+        fg = {
+            normal = theme.fg.button.normal,
+            hover  = theme.fg.button.hover,
+            active = theme.fg.button.active,
+        }
+    },
     font           = "sans 10",
     icon_theme     = "Papirus-Dark",
     input_field_bg = colors.black_3,
     layout         = {
         floating = default_theme_path .. "default/layouts/floatingw.png",
     },
-    main_menu      = {
-        image = {
+    mainmenu       = {
+        image       = {
             reload   = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
             quit     = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
             sleep    = gColor.recolor_image(theme_path .. "mainMenu/sleep.svg", theme.fg.normal),
             reboot   = gColor.recolor_image(theme_path .. "mainMenu/reboot.svg", theme.fg.normal),
             shutdown = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
         },
+        bg          = {
+            left  = colors.black_0,
+            right = colors.black_0,
+        },
+        category    = {
+            bg = {
+                normal = theme.bg.button.normal,
+                hover  = theme.bg.button.hover,
+                active = theme.bg.button.active,
+            },
+            fg = {
+                normal = theme.fg.button.normal,
+                hover  = theme.fg.button.hover,
+                active = theme.fg.button.active,
+            }
+        },
+        application = {
+            bg = {
+                normal = theme.bg.button.normal,
+                hover  = theme.bg.button.hover,
+                active = theme.bg.button.active,
+            },
+            fg = {
+                normal = theme.fg.button.normal,
+                hover  = theme.fg.button.hover,
+                active = theme.fg.button.active,
+            },
+            shape = function(ctx, width, height)
+                gears.shape.rounded_rect(ctx, width, height, 3)
+            end
+        },
+    },
+    profile        = {
+        picture = {
+            bg           = colors.black_4,
+            shape        = gears.shape.circle,
+            border_width = 0,
+        },
     },
     taglist        = {
         disable_icon = true,
-        bg_occupied  = theme.bg.minimize,
-        fg_occupied  = theme.fg.minimize,
+        bg           = {
+            occupied = theme.bg.minimize,
+            hover    = theme.bg.button.hover,
+            active   = theme.bg.button.active,
+        },
+        fg           = {
+            occupied = theme.fg.minimize,
+            hover    = theme.fg.button.hover,
+            active   = theme.fg.button.active,
+        }
     },
     tasklist       = {
         plain_task_name = true,
         width           = 150,
+        bg              = {
+            hover  = theme.bg.button.hover,
+            active = theme.bg.button.active,
+        },
+        fg              = {
+            hover  = theme.fg.button.hover,
+            active = theme.fg.button.active,
+        }
     },
     titlebar       = {
         close_button     = {
@@ -159,7 +252,16 @@ local config = {
         },
     },
     useless_gap    = dpi(0),
-    wallpaper      = theme_path .. "background.svg",
+    wallpaper      = {
+        theme_path .. "background.svg",
+        bg         = colors.black_1,
+        stylesheet = string.format(
+            ".bg{fill: %s;} .primary{fill: %s;} .secondary{fill: %s;}",
+            colors.black_1,
+            bg_prime_colors[math.random(#bg_prime_colors)],
+            colors.gray_0
+        ),
+    },
     wibar          = {
         height   = dpi(30),
         position = "bottom",
@@ -175,7 +277,7 @@ local function convertConfig(tbl, tbl2, prefix)
     prefix = prefix or ""
 
     if tbl2[1] then
-        tbl[prefix] = tbl2[1]
+        tbl[prefix:match "(.*)_"] = tbl2[1]
     end
 
     for k, v in pairs(tbl2) do
@@ -188,5 +290,7 @@ local function convertConfig(tbl, tbl2, prefix)
 
     return tbl
 end
+
+print(require "utils".toJson(convertConfig({}, config), true))
 
 return convertConfig({}, config)
