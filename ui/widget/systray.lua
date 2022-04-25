@@ -80,7 +80,7 @@ function M:init(args)
         }
     }
 
-    self.systray:connect_signal("widget::redraw_needed", function() M:update_popup_geometry() end)
+    --self.systray:connect_signal("widget::redraw_needed", function() M:update_popup_geometry() end)
 end
 
 ---Shows the popup.
@@ -97,7 +97,7 @@ function M:show(args)
         awful.placement.next_to_mouse(self.popup)
     end
 
-    M:update_popup_geometry()
+    --M:update_popup_geometry()
 
     self.popup.visible = true
 end
