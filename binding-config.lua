@@ -1,7 +1,8 @@
---------------------------------------------------
---
---      Mouse and Keybindings configurations
---
+--[[
+
+        Mouse and Keybindings configurations
+
+--]]
 --------------------------------------------------
 local setmetatable = setmetatable
 local unpack       = unpack or table.unpack
@@ -24,7 +25,7 @@ local M = { mt = {} }
 
 function M:focus_switch_by_dir(dir)
     return function()
-        awful.client.focus.bydirection(dir)
+        awful.client.focus.global_bydirection(dir)
         if client.focus then
             client.focus:raise()
         end
