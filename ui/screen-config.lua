@@ -39,11 +39,14 @@ function M.createWallpaper()
     end
 
     local w = awful.wallpaper {
+        honor_workarea = true,
         widget = {
-            bg             = beautiful.bg_normal,
-            honor_workarea = true,
-            image          = wallpaper,
-            widget         = wibox.widget.imagebox,
+            bg         = beautiful["wallpaper_bg"] or beautiful.bg_normal,
+            halign     = "center",
+            valign     = "center",
+            image      = wallpaper,
+            stylesheet = beautiful["wallpaper_stylesheet"] or nil,
+            widget     = wibox.widget.imagebox,
         },
     }
 
