@@ -1,7 +1,8 @@
---------------------------------------------------
---
---      Main Menu widget.
---
+--[[
+
+    Main Menu widget.
+
+--]]
 --------------------------------------------------
 local setmetatable = setmetatable
 
@@ -19,6 +20,7 @@ local applicationWidget = require(relPath .. ".application")
 local categoryWidget    = require(relPath .. ".category")
 local button            = require(relPath .. ".button")
 local inputField        = require "ui.widget.inputField"
+local profile           = require "ui.widget.profile"
 -- NOTE: Remove when overflow layout comes out.
 wibox.layout.overflow   = require "ui.layouts.overflow"
 local utils             = require "utils"
@@ -47,16 +49,14 @@ local hSeperator = wibox.widget {
 
 function mainMenu.default_style()
     return {
-        profile_picture = beautiful["profile_picture"] or os.getenv "HOME" .. "/.face",
-        username        = beautiful["username"] or os.getenv "HOME":match "/home/(%w+)",
-        bg              = beautiful["main_menu_bg"] or beautiful.bg,
-        bg_left         = beautiful["main_menu_bg_left"] or beautiful.bg_minimize,
-        bg_right        = beautiful["main_menu_bg_right"] or beautiful.bg_minimize,
-        img_reload      = beautiful["main_menu_image_reload"] or beautiful.awesome_icon,
-        img_quit        = beautiful["main_menu_image_quit"] or beautiful.awesome_icon,
-        img_sleep       = beautiful["main_menu_image_sleep"] or beautiful.awesome_icon,
-        img_reboot      = beautiful["main_menu_image_reboot"] or beautiful.awesome_icon,
-        img_shutdown    = beautiful["main_menu_image_shutdown"] or beautiful.awesome_icon,
+        bg           = beautiful["mainmenu_bg"] or beautiful.bg,
+        bg_left      = beautiful["mainmenu_bg_left"] or beautiful.bg_minimize,
+        bg_right     = beautiful["mainmenu_bg_right"] or beautiful.bg_minimize,
+        img_reload   = beautiful["mainmenu_image_reload"] or beautiful.awesome_icon,
+        img_quit     = beautiful["mainmenu_image_quit"] or beautiful.awesome_icon,
+        img_sleep    = beautiful["mainmenu_image_sleep"] or beautiful.awesome_icon,
+        img_reboot   = beautiful["mainmenu_image_reboot"] or beautiful.awesome_icon,
+        img_shutdown = beautiful["mainmenu_image_shutdown"] or beautiful.awesome_icon,
     }
 end
 
@@ -143,25 +143,7 @@ function mainMenu:init(args)
         {
             {
                 {
-                    {
-                        {
-                            {
-                                image         = args.style.profile_picture,
-                                forced_width  = 26,
-                                forced_height = 26,
-                                widget        = wibox.widget.imagebox,
-                            },
-                            {
-                                text   = args.style.username,
-                                widget = wibox.widget.textbox,
-                            },
-                            fill_space = true,
-                            spacing    = 10,
-                            layout     = wibox.layout.fixed.horizontal,
-                        },
-                        margins = 12,
-                        widget  = wibox.container.margin,
-                    },
+                    profile(),
                     forced_height = 50,
                     bg            = args.style.bg,
                     widget        = wibox.container.background,
