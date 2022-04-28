@@ -25,18 +25,20 @@ local M = {
 ---@return SysTrayStyle
 function M.default_style()
     return {
-        bg = {
+        icon       = beautiful["systray_icon"],
+        icon_style = beautiful["systray_icon_style"],
+        bg         = {
             normal = beautiful["systray_bg_normal"] or beautiful.bg_normal,
             hover  = beautiful["systray_bg_hover"] or beautiful.bg_focus,
             active = beautiful["systray_bg_active"] or beautiful.bg_urgent,
         },
-        fg = {
+        fg         = {
             normal = beautiful["systray_fg_normal"] or beautiful.fg_normal,
             hover  = beautiful["systray_fg_hover"] or beautiful.fg_focus,
             active = beautiful["systray_fg_active"] or beautiful.fg_urgent,
         },
-        padding = beautiful["systray_padding"] or 3,
-        popup = {
+        padding    = beautiful["systray_padding"] or 3,
+        popup      = {
             icon_width = beautiful["systray_popup_icon_width"] or 30,
             icon_height = beautiful["systray_popup_icon_height"] or 30,
 
@@ -142,8 +144,9 @@ function M:new(args)
     local w = wibox.widget {
         {
             {
-                image  = beautiful.awesome_icon,
-                widget = wibox.widget.imagebox,
+                image      = self.style.icon,
+                stylesheet = self.style.icon_style,
+                widget     = wibox.widget.imagebox,
             },
             margins = self.style.padding,
             widget  = wibox.container.margin,
