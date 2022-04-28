@@ -46,34 +46,6 @@ local colors = {
 
 -- Main Theme
 --------------------------------------------------
-local theme = {
-    main = colors.mauve,
-    bg   = {
-        normal   = colors.black_2,
-        focus    = colors.mauve,
-        urgent   = colors.red,
-        minimize = colors.black_4,
-        button   = {
-            normal = colors.black_3,
-            hover  = colors.black_4,
-            active = colors.black_1,
-        },
-    },
-    fg   = {
-        normal   = colors.white,
-        focus    = colors.gray_0,
-        urgent   = colors.rosewater,
-        minimize = colors.lavender,
-        button   = {
-            normal = colors.white,
-            hover  = colors.lavender,
-            active = colors.rosewater,
-        },
-    },
-}
-
--- Actual configs
---------------------------------------------------
 local bg_prime_colors = {
     colors.flamingo,
     colors.mauve,
@@ -91,27 +63,60 @@ local bg_prime_colors = {
     colors.rosewater,
 }
 
+local main = table.remove(bg_prime_colors, math.random(#bg_prime_colors))
+local secondary = bg_prime_colors[math.random(#bg_prime_colors)]
+
+local theme = {
+    main   = main,
+    second = secondary,
+    gray   = colors.gray_2,
+    bg     = {
+        normal   = colors.black_2,
+        focus    = main,
+        urgent   = secondary,
+        minimize = colors.black_4,
+        button   = {
+            normal = colors.black_3,
+            hover  = colors.black_4,
+            active = colors.black_1,
+        },
+    },
+    fg     = {
+        normal   = colors.white,
+        focus    = colors.gray_0,
+        urgent   = colors.rosewater,
+        minimize = colors.lavender,
+        button   = {
+            normal = colors.white,
+            hover  = colors.lavender,
+            active = colors.rosewater,
+        },
+    },
+}
+
+-- Actual configs
+--------------------------------------------------
 local config = {
-    awesome_icon   = theme_assets.awesome_icon(dpi(30), colors.mauve, theme.bg.normal),
-    bg             = {
+    awesome_icon    = theme_assets.awesome_icon(dpi(30), theme.main, theme.bg.normal),
+    bg              = {
         normal   = theme.bg.normal,
         focus    = theme.bg.focus,
         urgent   = theme.bg.urgent,
         minimize = theme.bg.minimize,
     },
-    fg             = {
+    fg              = {
         normal   = theme.fg.normal,
         focus    = theme.fg.focus,
         urgent   = theme.fg.urgent,
         minimize = theme.fg.minimize,
     },
-    border         = {
+    border          = {
         width  = dpi(1),
         normal = theme.bg.normal,
         focus  = theme.bg.focus,
         marked = theme.bg.urgent,
     },
-    button         = {
+    button          = {
         bg = {
             normal = theme.bg.button.normal,
             hover  = theme.bg.button.hover,
@@ -123,13 +128,13 @@ local config = {
             active = theme.fg.button.active,
         }
     },
-    font           = "sans 10",
-    icon_theme     = "Papirus-Dark",
-    input_field_bg = colors.black_3,
-    layout         = {
+    font            = "sans 10",
+    icon_theme      = "Papirus-Dark",
+    input_field_bg  = colors.black_3,
+    layout          = {
         floating = default_theme_path .. "default/layouts/floatingw.png",
     },
-    mainmenu       = {
+    mainmenu        = {
         image       = {
             reload   = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
             quit     = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
@@ -164,19 +169,34 @@ local config = {
                 hover  = theme.fg.button.hover,
                 active = theme.fg.button.active,
             },
-            shape = function(ctx, width, height)
-                gears.shape.rounded_rect(ctx, width, height, 3)
-            end
+            shape = function(ctx, width, height) gears.shape.rounded_rect(ctx, width, height, 3) end,
         },
     },
-    profile        = {
+    profile         = {
         picture = {
             bg           = colors.black_4,
             shape        = gears.shape.circle,
             border_width = 0,
         },
     },
-    taglist        = {
+    separator_color = theme.gray,
+    systray         = {
+        icon = {
+            theme_path .. "systray.svg",
+            style = (".primary {fill:%s;}"):format(theme.main),
+        },
+        bg   = {
+            normal = theme.bg.button.normal,
+            hover  = theme.bg.button.hover,
+            active = theme.bg.button.active,
+        },
+        fg   = {
+            normal = theme.fg.button.normal,
+            hover  = theme.fg.button.hover,
+            active = theme.fg.button.active,
+        },
+    },
+    taglist         = {
         disable_icon = true,
         bg           = {
             occupied = theme.bg.minimize,
@@ -189,7 +209,7 @@ local config = {
             active   = theme.fg.button.active,
         }
     },
-    tasklist       = {
+    tasklist        = {
         plain_task_name = true,
         width           = 150,
         bg              = {
@@ -201,7 +221,7 @@ local config = {
             active = theme.fg.button.active,
         }
     },
-    titlebar       = {
+    titlebar        = {
         close_button     = {
             normal = default_theme_path .. "default/titlebar/close_normal.png",
             focus  = default_theme_path .. "default/titlebar/close_focus.png",
@@ -251,18 +271,18 @@ local config = {
             },
         },
     },
-    useless_gap    = dpi(0),
-    wallpaper      = {
+    useless_gap     = dpi(0),
+    wallpaper       = {
         theme_path .. "background.svg",
         bg         = colors.black_1,
         stylesheet = string.format(
             ".bg{fill: %s;} .primary{fill: %s;} .secondary{fill: %s;}",
             colors.black_1,
-            bg_prime_colors[math.random(#bg_prime_colors)],
+            theme.main,
             colors.gray_0
         ),
     },
-    wibar          = {
+    wibar           = {
         height   = dpi(30),
         position = "bottom",
     },
