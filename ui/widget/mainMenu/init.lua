@@ -52,7 +52,10 @@ function mainMenu.default_style()
         bg           = beautiful["mainmenu_bg"] or beautiful.bg,
         bg_left      = beautiful["mainmenu_bg_left"] or beautiful.bg_minimize,
         bg_right     = beautiful["mainmenu_bg_right"] or beautiful.bg_minimize,
-        img_reload   = beautiful["mainmenu_image_reload"] or beautiful.awesome_icon,
+        img_reload   = {
+            beautiful["mainmenu_image_reload"] or beautiful.awesome_icon,
+            style = beautiful["mainmenu_image_reload_style"],
+        },
         img_quit     = beautiful["mainmenu_image_quit"] or beautiful.awesome_icon,
         img_sleep    = beautiful["mainmenu_image_sleep"] or beautiful.awesome_icon,
         img_reboot   = beautiful["mainmenu_image_reboot"] or beautiful.awesome_icon,
@@ -162,9 +165,10 @@ function mainMenu:init(args)
                     {
                         {
                             button {
-                                text    = "Reload",
-                                image   = args.style.img_reload,
-                                buttons = {
+                                text       = "Reload",
+                                image      = args.style.img_reload[1],
+                                stylesheet = args.style.img_reload.style,
+                                buttons    = {
                                     utils.aButton {
                                         modifiers = {},
                                         button    = 1,
