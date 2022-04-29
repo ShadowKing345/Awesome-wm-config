@@ -94,6 +94,8 @@ local theme = {
     },
 }
 
+local mainMenuIconStyle = (".primary {stroke: %s; fill: none;}"):format(theme.main)
+
 -- Actual configs
 --------------------------------------------------
 local config = {
@@ -136,11 +138,26 @@ local config = {
     },
     mainmenu        = {
         image       = {
-            reload   = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
-            quit     = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
-            sleep    = gColor.recolor_image(theme_path .. "mainMenu/sleep.svg", theme.fg.normal),
-            reboot   = gColor.recolor_image(theme_path .. "mainMenu/reboot.svg", theme.fg.normal),
-            shutdown = gColor.recolor_image(theme_path .. "mainMenu/power.svg", theme.fg.normal),
+            reload   = {
+                theme_path .. "mainMenu/power.svg",
+                style = mainMenuIconStyle,
+            },
+            quit     = {
+                theme_path .. "mainMenu/power.svg",
+                style = mainMenuIconStyle,
+            },
+            sleep    = {
+                theme_path .. "mainMenu/sleep.svg",
+                style = mainMenuIconStyle,
+            },
+            reboot   = {
+                theme_path .. "mainMenu/reboot.svg",
+                style = mainMenuIconStyle,
+            },
+            shutdown = {
+                theme_path .. "mainMenu/power.svg",
+                style = mainMenuIconStyle,
+            },
         },
         bg          = {
             left  = colors.black_0,
@@ -183,7 +200,7 @@ local config = {
     systray         = {
         icon = {
             theme_path .. "systray.svg",
-            style = (".primary {fill:%s;}"):format(theme.main),
+            style = (".primary {stroke:%s; fill: none;}"):format(theme.main),
         },
         bg   = {
             normal = theme.bg.button.normal,
