@@ -9,11 +9,11 @@
    xmlns:svg="http://www.w3.org/2000/svg">
   <defs
      id="defs8162" />
-  <path
+  <path class="primary"
      style="fill:none;stroke:#000000;stroke-width:22.2751;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="m 140.15715,60.63755 a 87.862502,91.692679 0 0 1 52.70541,84.03222 v 0 a 87.862502,91.692679 0 0 1 -87.8625,91.69268 87.862502,91.692679 0 0 1 -87.86251,-91.69268 87.862502,91.692679 0 0 1 52.445428,-83.913239"
      id="path8155" />
-  <path
+  <path class="primary"
      style="fill:none;stroke:#000000;stroke-width:22.275;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="m 105,30.860202 c 0,52.129597 0,52.129597 0,52.129597"
      id="path6610" />
