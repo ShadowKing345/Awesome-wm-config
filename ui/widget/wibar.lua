@@ -22,13 +22,11 @@ function M:new(args)
     local separator = wibox.widget {
         {
             orientation = "vertical",
-            span_ratio = 0.8,
-            thickness = dpi(1),
-            widget = wibox.widget.separator,
+            span_ratio  = 0.7,
+            thickness   = dpi(2),
+            widget      = wibox.widget.separator,
         },
-        left = dpi(3),
-        right = dpi(3),
-        forced_width = dpi(7),
+        forced_width = dpi(9),
         widget = wibox.container.margin,
     }
 
