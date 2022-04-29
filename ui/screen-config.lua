@@ -73,8 +73,13 @@ function M:new(env)
     screen.connect_signal("request::wallpaper", M.setupWallpaper)
 
     self.mainMenu = mainMenu(env)
-    self.launcher = awful.widget.button {
-        image = beautiful.awesome_icon,
+    self.launcher = wibox.widget {
+        {
+            image  = beautiful.awesome_icon,
+            widget = wibox.widget.imagebox,
+        },
+        margins = 2,
+        widget  = wibox.container.margin,
         buttons = {
             utils.aButton {
                 modifiers = {},
