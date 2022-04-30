@@ -54,12 +54,24 @@ function mainMenu.default_style()
         bg_right     = beautiful["mainmenu_bg_right"] or beautiful.bg_minimize,
         img_reload   = {
             beautiful["mainmenu_image_reload"] or beautiful.awesome_icon,
-            style = beautiful["mainmenu_image_reload_style"],
+            stylesheet = beautiful["mainmenu_image_reload_stylesheet"],
         },
-        img_quit     = beautiful["mainmenu_image_quit"] or beautiful.awesome_icon,
-        img_sleep    = beautiful["mainmenu_image_sleep"] or beautiful.awesome_icon,
-        img_reboot   = beautiful["mainmenu_image_reboot"] or beautiful.awesome_icon,
-        img_shutdown = beautiful["mainmenu_image_shutdown"] or beautiful.awesome_icon,
+        img_quit     = {
+            beautiful["mainmenu_image_quit"] or beautiful.awesome_icon,
+            stylesheet = beautiful["mainmenu_image_quit_stylesheet"],
+        },
+        img_sleep    = {
+            beautiful["mainmenu_image_sleep"] or beautiful.awesome_icon,
+            stylesheet = beautiful["mainmenu_image_sleep_stylesheet"],
+        },
+        img_reboot   = {
+            beautiful["mainmenu_image_reboot"] or beautiful.awesome_icon,
+            stylesheet = beautiful["mainmenu_image_reboot_stylesheet"],
+        },
+        img_shutdown = {
+            beautiful["mainmenu_image_shutdown"] or beautiful.awesome_icon,
+            stylesheet = beautiful["mainmenu_image_shutdown_stylesheet"],
+        },
     }
 end
 
@@ -167,7 +179,7 @@ function mainMenu:init(args)
                             button {
                                 text       = "Reload",
                                 image      = args.style.img_reload[1],
-                                stylesheet = args.style.img_reload.style,
+                                stylesheet = args.style.img_reload.stylesheet,
                                 buttons    = {
                                     utils.aButton {
                                         modifiers = {},
@@ -177,9 +189,10 @@ function mainMenu:init(args)
                                 }
                             },
                             button {
-                                text    = "Quit",
-                                image   = args.style.img_quit,
-                                buttons = {
+                                text       = "Quit",
+                                image      = args.style.img_quit[1],
+                                stylesheet = args.style.img_quit.stylesheet,
+                                buttons    = {
                                     utils.aButton {
                                         modifiers = {},
                                         button    = 1,
@@ -252,9 +265,10 @@ function mainMenu:init(args)
                     {
                         {
                             button {
-                                text    = "Sleep",
-                                image   = args.style.img_sleep,
-                                buttons = {
+                                text       = "Sleep",
+                                image      = args.style.img_sleep[1],
+                                stylesheet = args.style.img_sleep.stylesheet,
+                                buttons    = {
                                     utils.aButton {
                                         modifiers = {},
                                         button    = 1,
@@ -263,9 +277,10 @@ function mainMenu:init(args)
                                 }
                             },
                             button {
-                                text    = "Restart",
-                                image   = args.style.img_reboot,
-                                buttons = {
+                                text       = "Restart",
+                                image      = args.style.img_reboot[1],
+                                stylesheet = args.style.img_reboot.stylesheet,
+                                buttons    = {
                                     utils.aButton {
                                         modifiers = {},
                                         button    = 1,
@@ -274,9 +289,10 @@ function mainMenu:init(args)
                                 }
                             },
                             button {
-                                text    = "Shutdown",
-                                image   = args.style.img_shutdown,
-                                buttons = {
+                                text       = "Shutdown",
+                                image      = args.style.img_shutdown[1],
+                                stylesheet = args.style.img_shutdown.stylesheet,
+                                buttons    = {
                                     utils.aButton {
                                         modifiers = {},
                                         button    = 1,

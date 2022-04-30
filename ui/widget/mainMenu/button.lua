@@ -37,7 +37,7 @@ function button.default_style()
 end
 
 ---Creates a new button with text.
----@param args {image:string, text:string, buttons:table, style: table}
+---@param args {image:string, text:string, buttons:table, style: table, stylesheet:string}
 ---@return any
 function button.new(args)
     args       = args or {}
@@ -47,10 +47,11 @@ function button.new(args)
         {
             {
                 {
-                    image  = args.image,
-                    valign = "center",
-                    halign = "center",
-                    widget = wibox.widget.imagebox,
+                    image      = args.image,
+                    stylesheet = args.stylesheet,
+                    valign     = "center",
+                    halign     = "center",
+                    widget     = wibox.widget.imagebox,
                 },
                 {
                     text   = args.text,
