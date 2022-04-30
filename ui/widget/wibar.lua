@@ -35,29 +35,22 @@ function M:new(args)
         screen   = args.screen,
         widget   = {
             {
-                forced_height = beautiful["wibar_border_width_top"] or dpi(1),
-                widget        = wibox.widget.separator,
+                args.launcher,
+                separator,
+                args.taglist,
+                separator,
+                layout = wibox.layout.fixed.horizontal,
             },
+            args.tasklist,
             {
-                {
-                    args.launcher,
-                    separator,
-                    args.taglist,
-                    separator,
-                    layout = wibox.layout.fixed.horizontal,
-                },
-                args.tasklist,
-                {
-                    args.clock,
-                    separator,
-                    args.systray,
-                    separator,
-                    args.layoutbox,
-                    layout = wibox.layout.fixed.horizontal,
-                },
-                layout = wibox.layout.align.horizontal,
+                args.clock,
+                separator,
+                args.systray,
+                separator,
+                args.layoutbox,
+                layout = wibox.layout.fixed.horizontal,
             },
-            layout = wibox.layout.fixed.vertical,
+            layout = wibox.layout.align.horizontal,
         }
     }
 end
