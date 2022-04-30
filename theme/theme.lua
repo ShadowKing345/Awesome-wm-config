@@ -140,23 +140,23 @@ local config = {
         image       = {
             reload   = {
                 theme_path .. "mainMenu/power.svg",
-                style = mainMenuIconStyle,
+                stylesheet = mainMenuIconStyle,
             },
             quit     = {
                 theme_path .. "mainMenu/power.svg",
-                style = mainMenuIconStyle,
+                stylesheet = mainMenuIconStyle,
             },
             sleep    = {
                 theme_path .. "mainMenu/sleep.svg",
-                style = mainMenuIconStyle,
+                stylesheet = mainMenuIconStyle,
             },
             reboot   = {
                 theme_path .. "mainMenu/reboot.svg",
-                style = mainMenuIconStyle,
+                stylesheet = mainMenuIconStyle,
             },
             shutdown = {
                 theme_path .. "mainMenu/power.svg",
-                style = mainMenuIconStyle,
+                stylesheet = mainMenuIconStyle,
             },
         },
         bg          = {

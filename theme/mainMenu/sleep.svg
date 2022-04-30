@@ -1,62 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width="24"
-   height="24"
-   viewBox="0 0 6.3499999 6.3500002"
-   version="1.1"
-   id="svg8206"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs8203" />
-  <g
-     id="layer1">
-    <g
-       aria-label="z"
-       transform="scale(1.169336,0.8551862)"
-       id="text16022"
-       style="font-size:2.88607px;line-height:1.25;stroke-width:0.264583">
-      <path
-         d="M 2.0364115,6.187736 H 0.90507207 V 6.020344 L 1.7362602,4.8370553 H 0.95413526 V 4.6408025 H 2.016209 V 4.8312831 L 1.1965651,5.9914833 h 0.8398464 z"
-         id="path23305" />
-    </g>
-    <g
-       aria-label="z"
-       transform="scale(1.169336,0.85518619)"
-       id="text22928"
-       style="font-size:2.30886px;line-height:1.25;stroke-width:0.264583">
-      <path
-         d="M 3.0662764,4.9758477 H 2.1612032 V 4.8419338 L 2.8261549,3.8953012 H 2.2004539 V 3.7382987 H 3.0501144 V 3.8906835 L 2.3943981,4.8188452 h 0.6718783 z"
-         id="path23308" />
-    </g>
-    <g
-       aria-label="z"
-       transform="scale(1.1693359,0.85518627)"
-       id="text22932"
-       style="font-size:1.73164px;line-height:1.25;stroke-width:0.264583">
-      <path
-         d="M 3.5671471,3.191833 H 2.8883443 V 3.0913979 L 3.3870566,2.3814255 H 2.9177822 V 2.263674 H 3.5550257 V 2.3779622 L 3.0632399,3.0740815 h 0.5039072 z"
-         id="path23311" />
-    </g>
-    <g
-       aria-label="z"
-       transform="scale(1.1693356,0.85518648)"
-       id="text22936"
-       style="font-size:1.15443px;line-height:1.25;stroke-width:0.264583">
-      <path
-         d="M 4.1171131,1.9267019 H 3.6645766 V 1.859745 L 3.9970524,1.3864286 H 3.6842019 v -0.078501 h 0.4248302 v 0.076192 L 3.781174,1.8482007 h 0.3359391 z"
-         id="path23314" />
-    </g>
-    <g
-       aria-label="z"
-       transform="scale(1.1693361,0.85518611)"
-       id="text22940"
-       style="font-size:0.577214px;line-height:1.25;stroke-width:0.264583">
-      <path
-         d="M 4.6434011,1.0219675 H 4.4171332 V 0.98848912 L 4.5833708,0.75183138 h -0.156425 v -0.0392506 h 0.2124148 v 0.0380961 L 4.4754318,0.98271698 h 0.1679693 z"
-         id="path23317" />
-    </g>
+<svg width="24" height="24" version="1.1" viewBox="0 0 6.35 6.35" xmlns="http://www.w3.org/2000/svg">
+ <g stroke-width=".26458" class="primary">
+  <g transform="scale(1.1693 .85519)" aria-label="z">
+   <path d="m2.0364 6.1877h-1.1313v-.16739l.83119-1.1833h-.78212v-.19625h1.0621v.19048l-.81964 1.1602h.83985z"/>
   </g>
+  <g transform="scale(1.1693 .85519)" aria-label="z">
+   <path d="m3.0663 4.9758h-.90507v-.13391l.66495-.94663h-.6257v-.157h.84966v.15238l-.65572.92816h.67188z"/>
+  </g>
+  <g transform="scale(1.1693 .85519)" aria-label="z">
+   <path d="m3.5671 3.1918h-.6788v-.10044l.49871-.70997h-.46927v-.11775h.63724v.11429l-.49179.69612h.50391z"/>
+  </g>
+  <g transform="scale(1.1693 .85519)" aria-label="z">
+   <path d="m4.1171 1.9267h-.45254v-.066957l.33248-.47332h-.31285v-.078501h.42483v.076192l-.32786.46408h.33594z"/>
+  </g>
+  <g transform="scale(1.1693 .85519)" aria-label="z">
+   <path d="m4.6434 1.022h-.22627v-.033478l.16624-.23666h-.15642v-.039251h.21241v.038096l-.16393.23204h.16797z"/>
+  </g>
+ </g>
 </svg>
