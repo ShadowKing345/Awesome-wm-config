@@ -6,7 +6,6 @@
 --]]
 --------------------------------------------------
 local gears = require "gears"
-local gColor = require "gears.color"
 local theme_assets = require "beautiful.theme_assets"
 local xresources = require "beautiful.xresources"
 
@@ -198,19 +197,23 @@ local config = {
     },
     separator_color = theme.gray,
     systray         = {
-        icon = {
+        icon  = {
             theme_path .. "systray.svg",
-            style = (".primary {stroke:%s; fill: none;}"):format(theme.main),
+            stylesheet = mainMenuIconStyle,
+            spacing = 10,
         },
-        bg   = {
+        bg    = {
             normal = theme.bg.button.normal,
             hover  = theme.bg.button.hover,
             active = theme.bg.button.active,
         },
-        fg   = {
+        fg    = {
             normal = theme.fg.button.normal,
             hover  = theme.fg.button.hover,
             active = theme.fg.button.active,
+        },
+        popup = {
+            border_color = theme.main,
         },
     },
     taglist         = {
