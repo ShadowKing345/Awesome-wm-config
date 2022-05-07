@@ -203,12 +203,10 @@ local config = {
             style = (".primary {stroke:%s; fill: none;}"):format(theme.main),
         },
         bg   = {
-            normal = theme.bg.button.normal,
             hover  = theme.bg.button.hover,
             active = theme.bg.button.active,
         },
         fg   = {
-            normal = theme.fg.button.normal,
             hover  = theme.fg.button.hover,
             active = theme.fg.button.active,
         },
