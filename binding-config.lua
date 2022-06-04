@@ -32,8 +32,18 @@ function M:focus_switch_by_dir(dir)
     end
 end
 
+local function getCurrentLayout(c)
+    local tag = c and c.screen.selected_tag or awful.screen.focused().selected_tag
+
+    if tag then
+        return tag.layout
+    end
+
+    return nil
+end
+
 local function clientResize(c, dir, push)
-    local layout = c.screen.selected_tag.layout
+    local layout = getCurrentLayout(c)
     if layout and layout.name == "binaryTreeLayout" then
         layout.resize(c, 5 * (push and -1 or 1), dir)
     end
@@ -158,6 +168,18 @@ function M:new(env)
                 description = { description = "Lower Volume", group = "Multimedia" },
             },
 
+            -- Layout
+            aKey {
+                modifiers = { env.modKey },
+                key = "v",
+                callback = function()
+                    local layout = getCurrentLayout()
+                    if layout and layout.name == "binaryTreeLayout" then
+                        layout:toggle()
+                    end
+                end,
+                description = { description = "Toggles the direction of the binary layout", group = "Layout" },
+            },
         }),
         client = gTJoin(table.unpack {
             aKey {
@@ -219,52 +241,64 @@ function M:new(env)
                 modifiers = { env.modKey, "Shift" },
                 key = "h",
                 callback = function(c) clientResize(c, "left") end,
-                description = { description = "Push left", group = "Client Layout" }
+                description = { description = "Push left", group = "Layout" }
             },
             aKey {
                 modifiers = { env.modKey, "Shift", "Control" },
                 key = "h",
                 callback = function(c) clientResize(c, "left", true) end,
-                description = { description = "Pull left", group = "Client Layout" }
+                description = { description = "Pull left", group = "Layout" }
             },
 
             aKey {
                 modifiers = { env.modKey, "Shift" },
                 key = "l",
                 callback = function(c) clientResize(c, "right") end,
-                description = { description = "Push right", group = "Client Layout" }
+                description = { description = "Push right", group = "Layout" }
             },
             aKey {
                 modifiers = { env.modKey, "Shift", "Control" },
                 key = "l",
                 callback = function(c) clientResize(c, "right", true) end,
-                description = { description = "Pull right", group = "Client Layout" }
+                description = { description = "Pull right", group = "Layout" }
             },
 
             aKey {
                 modifiers = { env.modKey, "Shift" },
                 key = "k",
                 callback = function(c) clientResize(c, "up") end,
-                description = { description = "Push up", group = "Client Layout" }
+                description = { description = "Push up", group = "Layout" }
             },
             aKey {
                 modifiers = { env.modKey, "Shift", "Control" },
                 key = "k",
                 callback = function(c) clientResize(c, "up", true) end,
-                description = { description = "Pull up", group = "Client Layout" }
+                description = { description = "Pull up", group = "Layout" }
             },
 
             aKey {
                 modifiers = { env.modKey, "Shift" },
                 key = "j",
                 callback = function(c) clientResize(c, "down") end,
-                description = { description = "Push down", group = "Client Layout" }
+                description = { description = "Push down", group = "Layout" }
             },
             aKey {
                 modifiers = { env.modKey, "Shift", "Control" },
                 key = "j",
                 callback = function(c) clientResize(c, "down", true) end,
-                description = { description = "Pull down", group = "Client Layout" }
+                description = { description = "Pull down", group = "Layout" }
+            },
+
+            aKey {
+                modifiers = { env.modKey, "Shift" },
+                key = "v",
+                callback = function(c)
+                    local layout = getCurrentLayout(c)
+                    if layout and layout.name == "binaryTreeLayout" then
+                        layout:changeDirection(c)
+                    end
+                end,
+                description = { description = "Toggles the direction of the binary layout", group = "Layout" },
             },
 
         }),
