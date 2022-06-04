@@ -1,8 +1,8 @@
---------------------------------------------------
---
---      Layouts configuration
---
---------------------------------------------------
+--[[
+
+      Layouts configuration
+
+]]
 local setmetatable = setmetatable
 
 local awful = require "awful"
@@ -16,8 +16,8 @@ local layoutConfiguration = { mt = {} }
 
 function layoutConfiguration:new(_)
     self.layouts = {
+        binaryTreeLayout {},
         awful.layout.suit.floating,
-        binaryTreeLayout {}
     }
 
     awful.layout.layouts = self.layouts
