@@ -32,6 +32,13 @@ function M:focus_switch_by_dir(dir)
     end
 end
 
+local function clientResize(c, dir, push)
+    local layout = c.screen.selected_tag.layout
+    if layout and layout.name == "binaryTreeLayout" then
+        layout.resize(c, 5 * (push and -1 or 1), dir)
+    end
+end
+
 ---@param env EnvConfig #The environment configurations.
 ---@return BindingConfig
 function M:new(env)
@@ -204,11 +211,62 @@ function M:new(env)
             aKey {
                 modifiers   = { env.modKey },
                 key         = "o",
-                callback    = function(c)
-                    c:move_to_screen()
-                end,
-                description = { description = "Move to screen", group = "Client" },
+                callback    = function(c) c:move_to_screen() end,
+                description = { description = "Move to next screen", group = "Client" },
             },
+            --- Layout
+            aKey {
+                modifiers = { env.modKey, "Shift" },
+                key = "h",
+                callback = function(c) clientResize(c, "left") end,
+                description = { description = "Push left", group = "Client Layout" }
+            },
+            aKey {
+                modifiers = { env.modKey, "Shift", "Control" },
+                key = "h",
+                callback = function(c) clientResize(c, "left", true) end,
+                description = { description = "Pull left", group = "Client Layout" }
+            },
+
+            aKey {
+                modifiers = { env.modKey, "Shift" },
+                key = "l",
+                callback = function(c) clientResize(c, "right") end,
+                description = { description = "Push right", group = "Client Layout" }
+            },
+            aKey {
+                modifiers = { env.modKey, "Shift", "Control" },
+                key = "l",
+                callback = function(c) clientResize(c, "right", true) end,
+                description = { description = "Pull right", group = "Client Layout" }
+            },
+
+            aKey {
+                modifiers = { env.modKey, "Shift" },
+                key = "k",
+                callback = function(c) clientResize(c, "up") end,
+                description = { description = "Push up", group = "Client Layout" }
+            },
+            aKey {
+                modifiers = { env.modKey, "Shift", "Control" },
+                key = "k",
+                callback = function(c) clientResize(c, "up", true) end,
+                description = { description = "Pull up", group = "Client Layout" }
+            },
+
+            aKey {
+                modifiers = { env.modKey, "Shift" },
+                key = "j",
+                callback = function(c) clientResize(c, "down") end,
+                description = { description = "Push down", group = "Client Layout" }
+            },
+            aKey {
+                modifiers = { env.modKey, "Shift", "Control" },
+                key = "j",
+                callback = function(c) clientResize(c, "down", true) end,
+                description = { description = "Pull down", group = "Client Layout" }
+            },
+
         }),
     }
 
@@ -276,27 +334,27 @@ function M:new(env)
             aButton {
                 modifiers = {},
                 button    = 1,
-                callback  = function(client) client:emit_signal("request::activate", "mouse_click", { raise = true }) end,
+                callback  = function(c) c:emit_signal("request::activate", "mouse_click", { raise = true }) end,
             },
             aButton {
                 modifiers = { env.modKey },
                 button    = 1,
-                callback  = function(client)
-                    client:emit_signal("request::activate", "mouse_click", { raise = true })
-                    awful.mouse.client.move(client)
+                callback  = function(c)
+                    c:emit_signal("request::activate", "mouse_click", { raise = true })
+                    awful.mouse.client.move(c)
                 end,
             },
             aButton {
                 modifiers = {},
                 button    = 3,
-                callback  = function(client) client:emit_signal("request::activate", "mouse_click", { raise = true }) end,
+                callback  = function(c) c:emit_signal("request::activate", "mouse_click", { raise = true }) end,
             },
             aButton {
                 modifiers = { env.modKey },
                 button    = 3,
-                callback  = function(client)
-                    client:emit_signal("request::activate", "mouse_click", { raise = true })
-                    awful.mouse.client.resize(client)
+                callback  = function(c)
+                    c:emit_signal("request::activate", "mouse_click", { raise = true })
+                    awful.mouse.client.resize(c)
                 end,
             }
         ),
