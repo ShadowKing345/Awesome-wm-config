@@ -134,6 +134,7 @@ local config = {
     input_field_bg  = colors.black_3,
     layout          = {
         floating = default_theme_path .. "default/layouts/floatingw.png",
+        binaryTreeLayout = gfs.get_xdg_config_home() .. "/awesome/binary-tree-layout/icon.svg",
     },
     mainmenu        = {
         image       = {
@@ -290,7 +291,7 @@ local config = {
             },
         },
     },
-    useless_gap     = dpi(0),
+    useless_gap     = dpi(10),
     wallpaper       = {
         theme_path .. "background.svg",
         bg         = colors.black_1,
