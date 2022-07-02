@@ -16,16 +16,16 @@ require "error-config"
 
 -- Environment variables setup.
 --------------------------------------------------
-local env = require "env-config" {}
+local env = require "env-config" ()
 require "layouts-config" (env)
 local screenConfig = require "ui.screen-config" (env)
 awful.screen.connect_for_each_screen(screenConfig.init)
 
-local bindingConfig = require "binding-config" (env)
-root.keys(bindingConfig.keys.global)
-root.buttons(bindingConfig.mouse.global)
+local keybindings = require "keybindings" (env)
+root.keys(keybindings.keys.global)
+root.buttons(keybindings.mouse.global)
 
-require "rules-config":init { hotkeys = { keys = bindingConfig.keys, mouse = bindingConfig.mouse } }
+require "rules-config":init { hotkeys = { keys = keybindings.keys, mouse = keybindings.mouse } }
 require "service.pulseMixer" {}
 require "signals".init(env)
 require "autostart-config".run()
