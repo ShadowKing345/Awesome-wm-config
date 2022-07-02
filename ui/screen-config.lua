@@ -24,13 +24,16 @@ local utils    = require "utils"
 ---@field mainMenu table #The main menu object.
 ---@field launcher table #Launcher object.
 ---@field textClock table #Text clock object.
----@field tagListButtons table[] #Collection of buttons used for taglist
----@field tasklistButtons table[] #Collection of buttons used for tasklist
+---@field tagListButtons table[] #Collection of buttons used for taglist.
+---@field tasklistButtons table[] #Collection of buttons used for tasklist.
+---@field tags string[] #Collection of string to be used for the tags.
 local M = {
     mt         = {},
     wallpapers = {},
 }
 
+---Creates a new instance of the wallpaper widget(?) and returns it.
+---@return unknown
 function M.createWallpaper()
     local wallpaper = beautiful.wallpaper
 
@@ -53,6 +56,27 @@ function M.createWallpaper()
     return w
 end
 
+---Runs the setup procedures for each screen.
+---@param s any #The screen.
+function M:connectScreen(s)
+    awful.tag(self.tags or {}, s, awful.layout.layouts[1])
+
+    s.layoutbox = awful.widget.layoutbox(s)
+    s.taglist   = taglist { buttons = self.taglistButtons, screen = s, }
+    s.tasklist  = tasklist { buttons = self.tasklistButtons, screen = s, }
+    s.systray   = systray {}
+
+    s.wibox = wibar {
+        screen    = s,
+        taglist   = s.taglist,
+        tasklist  = s.tasklist,
+        launcher  = self.launcher,
+        clock     = self.textClock,
+        systray   = s.systray,
+        layoutbox = s.layoutbox,
+    }
+end
+
 --- Sets up a new instance of a wallpaper.
 --- Will just update the widget if one already exists.
 ---@param ctx any
@@ -66,11 +90,10 @@ function M.setupWallpaper(ctx)
     wallpaper.screen = ctx
 end
 
+---Creates a new instance of the screen configuration module.
 ---@param env EnvConfig
 function M:new(env)
     env = env or {}
-
-    screen.connect_signal("request::wallpaper", M.setupWallpaper)
 
     self.mainMenu = mainMenu(env)
     self.launcher = wibox.widget {
@@ -101,33 +124,14 @@ function M:new(env)
     self.taglistButtons = taglist.default_buttons(env)
     self.tasklistButtons = tasklist.default_buttons()
 
+    self.tags = env.tags or {}
+
     beautiful.wibar_height = beautiful.wibar_height + (beautiful["wibar_border_width_top"] or dpi(1))
 
+    screen.connect_signal("request::wallpaper", M.setupWallpaper)
+    screen.connect_signal("request::desktop_decoration", function(s) self:connectScreen(s) end)
+
     return self
-end
-
-function M:_init(s)
-    local tags = { "1", "2", "3", "4", "5", "6" }
-    awful.tag(tags, s, awful.layout.layouts[1])
-
-    s.layoutbox = awful.widget.layoutbox(s)
-    s.taglist   = taglist { buttons = self.taglistButtons, screen = s, }
-    s.tasklist  = tasklist { buttons = self.tasklistButtons, screen = s, }
-    s.systray   = systray {}
-
-    s.wibox = wibar {
-        screen    = s,
-        taglist   = s.taglist,
-        tasklist  = s.tasklist,
-        launcher  = self.launcher,
-        clock     = self.textClock,
-        systray   = s.systray,
-        layoutbox = s.layoutbox,
-    }
-end
-
-function M.init(screen)
-    M:_init(screen)
 end
 
 --------------------------------------------------
