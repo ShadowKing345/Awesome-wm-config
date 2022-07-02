@@ -1,6 +1,6 @@
 --[[
 
-        Mouse and Keybindings configurations
+    Mouse and Keybindings configurations
 
 --]]
 --------------------------------------------------
@@ -63,61 +63,6 @@ function M:new(env)
             end
             self.keys.client = gTJoin(self.keys.client, table.unpack(keys))
         end
-    end
-
-    for i = 1, 9 do
-        self.keys.global = gTJoin(
-            self.keys.global,
-            table.unpack {
-                aKey {
-                    modifiers   = { env.modKey },
-                    key         = ("#" .. i + 9),
-                    callback    = function()
-                        local tag = awful.screen.focused().tags[i]
-                        if tag then
-                            tag:view_only()
-                        end
-                    end,
-                    description = { description = "View tag #" .. i, group = "Tag" },
-                },
-                -- Toggle tag display.
-                aKey {
-                    modifiers   = { env.modKey, "Control" },
-                    key         = ("#" .. i + 9),
-                    callback    = function()
-                        local tag = awful.screen.focused().tags[i]
-                        if tag then
-                            awful.tag.viewtoggle(tag)
-                        end
-                    end,
-                    description = { description = "Toggle tag #" .. i, group = "Tag" },
-                },
-                -- Move client to tag.
-                aKey {
-                    modifiers   = { env.modKey, "Shift" },
-                    key         = ("#" .. i + 9),
-                    callback    = function()
-                        if client.focus then
-                            local tag = client.focus.screen.tags[i]
-                            if tag then client.focus:move_to_tag(tag) end
-                        end
-                    end,
-                    description = { description = "Move focused client to tag #" .. i, group = "Tag" },
-                },
-                -- Toggle tag on focused client.
-                aKey {
-                    modifiers   = { env.modKey, "Control", "Shift" },
-                    key         = ("#" .. i + 9),
-                    callback    = function()
-                        if client.focus then
-                            local tag = client.focus.screen.tags[i]
-                            if tag then client.focus:toggle_tag(tag) end
-                        end
-                    end,
-                    description = { description = "Toggle focused client on tag #" .. i, group = "Tag" },
-                },
-            }
-        )
     end
 
     self.mouse = {
