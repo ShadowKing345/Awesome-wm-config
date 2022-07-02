@@ -28,7 +28,7 @@ function M.keyboard(env)
         },
     }
 
-    for i = 1, 9 do
+    for i, tagName in pairs(env.tags) do
         table.insert(result,
             {
                 modifiers   = { env.modKey },
@@ -39,7 +39,7 @@ function M.keyboard(env)
                         tag:view_only()
                     end
                 end,
-                description = "View tag #" .. i,
+                description = "View tag " .. tagName,
             }
         )
         table.insert(result,
@@ -52,7 +52,7 @@ function M.keyboard(env)
                         awful.tag.viewtoggle(tag)
                     end
                 end,
-                description = "Toggle tag #" .. i,
+                description = "Toggle tag " .. tagName,
             }
         )
         table.insert(result,
@@ -65,7 +65,7 @@ function M.keyboard(env)
                         if tag then client.focus:move_to_tag(tag) end
                     end
                 end,
-                description = "Move focused client to tag #" .. i,
+                description = "Move focused client to tag " .. tagName,
             }
         )
         table.insert(result,
@@ -78,7 +78,7 @@ function M.keyboard(env)
                         if tag then client.focus:toggle_tag(tag) end
                     end
                 end,
-                description = "Toggle focused client on tag #" .. i,
+                description = "Toggle focused client on tag " .. tagName,
             }
         )
     end
