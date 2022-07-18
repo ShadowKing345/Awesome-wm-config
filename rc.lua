@@ -1,7 +1,8 @@
---------------------------------------------------
---
---      Awesome WM config entry point.
---
+--[[
+
+    Awesome WM config entry point.
+
+--]]
 --------------------------------------------------
 pcall(require, "luarocks.loader")
 
@@ -10,22 +11,43 @@ local awful = require "awful"
 require "awful.autofocus"
 require "awful.hotkeys_popup.keys"
 
+
 -- Error checking setup.
 --------------------------------------------------
 require "error-config"
 
+
 -- Environment variables setup.
 --------------------------------------------------
-local env = require "env-config" {}
-require "layouts-config" (env)
-local screenConfig = require "ui.screen-config" (env)
-awful.screen.connect_for_each_screen(screenConfig.init)
+local env = require "env-config" ()
+awful.layout.layouts = env.layouts
 
-local bindingConfig = require "binding-config" (env)
-root.keys(bindingConfig.keys.global)
-root.buttons(bindingConfig.mouse.global)
 
-require "rules-config":init { hotkeys = { keys = bindingConfig.keys, mouse = bindingConfig.mouse } }
+-- Screen configuration
+--------------------------------------------------
+require "ui.screen-config" (env)
+
+
+-- Keybindings
+--------------------------------------------------
+local keybindings = require "keybindings" (env)
+root.keys(keybindings.keys.global)
+root.buttons(keybindings.mouse.global)
+
+
+-- Everything else
+--------------------------------------------------
+require "rules-config":init { hotkeys = { keys = keybindings.keys, mouse = keybindings.mouse } }
 require "service.pulseMixer" {}
 require "signals".init(env)
-require "autostart-config".run()
+
+
+-- Note the collection of applications to autostart are mainly personal. Change them as you need to.
+require "autostart-config" {
+    "nvidia-settings --load-config-only",
+    "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1",
+    "picom -b",
+    "nm-applet",
+    "discord",
+    "mailspring -b",
+}

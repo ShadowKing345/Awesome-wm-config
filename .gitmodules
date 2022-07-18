@@ -1,6 +1,8 @@
 [submodule "binary-tree-layout"]
 	path = binary-tree-layout
+	branch = main
 	url = https://github.com/ShadowKing345/awesomewm-binary-tree-layout.git
 [submodule "utils"]
 	path = utils
+	branch = main
 	url = https://github.com/ShadowKing345/awesome-utils.git
