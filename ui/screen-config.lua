@@ -11,6 +11,7 @@ local beautiful = require "beautiful"
 local dpi       = require "beautiful.xresources".apply_dpi
 local wibox     = require "wibox"
 
+local desktop  = require "ui.desktop"
 local mainMenu = require "ui.widget.mainMenu"
 local taglist  = require "ui.widget.taglist"
 local tasklist = require "ui.widget.tasklist"
@@ -75,6 +76,8 @@ function M:connectScreen(s)
         systray   = s.systray,
         layoutbox = s.layoutbox,
     }
+
+    s.desktop_decoration = desktop(s, self.env)
 end
 
 --- Sets up a new instance of a wallpaper.
@@ -94,6 +97,8 @@ end
 ---@param env EnvConfig
 function M:new(env)
     env = env or {}
+
+    self.env = env
 
     self.mainMenu = mainMenu(env)
     self.launcher = wibox.widget {
