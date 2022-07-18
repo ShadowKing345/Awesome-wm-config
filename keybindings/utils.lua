@@ -13,7 +13,7 @@ local M = {
     keys = {
         shift = "Shift",
         clt = "Control",
-        alt = "Mod3",
+        alt = "Mod1",
         super = "Mod4",
     },
 }
