@@ -16,7 +16,7 @@ local aButton = require "utils".aButton
 --------------------------------------------------
 local M = { mt = {} }
 
----@param env EnvArgs
+---@param env EnvConfig
 function M.default_buttons(env)
     return {
         aButton {
