@@ -29,33 +29,9 @@ local utils    = require "utils"
 ---@field tasklistButtons table[] #Collection of buttons used for tasklist.
 ---@field tags string[] #Collection of string to be used for the tags.
 local M = {
-    mt         = {},
-    wallpapers = {},
+    mt       = {},
+    desktops = {},
 }
-
----Creates a new instance of the wallpaper widget(?) and returns it.
----@return unknown
-function M.createWallpaper()
-    local wallpaper = beautiful.wallpaper
-
-    if type(wallpaper) == "function" then
-        wallpaper = wallpaper()
-    end
-
-    local w = awful.wallpaper {
-        honor_workarea = true,
-        widget = {
-            bg         = beautiful["wallpaper_bg"] or beautiful.bg_normal,
-            halign     = "center",
-            valign     = "center",
-            image      = wallpaper,
-            stylesheet = beautiful["wallpaper_stylesheet"] or nil,
-            widget     = wibox.widget.imagebox,
-        },
-    }
-
-    return w
-end
 
 ---Runs the setup procedures for each screen.
 ---@param s any #The screen.
@@ -71,26 +47,21 @@ function M:connectScreen(s)
         screen    = s,
         taglist   = s.taglist,
         tasklist  = s.tasklist,
-        launcher  = self.launcher,
+        launcher  = self.mainMenu:createLauncher(),
         clock     = self.textClock,
         systray   = s.systray,
         layoutbox = s.layoutbox,
     }
-
-    s.desktop_decoration = desktop(s, self.env)
 end
 
---- Sets up a new instance of a wallpaper.
---- Will just update the widget if one already exists.
----@param ctx any
-function M.setupWallpaper(ctx)
-    local wallpaper = M.wallpapers[ctx]
-    if not wallpaper then
-        wallpaper = M.createWallpaper()
-        M.wallpapers[ctx] = wallpaper
+function M:requestDesktop(s)
+    local d = self.desktops[s]
+    if not d then
+        d = desktop(s, self.env)
+        self.desktops[s.index] = d
     end
 
-    wallpaper.screen = ctx
+    d:reload()
 end
 
 ---Creates a new instance of the screen configuration module.
@@ -101,28 +72,6 @@ function M:new(env)
     self.env = env
 
     self.mainMenu = mainMenu(env)
-    self.launcher = wibox.widget {
-        {
-            image  = beautiful.awesome_icon,
-            widget = wibox.widget.imagebox,
-        },
-        margins = 2,
-        widget  = wibox.container.margin,
-        buttons = {
-            utils.aButton {
-                modifiers = {},
-                button = 1,
-                callback = function()
-                    local geometry = mouse.screen.geometry
-                    geometry.y = geometry.height
-                    self.mainMenu:toggle {
-                        coords = geometry,
-                        screen = mouse.screen
-                    }
-                end,
-            }
-        }
-    }
 
     self.textClock = wibox.widget.textclock()
 
@@ -131,9 +80,10 @@ function M:new(env)
 
     self.tags = env.tags or {}
 
+
     beautiful.wibar_height = beautiful.wibar_height + (beautiful["wibar_border_width_top"] or dpi(1))
 
-    screen.connect_signal("request::wallpaper", M.setupWallpaper)
+    screen.connect_signal("request::wallpaper", function(s) self:requestDesktop(s) end)
     screen.connect_signal("request::desktop_decoration", function(s) self:connectScreen(s) end)
 
     return self
