@@ -9,6 +9,7 @@ local setmetatable = setmetatable
 local awful     = require "awful"
 local beautiful = require "beautiful"
 local gTable    = require "gears.table"
+local gShape    = require "gears.shape"
 local wibox     = require "wibox"
 
 local aButton = require "utils".aButton
@@ -54,70 +55,76 @@ end
 
 function M.default_template(style)
     return {
-        template = {
+        {
             {
                 nil,
                 {
                     {
-                        id = "text_role",
+                        id     = "text_role",
                         widget = wibox.widget.textbox,
-                        align = "center",
+                        align  = "center",
                     },
-                    widget = wibox.container.background,
-                    forced_width = 30
+                    widget       = wibox.container.background,
+                    forced_width = style.width,
                 },
                 {
-                    id = "background_role",
-                    widget = wibox.container.background,
+                    id            = "background_role",
+                    widget        = wibox.container.background,
                     forced_height = 3,
                 },
                 layout = wibox.layout.align.vertical,
             },
-            id              = "bg",
-            bg              = style.bg.normal,
-            widget          = wibox.container.background,
-            create_callback = function(self)
-                local bg = self:get_children_by_id "bg"[1]
-
-                if not bg then return end
-
-                bg._private.bg = style.bg
-                bg._private.fg = style.fg
-
-                function bg:change_state(state)
-                    self.bg = self._private.bg[state]
-                    self.fg = self._private.fg[state]
-                end
-
-                bg:connect_signal("mouse::enter", function() bg:change_state "hover" end)
-                bg:connect_signal("mouse::leave", function() bg:change_state "normal" end)
-                bg:connect_signal("button::press",
-                    function(_, _, _, button)
-                        if button ~= 1 then return end
-                        bg:change_state "active"
-                    end)
-                bg:connect_signal("button::release",
-                    function(_, _, _, button)
-                        if button ~= 1 then return end
-                        bg:change_state "hover"
-                    end)
-            end,
+            id     = "bg",
+            shape  = style.shape,
+            bg     = style.bg.normal,
+            widget = wibox.container.background,
         },
+        margins         = style.padding,
+        widget          = wibox.container.margin,
+        create_callback = function(self)
+            local bg = self:get_children_by_id "bg"[1]
+
+            if not bg then return end
+
+            bg._private.bg = style.bg
+            bg._private.fg = style.fg
+
+            function bg:change_state(state)
+                self.bg = self._private.bg[state]
+                self.fg = self._private.fg[state]
+            end
+
+            bg:connect_signal("mouse::enter", function() bg:change_state "hover" end)
+            bg:connect_signal("mouse::leave", function() bg:change_state "normal" end)
+            bg:connect_signal("button::press",
+                function(_, _, _, button)
+                    if button ~= 1 then return end
+                    bg:change_state "active"
+                end)
+            bg:connect_signal("button::release",
+                function(_, _, _, button)
+                    if button ~= 1 then return end
+                    bg:change_state "hover"
+                end)
+        end,
     }
 end
 
 function M.default_style()
     return {
-        bg = {
+        bg      = {
             normal = beautiful["taglist_bg_normal"],
             hover  = beautiful["taglist_bg_hover"],
             active = beautiful["taglist_bg_active"],
         },
-        fg = {
+        fg      = {
             normal = beautiful["taglist_fg_normal"],
             hover  = beautiful["taglist_fg_hover"],
             active = beautiful["taglist_fg_active"],
-        }
+        },
+        padding = beautiful["taglist_padding"] or 0,
+        shape   = beautiful["taglist_shape"] or gShape.rectangle,
+        width   = beautiful["taglist_width"] or 27,
     }
 end
 
@@ -131,7 +138,7 @@ function M:new(args)
         screen = args.screen,
         filter = awful.widget.taglist.filter.all,
         buttons = args.buttons,
-        widget_template = template.template
+        widget_template = template
     }
 
     gTable.crush(w, M, true)

@@ -9,6 +9,7 @@ local setmetatable = setmetatable
 local awful     = require "awful"
 local beautiful = require "beautiful"
 local gTable    = require "gears.table"
+local gShape    = require "gears.shape"
 local wibox     = require "wibox"
 
 local aButton = require "utils".aButton
@@ -54,42 +55,47 @@ function M.default_template(style)
         },
         template = {
             {
-
-                nil,
                 {
+
+                    nil,
                     {
                         {
                             {
                                 {
-                                    id     = "icon_role",
-                                    widget = wibox.widget.imagebox,
+                                    {
+                                        id     = "icon_role",
+                                        widget = wibox.widget.imagebox,
+                                    },
+                                    margins = 2,
+                                    widget  = wibox.container.margin,
                                 },
-                                margins = 2,
-                                widget  = wibox.container.margin,
+                                {
+                                    id           = "text_role",
+                                    widget       = wibox.widget.textbox,
+                                    forced_width = beautiful["tasklist_width"] or 100,
+                                },
+                                layout = wibox.layout.fixed.horizontal,
                             },
-                            {
-                                id           = "text_role",
-                                widget       = wibox.widget.textbox,
-                                forced_width = beautiful["tasklist_width"] or 100,
-                            },
-                            layout = wibox.layout.fixed.horizontal,
+                            left   = 2,
+                            right  = 8,
+                            widget = wibox.container.margin
                         },
-                        left   = 2,
-                        right  = 8,
-                        widget = wibox.container.margin
+                        widget = wibox.container.background,
                     },
-                    widget = wibox.container.background,
+                    {
+                        id = "background_role",
+                        widget = wibox.container.background,
+                        forced_height = 3,
+                    },
+                    layout = wibox.layout.align.vertical,
                 },
-                {
-                    id = "background_role",
-                    widget = wibox.container.background,
-                    forced_height = 3,
-                },
-                layout = wibox.layout.align.vertical,
+                id     = "bg",
+                shape  = style.shape,
+                bg     = style.bg.normal,
+                widget = wibox.container.background,
             },
-            id              = "bg",
-            bg              = style.bg.normal,
-            widget          = wibox.container.background,
+            margins         = style.padding,
+            widget          = wibox.container.margin,
             create_callback = function(self)
                 local bg = self:get_children_by_id "bg"[1]
 
@@ -131,7 +137,9 @@ function M.default_style()
             normal = beautiful["tasklist_fg_normal"],
             hover  = beautiful["tasklist_fg_hover"],
             active = beautiful["tasklist_fg_active"],
-        }
+        },
+        shape = beautiful["tasklist_shape"] or gShape.rectangle,
+        padding = beautiful["tasklist_padding"] or 0,
     }
 end
 
