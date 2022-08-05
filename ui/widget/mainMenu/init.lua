@@ -26,13 +26,14 @@ wibox.layout.overflow   = require "ui.layouts.overflow"
 local utils             = require "utils"
 
 --------------------------------------------------
-local mainMenu = {
-    pattern = gString.query_to_pattern "",
-    category = nil,
-    categories = nil,
+local M = {
+    pattern      = gString.query_to_pattern "",
+    category     = nil,
+    categories   = nil,
     applications = {},
-    widget = nil,
-    mt = {},
+    widget       = nil,
+    mt           = {},
+    launcher     = nil,
 }
 
 local vSeperator = wibox.widget {
@@ -47,7 +48,7 @@ local hSeperator = wibox.widget {
     widget        = wibox.widget.separator,
 }
 
-function mainMenu.default_style()
+function M.default_style()
     return {
         bg           = beautiful["mainmenu_bg"] or beautiful.bg,
         bg_left      = beautiful["mainmenu_bg_left"] or beautiful.bg_minimize,
@@ -75,7 +76,7 @@ function mainMenu.default_style()
     }
 end
 
-function mainMenu:set_coords(s, coords)
+function M:set_coords(s, coords)
     local workarea = s.workarea
 
     if coords == nil then coords = capi.mouse.coords() end
@@ -84,7 +85,7 @@ function mainMenu:set_coords(s, coords)
     self.widget.y = utils.clamp(coords.y, workarea.y, workarea.y + workarea.height - self.widget.height)
 end
 
-function mainMenu:genSideCategories(categories)
+function M:genSideCategories(categories)
     self.categories = self.categories or wibox.widget {
         spacing = 1,
         layout  = wibox.layout.overflow.vertical,
@@ -97,7 +98,7 @@ function mainMenu:genSideCategories(categories)
             icon_name = "",
             name      = "All"
         },
-        callback = function() mainMenu:setCategory(nil) end
+        callback = function() M:setCategory(nil) end
     })
 
     for k, v in pairs(categories) do
@@ -105,11 +106,11 @@ function mainMenu:genSideCategories(categories)
         while index <= #w.children and w.children[index].category.name < v.name do
             index = index + 1
         end
-        w:insert(index, categoryWidget { category = v, callback = function() mainMenu:setCategory(k) end })
+        w:insert(index, categoryWidget { category = v, callback = function() M:setCategory(k) end })
     end
 end
 
-function mainMenu:setCategory(category)
+function M:setCategory(category)
     if self.category == category then
         return
     end
@@ -118,7 +119,7 @@ function mainMenu:setCategory(category)
     self:resetApplicationsWidget()
 end
 
-function mainMenu:resetApplicationsWidget()
+function M:resetApplicationsWidget()
     self.widget.shownItems:reset()
     for _, v in ipairs(self.applications) do
         if (not self.category or (v.category == self.category))
@@ -128,14 +129,58 @@ function mainMenu:resetApplicationsWidget()
     end
 end
 
-function mainMenu.appliction_callback(application)
+function M.appliction_callback(application)
     awful.spawn(application.cmdline)
-    mainMenu:hide()
+    M:hide()
 end
 
-function mainMenu:init(args)
+function M.launcherDefaultStyle(style)
+    return gTable.merge({
+        padding = beautiful["launcher_padding"],
+        shape   = beautiful["launcher_shape"],
+    }, style or {})
+end
+
+function M:createLauncher(args)
     args = args or {}
-    args.style = gTable.merge(mainMenu.default_style(), args.style or {})
+
+    if self.launcher and not args.force then
+        return self.launcher
+    end
+
+    local style = self.launcherDefaultStyle(args.style or {})
+    self.launcher = wibox.widget {
+        {
+            {
+                image  = beautiful.awesome_icon,
+                widget = wibox.widget.imagebox,
+            },
+            shape  = style.shape,
+            widget = wibox.container.background,
+        },
+        margins = style.padding,
+        widget  = wibox.container.margin,
+        buttons = {
+            utils.aButton {
+                modifiers = {},
+                button = 1,
+                callback = function()
+                    local geometry = mouse.screen.geometry
+                    geometry.y = geometry.height
+                    self:toggle {
+                        coords = geometry,
+                        screen = mouse.screen
+                    }
+                end,
+            }
+        }
+    }
+    return self.launcher
+end
+
+function M:init(args)
+    args = args or {}
+    args.style = gTable.merge(M.default_style(), args.style or {})
 
     self.widget = wibox {
         ontop  = true,
@@ -325,11 +370,11 @@ function mainMenu:init(args)
     }
 end
 
-function mainMenu:hide()
+function M:hide()
     self.widget.visible = false
 end
 
-function mainMenu:show(args)
+function M:show(args)
     args = args or {}
     local coords = args.coords or nil
     local s = args.screen or capi.mouse.screen
@@ -340,15 +385,15 @@ function mainMenu:show(args)
     self.widget.visible = true
 end
 
-function mainMenu:toggle(args)
+function M:toggle(args)
     if self.widget.visible then
-        mainMenu:hide()
+        M:hide()
     else
-        mainMenu:show(args)
+        M:show(args)
     end
 end
 
-function mainMenu:new(args)
+function M:new(args)
     if not self.widget then
         self:init(args)
     end
@@ -364,10 +409,10 @@ function mainMenu:new(args)
 end
 
 --------------------------------------------------
-function mainMenu.mt:__call(...)
-    return mainMenu:new(...)
+function M.mt:__call(...)
+    return M:new(...)
 end
 
-return setmetatable(mainMenu, mainMenu.mt)
+return setmetatable(M, M.mt)
 
 --------------------------------------------------
