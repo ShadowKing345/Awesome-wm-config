@@ -18,7 +18,6 @@ local taglist   = require "ui.widget.taglist"
 local tasklist  = require "ui.widget.tasklist"
 local systray   = require "ui.widget.systray"
 local wibar     = require "ui.widget.wibar"
-local utils     = require "utils"
 
 --------------------------------------------------
 ---@class ScreenConfig
@@ -39,7 +38,7 @@ local M = {
 function M:connectScreen(s)
     awful.tag(self.tags or {}, s, awful.layout.layouts[1])
 
-    s.layoutbox = layoutbox { screen = s }
+    s.layoutbox = layoutbox { screen = s, }
     s.taglist   = taglist { buttons = self.taglistButtons, screen = s, }
     s.tasklist  = tasklist { buttons = self.tasklistButtons, screen = s, }
     s.systray   = systray {}
@@ -55,6 +54,8 @@ function M:connectScreen(s)
     }
 end
 
+---Creates a new desktop instance and/or reloads it.
+---@param s any #The screen in question.
 function M:requestDesktop(s)
     local d = self.desktops[s]
     if not d then
@@ -72,11 +73,10 @@ function M:new(env)
 
     self.env = env
 
-    self.mainMenu = mainMenu(env)
-
+    self.mainMenu  = mainMenu(env)
     self.textClock = wibox.widget.textclock()
 
-    self.taglistButtons = taglist.default_buttons(env)
+    self.taglistButtons  = taglist.default_buttons(env)
     self.tasklistButtons = tasklist.default_buttons()
 
     self.tags = env.tags or {}
