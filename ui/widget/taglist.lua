@@ -55,7 +55,7 @@ end
 
 function M.default_template(style)
     return {
-        {
+        template = {
             {
                 nil,
                 {
@@ -74,39 +74,41 @@ function M.default_template(style)
                 },
                 layout = wibox.layout.align.vertical,
             },
-            id     = "bg",
-            shape  = style.shape,
-            bg     = style.bg.normal,
-            widget = wibox.container.background,
+            id              = "bg",
+            shape           = style.shape,
+            bg              = style.bg.normal,
+            widget          = wibox.container.background,
+            create_callback = function(self)
+                local bg = self:get_children_by_id "bg"[1]
+
+                if not bg then return end
+
+                bg._private.bg = style.bg
+                bg._private.fg = style.fg
+
+                function bg:change_state(state)
+                    self.bg = self._private.bg[state]
+                    self.fg = self._private.fg[state]
+                end
+
+                bg:connect_signal("mouse::enter", function() bg:change_state "hover" end)
+                bg:connect_signal("mouse::leave", function() bg:change_state "normal" end)
+                bg:connect_signal("button::press",
+                    function(_, _, _, button)
+                        if button ~= 1 then return end
+                        bg:change_state "active"
+                    end)
+                bg:connect_signal("button::release",
+                    function(_, _, _, button)
+                        if button ~= 1 then return end
+                        bg:change_state "hover"
+                    end)
+            end,
         },
-        margins         = style.padding,
-        widget          = wibox.container.margin,
-        create_callback = function(self)
-            local bg = self:get_children_by_id "bg"[1]
-
-            if not bg then return end
-
-            bg._private.bg = style.bg
-            bg._private.fg = style.fg
-
-            function bg:change_state(state)
-                self.bg = self._private.bg[state]
-                self.fg = self._private.fg[state]
-            end
-
-            bg:connect_signal("mouse::enter", function() bg:change_state "hover" end)
-            bg:connect_signal("mouse::leave", function() bg:change_state "normal" end)
-            bg:connect_signal("button::press",
-                function(_, _, _, button)
-                    if button ~= 1 then return end
-                    bg:change_state "active"
-                end)
-            bg:connect_signal("button::release",
-                function(_, _, _, button)
-                    if button ~= 1 then return end
-                    bg:change_state "hover"
-                end)
-        end,
+        layout = {
+            spacing = style.padding,
+            layout  = wibox.layout.fixed.horizontal,
+        },
     }
 end
 
@@ -134,11 +136,16 @@ function M:new(args)
 
     local template = self.default_template(args.style)
 
-    local w = awful.widget.taglist {
-        screen = args.screen,
-        filter = awful.widget.taglist.filter.all,
-        buttons = args.buttons,
-        widget_template = template
+    local w = wibox.widget {
+        awful.widget.taglist {
+            screen          = args.screen,
+            filter          = awful.widget.taglist.filter.all,
+            buttons         = args.buttons,
+            widget_template = template.template,
+            layout          = template.layout,
+        },
+        margins = args.style.padding,
+        widget  = wibox.container.margin,
     }
 
     gTable.crush(w, M, true)

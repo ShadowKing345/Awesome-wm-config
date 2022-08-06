@@ -51,51 +51,48 @@ end
 function M.default_template(style)
     return {
         layout = {
-            layout = wibox.layout.fixed.horizontal
+            spacing = style.padding,
+            layout  = wibox.layout.fixed.horizontal
         },
         template = {
             {
-                {
 
-                    nil,
+                nil,
+                {
                     {
                         {
                             {
                                 {
-                                    {
-                                        id     = "icon_role",
-                                        widget = wibox.widget.imagebox,
-                                    },
-                                    margins = 2,
-                                    widget  = wibox.container.margin,
+                                    id     = "icon_role",
+                                    widget = wibox.widget.imagebox,
                                 },
-                                {
-                                    id           = "text_role",
-                                    widget       = wibox.widget.textbox,
-                                    forced_width = beautiful["tasklist_width"] or 100,
-                                },
-                                layout = wibox.layout.fixed.horizontal,
+                                margins = 2,
+                                widget  = wibox.container.margin,
                             },
-                            left   = 2,
-                            right  = 8,
-                            widget = wibox.container.margin
+                            {
+                                id           = "text_role",
+                                widget       = wibox.widget.textbox,
+                                forced_width = beautiful["tasklist_width"] or 100,
+                            },
+                            layout = wibox.layout.fixed.horizontal,
                         },
-                        widget = wibox.container.background,
+                        left   = 2,
+                        right  = 8,
+                        widget = wibox.container.margin
                     },
-                    {
-                        id = "background_role",
-                        widget = wibox.container.background,
-                        forced_height = 3,
-                    },
-                    layout = wibox.layout.align.vertical,
+                    widget = wibox.container.background,
                 },
-                id     = "bg",
-                shape  = style.shape,
-                bg     = style.bg.normal,
-                widget = wibox.container.background,
+                {
+                    id = "background_role",
+                    widget = wibox.container.background,
+                    forced_height = 3,
+                },
+                layout = wibox.layout.align.vertical,
             },
-            margins         = style.padding,
-            widget          = wibox.container.margin,
+            id              = "bg",
+            shape           = style.shape,
+            bg              = style.bg.normal,
+            widget          = wibox.container.background,
             create_callback = function(self)
                 local bg = self:get_children_by_id "bg"[1]
 
@@ -148,12 +145,16 @@ function M:new(args)
     args.style = gTable.merge(M.default_style(), args.style or {})
     local template = self.default_template(args.style)
 
-    local w = awful.widget.tasklist {
-        screen = args.screen,
-        filter = awful.widget.tasklist.filter.currenttags,
-        buttons = args.buttons,
-        layout = template.layout,
-        widget_template = template.template
+    local w = wibox.widget {
+        awful.widget.tasklist {
+            screen = args.screen,
+            filter = awful.widget.tasklist.filter.currenttags,
+            buttons = args.buttons,
+            layout = template.layout,
+            widget_template = template.template
+        },
+        margins = args.style.padding,
+        widget  = wibox.container.margin,
     }
     table.insert(self.widgets, w)
 
