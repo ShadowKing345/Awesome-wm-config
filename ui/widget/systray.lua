@@ -5,11 +5,12 @@
 --]]
 --------------------------------------------------
 local setmetatable = setmetatable
-local unpack       = unpack or table.unpack
+local unpack       = table.unpack
 
 local awful     = require "awful"
 local beautiful = require "beautiful"
 local gTable    = require "gears.table"
+local gShape    = require "gears.shape"
 local wibox     = require "wibox"
 
 --------------------------------------------------
@@ -25,20 +26,24 @@ local M = {
 ---@return SysTrayStyle
 function M.default_style()
     return {
-        icon            = beautiful["systray_icon"],
-        icon_stylesheet = beautiful["systray_icon_stylesheet"],
-        bg              = {
-            normal = beautiful["systray_bg_normal"] or beautiful.bg_normal,
-            hover  = beautiful["systray_bg_hover"] or beautiful.bg_focus,
-            active = beautiful["systray_bg_active"] or beautiful.bg_urgent,
+        widget = {
+            icon            = beautiful["systray_widget_icon"],
+            icon_stylesheet = beautiful["systray_widget_icon_stylesheet"],
+            padding         = beautiful["systray_widget_padding"] or 3,
+            margins         = beautiful["systray_widget_margins"] or 3,
+            shape           = beautiful["systray_widget_shape"] or gShape.rectangle,
+            bg              = {
+                normal = beautiful["systray_widget_bg_normal"] or beautiful.bg_normal,
+                hover  = beautiful["systray_widget_bg_hover"] or beautiful.bg_focus,
+                active = beautiful["systray_widget_bg_active"] or beautiful.bg_urgent,
+            },
+            fg              = {
+                normal = beautiful["systray_widget_fg_normal"] or beautiful.fg_normal,
+                hover  = beautiful["systray_widget_fg_hover"] or beautiful.fg_focus,
+                active = beautiful["systray_widget_fg_active"] or beautiful.fg_urgent,
+            },
         },
-        fg              = {
-            normal = beautiful["systray_fg_normal"] or beautiful.fg_normal,
-            hover  = beautiful["systray_fg_hover"] or beautiful.fg_focus,
-            active = beautiful["systray_fg_active"] or beautiful.fg_urgent,
-        },
-        padding         = beautiful["systray_padding"] or 3,
-        popup           = {
+        popup  = {
             icon_size = beautiful["systray_popup_icon_size"] or 30,
 
             bg                = beautiful["systray_popup_bg"] or beautiful.bg_normal,
@@ -158,43 +163,43 @@ function M:new(args)
     if not self.style then
         self.style = gTable.merge(self.default_style(), args.style or {})
     end
+    local sWidget = self.style.widget
 
     if not self.popup then
         self:init(args)
     end
 
-    local w = wibox.widget {
+    local button = wibox.widget {
         {
             {
-                image      = self.style.icon,
-                stylesheet = self.style.icon_stylesheet,
+                image      = sWidget.icon,
+                stylesheet = sWidget.icon_stylesheet,
                 widget     = wibox.widget.imagebox,
             },
-            margins = self.style.padding,
+            margins = sWidget.padding,
             widget  = wibox.container.margin,
         },
-        bg     = self.style.bg.normal,
-        fg     = self.style.fg.normal,
+        id     = "bg",
+        bg     = sWidget.bg.normal,
+        fg     = sWidget.fg.normal,
+        shape  = sWidget.shape,
         widget = wibox.container.background,
     }
 
-    w._private.style = {
-        bg = self.style.bg,
-        fg = self.style.fg,
+    local w = wibox.widget {
+        button,
+        margins = sWidget.margins,
+        widget  = wibox.container.margin,
     }
 
-    function w:change_state(state)
-        self.bg = self._private.style.bg[state]
-        self.fg = self._private.style.fg[state]
-    end
-
-    w:buttons(gTable.join(
+    button:buttons(gTable.join(
         unpack(args.buttons or {}),
-        awful.button({}, 1, function() w:change_state "active" end, function() w:change_state "hover" end),
+        awful.button({}, 1, function() button.bg = sWidget.bg.active end,
+            function() button.bg = sWidget.bg.hover end),
         awful.button({}, 1, function() self:toggle { next_to = w } end)
     ))
-    w:connect_signal("mouse::enter", function() w:change_state "hover" end)
-    w:connect_signal("mouse::leave", function() w:change_state "normal" end)
+    button:connect_signal("mouse::enter", function() button.bg = sWidget.bg.hover end)
+    button:connect_signal("mouse::leave", function() button.bg = sWidget.bg.normal end)
 
     return w
 end
@@ -210,12 +215,17 @@ return setmetatable(M, M.mt)
 ---@field style? SysTrayStyle #Style used.
 
 ---@class SysTrayStyle #The style for the system tray widget.
----@field icon string #The icon to be used int the widget.
----@field icon_stylesheet string #Style for the icon.
+---@field popup SysTrayPopupStyle #Style for the popup wibox.
+---@field widget SysTrayWidgetStyle #Style for the widget.
+
+---@class SysTrayWidgetStyle #The style for the widget.
+---@field padding number | Cardinal #Padding for the icon.
+---@field margins number | Cardinal #Margins for the widget.
+---@field icon string #File path for the icon.
+---@field icon_stylesheet string #Style sheet for the icon.
+---@field shape function #Shape funciton.
 ---@field bg ButtonStyle #The button colors for the background.
 ---@field fg ButtonStyle #The button colors for the foreground.
----@field padding number|Cardinal #The padding for the button.
----@field popup SysTrayPopupStyle #Style for the popup wibox.
 
 ---@class SysTrayPopupStyle #The style for the popup wibox.
 ---@field icon_size number #The size of a systray icon.
