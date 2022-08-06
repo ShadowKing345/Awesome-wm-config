@@ -95,14 +95,6 @@ function M:new(args)
             widget = wibox.container.background,
         }
 
-        button:buttons(gTable.join(
-            table.unpack(args.buttons or {}),
-            awful.button({}, 1, function() button.bg = style.bg.active end,
-                function() button.bg = style.bg.hover end)
-        ))
-        button:connect_signal("mouse::enter", function() button.bg = style.bg.hover end)
-        button:connect_signal("mouse::leave", function() button.bg = style.bg.normal end)
-
         w = wibox.widget {
             button,
             margins = style.padding,
@@ -111,6 +103,24 @@ function M:new(args)
 
         w._layoutboxToolTip = tooltip { object = { w }, delay_show = 1 }
         w._button           = button
+
+        if args.buttons then
+            for _, b in ipairs(args.buttons) do
+                button:add_button(b)
+            end
+        end
+
+        button:buttons(gTable.join(
+            awful.button({}, 1,
+                function()
+                    if args.layoutlist then args.layoutlist:toggle() end
+                    button.bg = style.bg.active
+                end,
+                function() button.bg = style.bg.hover end
+            )
+        ))
+        button:connect_signal("mouse::enter", function() button.bg = style.bg.hover end)
+        button:connect_signal("mouse::leave", function() button.bg = style.bg.normal end)
 
         gTable.crush(w, args)
 
