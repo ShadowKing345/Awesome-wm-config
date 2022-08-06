@@ -11,13 +11,14 @@ local beautiful = require "beautiful"
 local dpi       = require "beautiful.xresources".apply_dpi
 local wibox     = require "wibox"
 
-local desktop  = require "ui.desktop"
-local mainMenu = require "ui.widget.mainMenu"
-local taglist  = require "ui.widget.taglist"
-local tasklist = require "ui.widget.tasklist"
-local systray  = require "ui.widget.systray"
-local wibar    = require "ui.widget.wibar"
-local utils    = require "utils"
+local desktop   = require "ui.desktop"
+local layoutbox = require "ui.widget.layoutbox"
+local mainMenu  = require "ui.widget.mainMenu"
+local taglist   = require "ui.widget.taglist"
+local tasklist  = require "ui.widget.tasklist"
+local systray   = require "ui.widget.systray"
+local wibar     = require "ui.widget.wibar"
+local utils     = require "utils"
 
 --------------------------------------------------
 ---@class ScreenConfig
@@ -38,7 +39,7 @@ local M = {
 function M:connectScreen(s)
     awful.tag(self.tags or {}, s, awful.layout.layouts[1])
 
-    s.layoutbox = awful.widget.layoutbox(s)
+    s.layoutbox = layoutbox { screen = s }
     s.taglist   = taglist { buttons = self.taglistButtons, screen = s, }
     s.tasklist  = tasklist { buttons = self.tasklistButtons, screen = s, }
     s.systray   = systray {}
