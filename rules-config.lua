@@ -22,8 +22,8 @@ rules.floating_any = {
 
 function rules:init(args)
     args = args or {}
-    self.base_properties.keys = args.hotkeys.keys.client
-    self.base_properties.buttons = args.hotkeys.mouse.client
+    --self.base_properties.keys = args.hotkeys.keys.client
+    --self.base_properties.buttons = args.hotkeys.mouse.client
 
     -- Build rules
     self.rules = {
@@ -35,6 +35,8 @@ function rules:init(args)
         -- attempt to make the "splash screen" for Jetbrain IDE float. Shockingly worked.
         { rule = { name = "win0" }, properties = { floating = true } },
     }
+
+    self.rules.client = {}
 
     awful.rules.rules = rules.rules
 end

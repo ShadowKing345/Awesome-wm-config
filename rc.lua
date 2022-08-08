@@ -30,14 +30,11 @@ require "ui.screen-config" (env)
 
 -- Keybindings
 --------------------------------------------------
-local keybindings = require "keybindings" (env)
-root.keys(keybindings.keys.global)
-root.buttons(keybindings.mouse.global)
-
+require "keybindings" (env)
 
 -- Everything else
 --------------------------------------------------
-require "rules-config":init { hotkeys = { keys = keybindings.keys, mouse = keybindings.mouse } }
+require "rules-config":init {}
 require "service.pulseMixer" {}
 require "signals".init(env)
 
