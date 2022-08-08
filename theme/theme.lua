@@ -146,6 +146,21 @@ local config = {
         shape      = function(ctx, width, height) gears.shape.rounded_rect(ctx, width, height, dpi(3)) end,
         stylesheet = (".icon {stroke: %s;}"):format(theme.main),
     },
+    layoutlist      = {
+        selection_notch_tempate = {},
+        selection               = function(selected) return selected and theme.main or theme.bg.minimize end,
+        stylesheet              = (".icon {stroke: %s;}"):format(theme.main),
+        bg                      = {
+            normal = theme.bg.button.normal,
+            hover  = theme.bg.button.hover,
+            active = theme.bg.button.active,
+        },
+        fg                      = {
+            normal = theme.fg.button.normal,
+            hover  = theme.fg.button.hover,
+            active = theme.fg.button.active,
+        },
+    },
     layout          = {
         floating         = default_theme_path .. "default/layouts/floatingw.png",
         binaryTreeLayout = gfs.get_xdg_config_home() .. "/awesome/binary-tree-layout/icon.svg",
