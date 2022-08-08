@@ -38,7 +38,7 @@ local M = {
 function M:connectScreen(s)
     awful.tag(self.tags or {}, s, awful.layout.layouts[1])
 
-    s.layoutbox = layoutbox { screen = s, }
+    s.layoutbox = layoutbox { screen = s, enableList = true }
     s.taglist   = taglist { buttons = self.taglistButtons, screen = s, }
     s.tasklist  = tasklist { buttons = self.tasklistButtons, screen = s, }
     s.systray   = systray {}
