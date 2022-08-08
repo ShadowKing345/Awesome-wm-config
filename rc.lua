@@ -20,7 +20,7 @@ require "error-config"
 -- Environment variables setup.
 --------------------------------------------------
 local env = require "env-config" ()
-awful.layout.layouts = env.layouts
+awful.layout.append_default_layouts(env.layouts)
 
 
 -- Screen configuration
