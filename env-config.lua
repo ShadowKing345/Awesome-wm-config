@@ -1,16 +1,17 @@
---------------------------------------------------
---
---      Environment configuration setup.
---
+--[[
+
+        Environment configuration setup.
+
+]]
 --------------------------------------------------
 local setmetatable = setmetatable
 
-local awful = require "awful"
+local awful     = require "awful"
 local beautiful = require "beautiful"
-local gears = require "gears"
 
 local binaryTreeLayout = require "binary-tree-layout"
-local keybindingUtils = require "keybindings.utils"
+local keybindingUtils  = require "keybindings.utils"
+local theme            = require "theme"
 
 --------------------------------------------------
 ---@class EnvConfig
@@ -31,15 +32,13 @@ function env:new()
 
     self.modKey = keybindingUtils.keys.super
 
-    self.themePath = gears.filesystem.get_xdg_config_home() .. "awesome/theme/theme.lua"
-
     self.tags = { "1", "2", "3", "4", "5", "6" }
     self.layouts = {
         binaryTreeLayout {},
         awful.layout.suit.floating,
     }
 
-    beautiful.init(env.themePath)
+    beautiful.init(theme())
 
     return self
 end
