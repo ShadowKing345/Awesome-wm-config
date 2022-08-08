@@ -58,7 +58,7 @@ function M:new(style)
                 forced_width  = style.picture.width,
                 forced_height = style.picture.height,
                 shape         = style.picture.shape,
-                widget        = wibox.widget.background,
+                widget        = wibox.container.background,
             },
             {
                 markup = style.name,
