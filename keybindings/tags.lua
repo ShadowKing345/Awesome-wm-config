@@ -17,13 +17,13 @@ function M.keyboard(env)
         {
             modifiers   = { env.modKey },
             key         = "Left",
-            callback    = awful.tag.viewprev,
+            press       = awful.tag.viewprev,
             description = "View previous",
         },
         {
             modifiers   = { env.modKey },
             key         = "Right",
-            callback    = awful.tag.viewnext,
+            press       = awful.tag.viewnext,
             description = "View next",
         },
     }
@@ -33,7 +33,7 @@ function M.keyboard(env)
             {
                 modifiers   = { env.modKey },
                 key         = ("#" .. i + 9),
-                callback    = function()
+                press       = function()
                     local tag = awful.screen.focused().tags[i]
                     if tag then
                         tag:view_only()
@@ -46,7 +46,7 @@ function M.keyboard(env)
             {
                 modifiers   = { env.modKey, utils.keys.clt },
                 key         = ("#" .. i + 9),
-                callback    = function()
+                press       = function()
                     local tag = awful.screen.focused().tags[i]
                     if tag then
                         awful.tag.viewtoggle(tag)
@@ -59,7 +59,7 @@ function M.keyboard(env)
             {
                 modifiers   = { env.modKey, utils.keys.shift },
                 key         = ("#" .. i + 9),
-                callback    = function()
+                press       = function()
                     if client.focus then
                         local tag = client.focus.screen.tags[i]
                         if tag then client.focus:move_to_tag(tag) end
@@ -72,7 +72,7 @@ function M.keyboard(env)
             {
                 modifiers   = { env.modKey, utils.keys.clt, utils.keys.shift },
                 key         = ("#" .. i + 9),
-                callback    = function()
+                press       = function()
                     if client.focus then
                         local tag = client.focus.screen.tags[i]
                         if tag then client.focus:toggle_tag(tag) end

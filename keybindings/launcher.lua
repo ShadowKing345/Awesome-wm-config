@@ -17,17 +17,13 @@ function M.keyboard(env)
         {
             modifiers   = { env.modKey },
             key         = "Return",
-            callback    = function()
-                awful.spawn(env.terminal)
-            end,
+            press       = function() awful.spawn(env.terminal) end,
             description = "Opens a terminal",
         },
         {
             modifiers   = { env.modKey },
             key         = "p",
-            callback    = function()
-                menubar.show()
-            end,
+            press       = function() menubar.show() end,
             description = "Opens application launcher",
         },
     }

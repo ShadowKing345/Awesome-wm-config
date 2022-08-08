@@ -4,12 +4,11 @@
 
 --]]
 --------------------------------------------------
-local awful  = require "awful"
-local gTJoin = require "gears.table".join
+local awful = require "awful"
 
 local utils   = require "utils"
-local aKey    = utils.aKey
 local aButton = utils.aButton
+
 ---@type KeybindingModule[]
 local modules = {
     audio    = require "keybindings.audio",
@@ -28,79 +27,80 @@ local modules = {
 local M = { mt = {} }
 
 ---@param env EnvConfig #The environment configurations.
----@return BindingConfig
 function M:new(env)
     env = env or {}
 
-    self.keys = {
-        global = {},
-        client = {},
-    }
+    self.global = { keyboard = {}, mouse = {
+        aButton { modifiers = {}, button = 4, callback = awful.tag.viewnext },
+        aButton { modifiers = {}, button = 5, callback = awful.tag.viewprev }
+    } }
+    self.client = { keyboard = {}, mouse = {
+        aButton {
+            modifiers = {},
+            button    = 1,
+            callback  = function(c) c:activate { context = "mouse_click" } end,
+        },
+        aButton {
+            modifiers = { env.modKey },
+            button    = 1,
+            callback  = function(c) c:activate { context = "mouse_click", action = "mouse_move", } end,
+        },
+        aButton {
+            modifiers = {},
+            button    = 3,
+            callback  = function(c) c:activate { context = "mouse_click" } end,
+        },
+        aButton {
+            modifiers = { env.modKey },
+            button    = 3,
+            callback  = function(c) c:activate { context = "mouse_click", action = "mouse_resize", } end,
+        }
+    } }
 
-    for name, module in pairs(modules) do
-        if module.keyboard then
-            local keys = {}
-            for _, key in ipairs(module.keyboard(env)) do
-                table.insert(keys, aKey {
-                    modifiers   = key.modifiers,
-                    key         = key.key,
-                    callback    = key.callback,
-                    description = { description = key.description, group = module.groupName or name },
-                })
+    for name, m in pairs(modules) do
+        if m.keyboard then
+            ---@type Keybinding[]
+            local keybindings = m.keyboard(env)
+            for _, key in ipairs(keybindings) do
+                table.insert(self.global.keyboard,
+                    awful.key(
+                        key.modifiers,
+                        key.key,
+                        key.press or function() end,
+                        key.release or function() end,
+                        { description = key.description, group = name }
+                    )
+                )
             end
-            self.keys.global = gTJoin(self.keys.global, table.unpack(keys))
         end
 
-        if module.client then
-            local keys = {}
-            for _, key in ipairs(module.client(env)) do
-                table.insert(keys, aKey {
-                    modifiers   = key.modifiers,
-                    key         = key.key,
-                    callback    = key.callback,
-                    description = { description = key.description, group = module.groupName or name },
-                })
+        if m.client then
+            ---@type Keybinding[]
+            local keybindings = m.client(env)
+            for _, key in ipairs(keybindings) do
+                table.insert(self.client.keyboard,
+                    awful.key(
+                        key.modifiers,
+                        key.key,
+                        key.press or function() end,
+                        key.release or function() end,
+                        { description = key.description, group = name }
+                    )
+                )
             end
-            self.keys.client = gTJoin(self.keys.client, table.unpack(keys))
         end
     end
 
-    self.mouse = {
-        global = gTJoin(
-            aButton { modifiers = {}, button = 4, callback = awful.tag.viewnext },
-            aButton { modifiers = {}, button = 5, callback = awful.tag.viewprev }
-        ),
-        client = gTJoin(
-            aButton {
-                modifiers = {},
-                button    = 1,
-                callback  = function(c) c:emit_signal("request::activate", "mouse_click", { raise = true }) end,
-            },
-            aButton {
-                modifiers = { env.modKey },
-                button    = 1,
-                callback  = function(c)
-                    c:emit_signal("request::activate", "mouse_click", { raise = true })
-                    awful.mouse.client.move(c)
-                end,
-            },
-            aButton {
-                modifiers = {},
-                button    = 3,
-                callback  = function(c) c:emit_signal("request::activate", "mouse_click", { raise = true }) end,
-            },
-            aButton {
-                modifiers = { env.modKey },
-                button    = 3,
-                callback  = function(c)
-                    c:emit_signal("request::activate", "mouse_click", { raise = true })
-                    awful.mouse.client.resize(c)
-                end,
-            }
-        ),
-    }
+    awful.keyboard.append_global_keybindings(self.global.keyboard)
+    awful.mouse.append_global_mousebindings(self.global.mouse)
 
-    return self
+    client.connect_signal("request::default_keybindings", function()
+        awful.keyboard.append_client_keybindings(self.client.keyboard)
+    end)
+
+    client.connect_signal("request::default_keybindings", function()
+        awful.mouse.append_client_mousebindings(self.client.mouse)
+    end)
 end
 
 --------------------------------------------------
@@ -113,11 +113,12 @@ return setmetatable(M, M.mt)
 
 ---@class KeybindingModule #Class definition for a keybinding module.
 ---@field keyboard? function(env:EnvConfig):Keybinding[] #Function that generates the keyboard bindings.
----@filed client? function(env:EnvConfig):Keybinding[] #Function that generates the client bindings.
+---@field client? function(env:EnvConfig):Keybinding[] #Function that generates the keyboard bindings.
 ---@field groupName string #Name of the group.
 
 ---@class Keybinding #Class defining a keybinding.
 ---@field modifiers string[] #Collection of all the modifiers to be pressed.
 ---@field key string #The key to be pressed.
----@field callout function #Function to be called when the key is pressed.
+---@field press function #Function to be called when the key is pressed.
+---@field release function #Function to be called when the key is pressed.
 ---@field description string #The description of what the key does.

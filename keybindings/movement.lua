@@ -68,25 +68,25 @@ function M.keyboard(env)
         {
             modifiers   = { env.modKey },
             key         = "l",
-            callback    = focusSwitchByDir "right",
+            press       = focusSwitchByDir "right",
             description = "Go to rigth client.",
         },
         {
             modifiers   = { env.modKey },
             key         = "h",
-            callback    = focusSwitchByDir "left",
+            press       = focusSwitchByDir "left",
             description = "Go to left client."
         },
         {
             modifiers   = { env.modKey },
             key         = "k",
-            callback    = focusSwitchByDir "up",
+            press       = focusSwitchByDir "up",
             description = "Go to upper client."
         },
         {
             modifiers   = { env.modKey },
             key         = "j",
-            callback    = focusSwitchByDir "down",
+            press       = focusSwitchByDir "down",
             description = "Go to lower client."
         },
     }
@@ -97,50 +97,50 @@ function M.client(env)
         {
             modifiers   = { env.modKey, utils.keys.shift },
             key         = "h",
-            callback    = function(c) moveFloatingClient(c, "left") end,
+            press       = function(c) moveFloatingClient(c, "left") end,
             description = "Moves client to the left.",
         },
         {
             modifiers   = { env.modKey, utils.keys.shift },
             key         = "j",
-            callback    = function(c) moveFloatingClient(c, "down") end,
+            press       = function(c) moveFloatingClient(c, "down") end,
             description = "Moves client to the down.",
         },
         {
             modifiers   = { env.modKey, utils.keys.shift },
             key         = "k",
-            callback    = function(c) moveFloatingClient(c, "up") end,
+            press       = function(c) moveFloatingClient(c, "up") end,
             description = "Moves client to the up.",
         },
         {
             modifiers   = { env.modKey, utils.keys.shift },
             key         = "l",
-            callback    = function(c) moveFloatingClient(c, "right") end,
+            press       = function(c) moveFloatingClient(c, "right") end,
             description = "Moves client to the right.",
         },
 
         {
             modifiers   = { env.modKey, utils.keys.shift, utils.keys.clt },
             key         = "l",
-            callback    = function(c) clientResize(c, "width", false) end,
+            press       = function(c) clientResize(c, "width", false) end,
             description = "Grows client width.",
         },
         {
             modifiers   = { env.modKey, utils.keys.shift, utils.keys.clt },
             key         = "h",
-            callback    = function(c) clientResize(c, "width", true) end,
+            press       = function(c) clientResize(c, "width", true) end,
             description = "Shrinks client width.",
         },
         {
             modifiers   = { env.modKey, utils.keys.shift, utils.keys.clt },
             key         = "j",
-            callback    = function(c) clientResize(c, "height", false) end,
+            press       = function(c) clientResize(c, "height", false) end,
             description = "Grows client height.",
         },
         {
             modifiers   = { env.modKey, utils.keys.shift, utils.keys.clt },
             key         = "k",
-            callback    = function(c) clientResize(c, "height", true) end,
+            press       = function(c) clientResize(c, "height", true) end,
             description = "Shrinks client height.",
         },
     }

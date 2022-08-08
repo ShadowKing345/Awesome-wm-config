@@ -17,19 +17,19 @@ function M.keyboard(env)
         {
             modifiers   = { env.modKey, utils.keys.clt },
             key         = "r",
-            callback    = awesome.restart,
+            press       = awesome.restart,
             description = "Reload Awesome",
         },
         {
             modifiers   = { env.modKey, utils.keys.shift },
             key         = "q",
-            callback    = awesome.quit,
+            press       = awesome.quit,
             description = "Quit Awesome",
         },
         {
             modifiers   = { env.modKey },
             key         = "s",
-            callback    = hotkeysPopup.show_help,
+            press       = hotkeysPopup.show_help,
             description = "Show help",
         },
     }

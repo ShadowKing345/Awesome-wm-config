@@ -15,19 +15,19 @@ function M.keyboard(_)
         {
             modifiers   = {},
             key         = "XF86AudioMute",
-            callback    = function() pulseMixer:toggleMute() end,
+            press       = function() pulseMixer:toggleMute() end,
             description = "Toggle Mute",
         },
         {
             modifiers   = {},
             key         = "XF86AudioRaiseVolume",
-            callback    = function() pulseMixer:changeVolume(1) end,
+            press       = function() pulseMixer:changeVolume(1) end,
             description = "Raise Volume",
         },
         {
             modifiers   = {},
             key         = "XF86AudioLowerVolume",
-            callback    = function() pulseMixer:changeVolume(-1) end,
+            press       = function() pulseMixer:changeVolume(-1) end,
             description = "Lower Volume",
         },
     }

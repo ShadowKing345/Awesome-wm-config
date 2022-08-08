@@ -16,7 +16,7 @@ function M.keyboard(env)
         {
             modifiers = { env.modKey },
             key = "v",
-            callback = function()
+            press = function()
                 local layout = utils.getCurrentLayout()
                 if layout and layout.name == "binaryTreeLayout" then
                     layout:toggle()
@@ -30,9 +30,9 @@ end
 function M.client(env)
     return {
         {
-            modifiers = { env.modKey, utils.keys.shift },
-            key = "v",
-            callback = function(c)
+            modifiers   = { env.modKey, utils.keys.shift },
+            key         = "v",
+            press       = function(c)
                 local layout = utils.getCurrentLayout(c)
                 if layout and layout.name == "binaryTreeLayout" then
                     layout:changeDirection(c)
