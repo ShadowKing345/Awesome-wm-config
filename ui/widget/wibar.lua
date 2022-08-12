@@ -43,6 +43,7 @@ function M:new(args)
             },
             args.tasklist,
             {
+                args.battery,
                 args.clock,
                 separator,
                 args.systray,
@@ -64,6 +65,7 @@ return setmetatable(M, M.mt)
 
 --------------------------------------------------
 ---@class WibarArgs
+---@field battery any #The battery widget.
 ---@field screen any #Screen object.
 ---@field taglist table #Taglist widget.
 ---@field tasklist table #Tasklist widget.

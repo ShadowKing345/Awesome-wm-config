@@ -12,6 +12,7 @@ local dpi       = require "beautiful.xresources".apply_dpi
 local wibox     = require "wibox"
 
 local desktop   = require "ui.desktop"
+local battery   = require "ui.widget.battery"
 local layoutbox = require "ui.widget.layoutbox"
 local mainMenu  = require "ui.widget.mainMenu"
 local taglist   = require "ui.widget.taglist"
@@ -45,6 +46,7 @@ function M:connectScreen(s)
 
     s.wibox = wibar {
         screen    = s,
+        battery   = self.battery.widget,
         taglist   = s.taglist,
         tasklist  = s.tasklist,
         launcher  = self.mainMenu:createLauncher(),
@@ -80,6 +82,9 @@ function M:new(env)
     self.tasklistButtons = tasklist.default_buttons()
 
     self.tags = env.tags or {}
+
+    self.battery = battery()
+    self.battery:startTimer()
 
 
     beautiful.wibar_height = beautiful.wibar_height + (beautiful["wibar_border_width_top"] or dpi(1))
