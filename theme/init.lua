@@ -16,6 +16,7 @@ local extensions = {
     layout   = require "theme.layout",
     mainmenu = require "theme.mainMenu",
     wibar    = require "theme.wibar",
+    widget   = require "theme.widget",
 }
 --------------------------------------------------
 local M = { mt = {} }
