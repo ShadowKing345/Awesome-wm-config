@@ -19,6 +19,7 @@ local taglist   = require "ui.widget.taglist"
 local tasklist  = require "ui.widget.tasklist"
 local systray   = require "ui.widget.systray"
 local wibar     = require "ui.widget.wibar"
+local textClock = require "ui.widget.textclock"
 
 --------------------------------------------------
 ---@class ScreenConfig
@@ -76,7 +77,7 @@ function M:new(env)
     self.env = env
 
     self.mainMenu  = mainMenu(env)
-    self.textClock = wibox.widget.textclock()
+    self.textClock = textClock()
 
     self.taglistButtons  = taglist.default_buttons(env)
     self.tasklistButtons = tasklist.default_buttons()

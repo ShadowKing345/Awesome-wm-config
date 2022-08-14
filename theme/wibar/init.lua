@@ -83,6 +83,22 @@ function M:call(config)
         shape           = shape,
     }
 
+    config.textclock = {
+        padding = dpi(5),
+        margin  = dpi(5),
+        shape   = shape,
+        bg      = {
+            normal = colors.theme.bg.button.normal,
+            hover  = colors.theme.bg.button.hover,
+            active = colors.theme.bg.button.active,
+        },
+        fg      = {
+            normal = colors.theme.fg.button.normal,
+            hover  = colors.theme.fg.button.hover,
+            active = colors.theme.fg.button.active,
+        },
+    }
+
     config.wibar = {
         height   = dpi(40),
         position = "bottom",
