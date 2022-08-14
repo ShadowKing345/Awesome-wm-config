@@ -9,6 +9,7 @@ local aSpawn    = require "awful.spawn"
 local gTable    = require "gears.table"
 local gShape    = require "gears.shape"
 local gTimer    = require "gears.timer"
+local gPCall    = require "gears.protected_call"
 local beautiful = require "beautiful"
 local wibox     = require "wibox"
 
@@ -33,11 +34,14 @@ function M.default_style(style)
 
     local result = {
         icons        = {
-            stylesheet  = beautiful[n .. "icons_stylesheet"],
-            full        = beautiful[n .. "icons_full"],
-            charging    = beautiful[n .. "icons_charging"],
-            discharging = beautiful[n .. "icons_discharging"],
-            unknown     = beautiful[n .. "icons_unknown"],
+            stylesheet    = beautiful[n .. "icons_stylesheet"],
+            batteryStates = {
+                full        = beautiful[n .. "icons_batery_states_full"],
+                charging    = beautiful[n .. "icons_batery_states_charging"],
+                discharging = beautiful[n .. "icons_batery_states_discharging"],
+                unknown     = beautiful[n .. "icons_batery_states_unkown"],
+            },
+            percentages   = beautiful[n .. "icons_percentages"] or {},
         },
         spacing      = beautiful[n .. "spacing_widget"] or wibox.widget {
             forced_width = 5,
@@ -70,9 +74,17 @@ function M:init(style)
         {
             {
                 {
-                    id         = "icon",
-                    stylesheet = self.style.icons.stylesheet,
-                    widget     = wibox.widget.imagebox,
+                    {
+                        id         = "icon",
+                        stylesheet = self.style.icons.stylesheet,
+                        widget     = wibox.widget.imagebox,
+                    },
+                    {
+                        id         = "overlay",
+                        stylesheet = self.style.icons.stylesheet,
+                        widget     = wibox.widget.imagebox,
+                    },
+                    layout = wibox.layout.stack,
                 },
                 self.style.spacing,
                 {
@@ -132,7 +144,11 @@ function M:init(style)
             if t == "string" then
                 aSpawn.easy_async_with_shell(self.style.statusScript, function(stdout, _, _, exitCode)
                     if exitCode ~= 0 then
-                        return
+                        return self:stopTimer(true)
+                    end
+
+                    if #utils.trim(stdout) == 0 then
+                        return self:stopTimer(true)
                     end
 
                     local results = utils.splitString(utils.trim(stdout), ",")
@@ -144,9 +160,11 @@ function M:init(style)
                     }
                 end)
             elseif t == "function" then
-                self.style.statusScript(function(obj) M:setStatus(obj) end)
+                if not gPCall(function() self.style.statusScript(function(obj) M:setStatus(obj) end) end) then
+                    return self:stopTimer(true)
+                end
             else
-                self:stopTimer()
+                self:stopTimer(true)
             end
         end,
     }
@@ -155,11 +173,6 @@ end
 function M:update()
     if not self.widget then
         return
-    end
-
-    local icon = self.widget._button:get_children_by_id "icon"[1]
-    if icon then
-        icon.image = self.style.icons[self.status.state]
     end
 
     local text = self.widget._button:get_children_by_id "text"[1]
@@ -173,18 +186,44 @@ function M:update()
     end
 end
 
-function M:startTimer()
+function M:startTimer(show)
     if not self.status.timer or self.status.timer.started then
         return
     end
+
+    if show then
+        self:showWidget()
+    end
+
     self.status.timer:start()
 end
 
-function M:stopTimer()
+function M:stopTimer(hide)
     if not self.status.timer or not self.status.timer.started then
         return
     end
+
+    if hide then
+        self:hideWidget()
+    end
+
     self.status.timer:stop()
+end
+
+function M:hideWidget()
+    if not self.widget then
+        return
+    end
+
+    self.widget.visible = false
+end
+
+function M:showWidget()
+    if not self.widget then
+        return
+    end
+
+    self.widget.visible = true
 end
 
 function M:setStatus(obj)
@@ -198,6 +237,8 @@ function M:setStatus(obj)
     status.additionalInfo = (obj.additionalInfo and type(obj.additionalInfo) == "string") and obj.additionalInfo or nil
     status.state = (obj.state and type(obj.state) == "string" and gTable.hasitem(self.validStates, obj.state) ~= nil)
         and obj.state or "unknown"
+
+    self.status.valid = true
     M:update()
 end
 
