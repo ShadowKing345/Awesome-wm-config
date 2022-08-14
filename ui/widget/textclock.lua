@@ -56,22 +56,22 @@ function M:new(args)
     button:buttons(gTable.join(
         awful.button({}, 1,
             function()
-                button.bg = self.style.bg.active
-                button.fg = self.style.fg.active
+                button.bg = style.bg.active
+                button.fg = style.fg.active
             end,
             function()
-                button.bg = self.style.bg.hover
-                button.fg = self.style.fg.hover
+                button.bg = style.bg.hover
+                button.fg = style.fg.hover
             end)
     ))
 
     button:connect_signal("mouse::enter", function()
-        button.bg = self.style.bg.hover
-        button.fg = self.style.fg.hover
+        button.bg = style.bg.hover
+        button.fg = style.fg.hover
     end)
     button:connect_signal("mouse::leave", function()
-        button.bg = self.style.bg.normal
-        button.fg = self.style.fg.normal
+        button.bg = style.bg.normal
+        button.fg = style.fg.normal
     end)
 
     gTable.crush(w, self, false)
