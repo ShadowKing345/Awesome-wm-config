@@ -1,6 +1,7 @@
 --[[
 
     Main Menu widget.
+    TODO: Needs to be redone (its looks terrible.)
 
 --]]
 --------------------------------------------------
@@ -76,13 +77,12 @@ function M.default_style()
     }
 end
 
-function M:set_coords(s, coords)
-    local workarea = s.workarea
-
-    if coords == nil then coords = capi.mouse.coords() end
-
-    self.widget.x = utils.clamp(coords.x, workarea.x, workarea.x + workarea.width - self.widget.width)
-    self.widget.y = utils.clamp(coords.y, workarea.y, workarea.y + workarea.height - self.widget.height)
+function M:setCoords(geometry)
+    if geometry then
+        awful.placement.next_to(self.widget, { geometry = geometry })
+    else
+        awful.placement.under_mouse(self.widget)
+    end
 end
 
 function M:genSideCategories(categories)
@@ -160,21 +160,14 @@ function M:createLauncher(args)
         },
         margins = style.padding,
         widget  = wibox.container.margin,
-        buttons = {
-            utils.aButton {
-                modifiers = {},
-                button = 1,
-                callback = function()
-                    local geometry = mouse.screen.geometry
-                    geometry.y = geometry.height
-                    self:toggle {
-                        coords = geometry,
-                        screen = mouse.screen
-                    }
-                end,
-            }
-        }
     }
+
+    self.launcher:connect_signal("button::press",
+        function(_, _, _, _, _, geometry)
+            self:toggle { geometry = geometry }
+        end
+    )
+
     return self.launcher
 end
 
@@ -376,12 +369,10 @@ end
 
 function M:show(args)
     args = args or {}
-    local coords = args.coords or nil
-    local s = args.screen or capi.mouse.screen
 
     self:resetApplicationsWidget()
 
-    self:set_coords(s, coords)
+    self:setCoords(args.geometry)
     self.widget.visible = true
 end
 
