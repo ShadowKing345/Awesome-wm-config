@@ -83,11 +83,11 @@ function M:init(args)
         }
     }
 
-    self.systray:connect_signal("widget::redraw_needed", function() M:update_popup_size_position() end)
+    self.systray:connect_signal("widget::redraw_needed", function() M:updatePopupGeometry() end)
 end
 
 ---Updates the geometry and position of the popup.
-function M:update_popup_size_position()
+function M:updatePopupGeometry()
     if not self.popup then return end
     local size = self.style.popup.icon_size;
     if not size then return end
@@ -120,12 +120,12 @@ function M:show(args)
     end
     args = args or {}
 
-    M:update_popup_size_position()
+    M:updatePopupGeometry()
 
-    if args.next_to then
-        (awful.placement.next_to_mouse + awful.placement.no_offscreen)(self.popup, { honor_workarea = true })
+    if args.geometry then
+        awful.placement.next_to(self.popup, { geometry = args.geometry })
     else
-        awful.placement.next_to_mouse(self.popup)
+        awful.placement.under_mouse(self.popup)
     end
 
     self.popup.visible = true
@@ -194,12 +194,16 @@ function M:new(args)
 
     button:buttons(gTable.join(
         unpack(args.buttons or {}),
-        awful.button({}, 1, function() button.bg = sWidget.bg.active end,
-            function() button.bg = sWidget.bg.hover end),
-        awful.button({}, 1, function() self:toggle { next_to = w } end)
+        awful.button({}, 1,
+            function() button.bg = sWidget.bg.active end,
+            function() button.bg = sWidget.bg.hover end)
     ))
     button:connect_signal("mouse::enter", function() button.bg = sWidget.bg.hover end)
     button:connect_signal("mouse::leave", function() button.bg = sWidget.bg.normal end)
+    button:connect_signal("button::press",
+        function(_, _, _, _, _, geometry)
+            self:toggle { geometry = geometry }
+        end)
 
     return w
 end
@@ -237,4 +241,4 @@ return setmetatable(M, M.mt)
 ---@field relative_position string[] #The placement of the popup relative to the widget.
 
 ---@class SysTrayShowArgs #Argyments for when you are showing the system tray popup.
----@field next_to? table #Where to place the popup next to.
+---@field geometry? table #Where to place the popup next to.
