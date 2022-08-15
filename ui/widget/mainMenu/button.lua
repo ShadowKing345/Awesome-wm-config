@@ -2,99 +2,107 @@
 
     A button with an image and text.
 
---]]
+]]
 --------------------------------------------------
 local setmetatable = setmetatable
-local unpack       = unpack or table.unpack
 
-local aButton      = require "awful.button"
-local beautiful    = require "beautiful"
-local gTable       = require "gears.table"
-local rounded_rect = require "gears.shape".rounded_rect
-local wibox        = require "wibox"
+local aButton   = require "awful.button"
+local beautiful = require "beautiful"
+local gTable    = require "gears.table"
+local wibox     = require "wibox"
 
+local utils = require "utils"
 
 --------------------------------------------------
-local button = { default_string = "<span color=\"%s\">%s</span>", mt = {} }
+local M = { mt = {} }
 
-function button.default_style()
-    return {
-        bg = {
-            normal = beautiful["button_bg_normal"] or beautiful.bg_normal,
-            hover  = beautiful["button_bg_hover"] or beautiful.bg_focus,
-            active = beautiful["button_bg_active"] or beautiful.bg_urgent,
+function M.defaultStyle(style)
+    local n = "button_"
+    return utils.deepMerge({
+        image      = beautiful[n .. "image"],
+        stylesheet = beautiful[n .. "stylesheet"],
+        bg         = {
+            normal = beautiful[n .. "bg_normal"],
+            hover  = beautiful[n .. "bg_hover"],
+            active = beautiful[n .. "bg_active"],
         },
-        fg = {
-            normal = beautiful["button_fg_normal"] or beautiful.fg_normal,
-            hover  = beautiful["button_fg_hover"] or beautiful.fg_focus,
-            active = beautiful["button_fg_active"] or beautiful.fg_urgent,
+        fg         = {
+            normal = beautiful[n .. "fg_normal"],
+            hover  = beautiful[n .. "fg_hover"],
+            active = beautiful[n .. "fg_active"],
         },
-
-        font    = beautiful["button_font"] or beautiful.font,
-        padding = beautiful["button_padding"] or 5,
-        shape   = function(cr, width, height) rounded_rect(cr, width, height, 2) end
-    }
+        font       = beautiful[n .. "font"] or beautiful.font,
+        padding    = beautiful[n .. "padding"],
+        spacing    = beautiful[n .. "spacing"],
+        shape      = beautiful[n .. "shape"],
+    }, style or {})
 end
 
 ---Creates a new button with text.
 ---@param args {image:string, text:string, buttons:table, style: table, stylesheet:string}
 ---@return any
-function button.new(args)
-    args       = args or {}
-    args.style = gTable.merge(button.default_style(), args.style or {})
+function M:new(args)
+    args        = args or {}
+    local style = self.defaultStyle(args.style or {})
 
-    local ret = wibox.widget {
+    local w = wibox.widget {
         {
             {
                 {
-                    image      = args.image,
-                    stylesheet = args.stylesheet,
-                    valign     = "center",
-                    halign     = "center",
+                    image      = style.image,
+                    stylesheet = style.stylesheet,
                     widget     = wibox.widget.imagebox,
                 },
                 {
                     text   = args.text,
-                    font   = args.style.font,
                     widget = wibox.widget.textbox,
                 },
-                spacing = 10,
-                layout  = wibox.layout.fixed.horizontal,
+                spacing    = style.spacing,
+                fill_space = true,
+                layout     = wibox.layout.fixed.horizontal,
             },
-            margins = args.style.padding,
+            margins = style.padding,
             widget  = wibox.container.margin,
         },
-        bg     = args.style.bg.normal,
-        fg     = args.style.fg.normal,
-        shape  = args.style.shape,
+        bg     = style.bg.normal,
+        fg     = style.fg.normal,
+        shape  = style.shape,
         widget = wibox.container.background,
     }
 
-    ret._private.bg = args.style.bg
-    ret._private.fg = args.style.fg
-
-
-    function ret:change_state(state)
-        ret.bg = self._private.bg[state]
-        ret.fg = self._private.fg[state]
+    w:connect_signal("mouse::enter", function()
+        w.bg = style.bg.hover
+        w.fg = style.fg.hover
+    end)
+    w:connect_signal("mouse::leave", function()
+        w.bg = style.bg.normal
+        w.fg = style.fg.normal
+    end)
+    w:buttons(gTable.join(
+        aButton({}, 1,
+            function()
+                w.bg = style.bg.active
+                w.fg = style.fg.active
+            end,
+            function()
+                w.bg = style.bg.hover
+                w.fg = style.fg.hover
+            end)
+    ))
+    if args.buttons then
+        for _, button in ipairs(args.buttons) do
+            w:add_button(button)
+        end
     end
 
-    ret:buttons(gTable.join(
-        unpack(args.buttons or {}),
-        aButton({}, 1, function() ret:change_state "active" end, function() ret:change_state "hover" end)
-    ))
-
-    ret:connect_signal("mouse::enter", function() ret:change_state "hover" end)
-    ret:connect_signal("mouse::leave", function() ret:change_state "normal" end)
-
-    gTable.crush(ret, button, true)
-    return ret
+    gTable.crush(w, self, true)
+    return w
 end
 
 -- Set metadata
 --------------------------------------------------
-function button.mt:__call(...)
-    return button.new(...)
+function M.mt:__call(...)
+    return M:new(...)
 end
 
-return setmetatable(button, button.mt)
+return setmetatable(M, M.mt)
