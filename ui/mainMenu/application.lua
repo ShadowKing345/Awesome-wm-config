@@ -43,9 +43,8 @@ function M.defaultStyle(style)
 end
 
 function M:new(args)
-    args             = args or {}
-    self.application = args.application or {}
-    local style      = self.defaultStyle(args.style or {})
+    args        = args or {}
+    local style = self.defaultStyle(args.style or {})
 
     local w = wibox.widget {
         {
@@ -54,7 +53,7 @@ function M:new(args)
                     {
                         {
                             {
-                                image      = self.application.icon or style.image.default,
+                                image      = args.application.icon or style.image.default,
                                 stylesheet = style.stylesheet,
                                 widget     = wibox.widget.imagebox,
                             },
@@ -68,7 +67,7 @@ function M:new(args)
                     widget = wibox.container.place,
                 },
                 {
-                    text = self.application.name or "Fish",
+                    text = args.application.name or "Fish",
 
                     ellipsize = "end",
                     wrap      = "char",
@@ -112,7 +111,7 @@ function M:new(args)
     )))
 
     if args.callback and type(args.callback) == "function" then
-        w:add_button(awful.button({}, 1, function() awful.callback(self.application.cmdline) end))
+        w:add_button(awful.button({}, 1, function() args.callback(args.application.cmdline) end))
     end
 
     if args.buttons then
