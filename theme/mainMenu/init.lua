@@ -4,6 +4,7 @@
 
 ]]
 --------------------------------------------------
+local dpi    = require "beautiful.xresources".apply_dpi
 local gShape = require "gears.shape"
 
 local colors = require "theme.colors"
@@ -13,62 +14,85 @@ local M = { mt = {} }
 
 --  General variables
 --------------------------------------------------
-local theme_path = require "gears.filesystem".get_xdg_config_home() .. "awesome/theme/"
+local themePath = require "gears.filesystem".get_configuration_dir() .. "theme/mainMenu/"
+
+local function shape(ctx, w, h)
+    return gShape.rounded_rect(ctx, w, h, dpi(3))
+end
+
+local bg = {
+    normal = colors.theme.bg.button.normal,
+    hover  = colors.theme.bg.button.hover,
+    active = colors.theme.bg.button.active,
+}
+local fg = {
+    normal = colors.theme.fg.button.normal,
+    hover  = colors.theme.fg.button.hover,
+    active = colors.theme.fg.button.active,
+}
+
 
 function M:call(config)
-    local mainMenuIconStyle = (".primary {stroke: %s; fill: none;}"):format(colors.theme.main)
+    local stylesheet = (".primary {stroke: %s; fill: none;}"):format(colors.theme.main)
 
     config.mainmenu = {
-        image       = {
-            reload   = {
-                theme_path .. "mainMenu/power.svg",
-                stylesheet = mainMenuIconStyle,
-            },
-            quit     = {
-                theme_path .. "mainMenu/power.svg",
-                stylesheet = mainMenuIconStyle,
-            },
-            sleep    = {
-                theme_path .. "mainMenu/sleep.svg",
-                stylesheet = mainMenuIconStyle,
-            },
-            reboot   = {
-                theme_path .. "mainMenu/reboot.svg",
-                stylesheet = mainMenuIconStyle,
-            },
-            shutdown = {
-                theme_path .. "mainMenu/power.svg",
-                stylesheet = mainMenuIconStyle,
-            },
+        launcher = {
+            margins = dpi(5),
+            shape   = shape,
+            bg      = bg,
         },
-        bg          = {
-            left  = colors.colors.black_0,
-            right = colors.colors.black_0,
-        },
-        category    = {
-            bg = {
-                normal = colors.theme.bg.button.normal,
-                hover  = colors.theme.bg.button.hover,
-                active = colors.theme.bg.button.active,
+        wibox    = {
+            bg           = {
+                left  = colors.colors.black_0,
+                right = colors.colors.black_0,
             },
-            fg = {
-                normal = colors.theme.fg.button.normal,
-                hover  = colors.theme.fg.button.hover,
-                active = colors.theme.fg.button.active,
-            }
-        },
-        application = {
-            bg = {
-                normal = colors.theme.bg.button.normal,
-                hover  = colors.theme.bg.button.hover,
-                active = colors.theme.bg.button.active,
+            buttons      = {
+                icons   = {
+                    stylesheet = stylesheet,
+                    reload     = {
+                        icon = themePath .. "power.svg",
+                    },
+                    quit       = {
+                        icon = themePath .. "power.svg",
+                    },
+                    sleep      = {
+                        icon = themePath .. "sleep.svg",
+                    },
+                    reboot     = {
+                        icon = themePath .. "reboot.svg",
+                    },
+                    shutdown   = {
+                        icon = themePath .. "power.svg",
+                    },
+                },
+                bg      = {
+                    normal = colors.theme.bg.button.normal,
+                    hover  = colors.theme.bg.button.hover,
+                    active = colors.theme.bg.button.active,
+                },
+                fg      = {
+                    normal = colors.theme.fg.button.normal,
+                    hover  = colors.theme.fg.button.hover,
+                    active = colors.theme.fg.button.active,
+                },
+                padding = dpi(5),
+                shape   = shape,
+                spacing = dpi(10),
             },
-            fg = {
-                normal = colors.theme.fg.button.normal,
-                hover  = colors.theme.fg.button.hover,
-                active = colors.theme.fg.button.active,
+            applications = {
+                fg      = fg,
+                bg      = bg,
+                width   = dpi(50),
+                height  = dpi(80),
+                spacing = dpi(5),
+                padding = dpi(5),
+                shape   = shape,
+                image   = {
+                    padding    = dpi(5),
+                    shape      = shape,
+                    stylesheet = stylesheet,
+                },
             },
-            shape = function(ctx, width, height) gShape.rounded_rect(ctx, width, height, 3) end,
         },
     }
     config.profile  = {

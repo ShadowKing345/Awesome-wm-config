@@ -9,12 +9,11 @@ local setmetatable = setmetatable
 local awful     = require "awful"
 local beautiful = require "beautiful"
 local dpi       = require "beautiful.xresources".apply_dpi
-local wibox     = require "wibox"
 
 local desktop   = require "ui.desktop"
 local battery   = require "ui.widget.battery"
 local layoutbox = require "ui.widget.layoutbox"
-local mainMenu  = require "ui.widget.mainMenu"
+local mainMenu  = require "ui.mainMenu"
 local taglist   = require "ui.widget.taglist"
 local tasklist  = require "ui.widget.tasklist"
 local systray   = require "ui.widget.systray"
@@ -76,7 +75,7 @@ function M:new(env)
 
     self.env = env
 
-    self.mainMenu  = mainMenu(env)
+    self.mainMenu  = mainMenu { env = env }
     self.textClock = textClock()
 
     self.taglistButtons  = taglist.default_buttons(env)
