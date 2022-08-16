@@ -33,7 +33,7 @@ local fg = {
 
 
 function M:call(config)
-    local mainMenuIconStyle = (".primary {stroke: %s; fill: none;}"):format(colors.theme.main)
+    local stylesheet = (".primary {stroke: %s; fill: none;}"):format(colors.theme.main)
 
     config.mainmenu = {
         launcher = {
@@ -42,13 +42,13 @@ function M:call(config)
             bg      = bg,
         },
         wibox    = {
-            bg      = {
+            bg           = {
                 left  = colors.colors.black_0,
                 right = colors.colors.black_0,
             },
-            buttons = {
+            buttons      = {
                 icons   = {
-                    stylesheet = mainMenuIconStyle,
+                    stylesheet = stylesheet,
                     reload     = {
                         icon = themePath .. "power.svg",
                     },
@@ -78,6 +78,20 @@ function M:call(config)
                 padding = dpi(5),
                 shape   = shape,
                 spacing = dpi(10),
+            },
+            applications = {
+                fg      = fg,
+                bg      = bg,
+                width   = dpi(50),
+                height  = dpi(80),
+                spacing = dpi(5),
+                padding = dpi(5),
+                shape   = shape,
+                image   = {
+                    padding    = dpi(5),
+                    shape      = shape,
+                    stylesheet = stylesheet,
+                },
             },
         },
     }

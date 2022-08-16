@@ -54,6 +54,8 @@ function M.defaultStyle(style)
     local n = "mainmenu_"
     local w = n .. "wibox_"
     local b = w .. "buttons_"
+    local c = w .. "categories_"
+    local a = w .. "applications_"
     local i = b .. "icons_"
     local l = n .. "launcher_"
     return utils.deepMerge({
@@ -70,16 +72,40 @@ function M.defaultStyle(style)
             }
         },
         wibox    = {
-            bg         = {
+            bg           = {
                 top    = beautiful[w .. "bg_top"],
                 bottom = beautiful[w .. "bg_bottom"],
                 left   = beautiful[w .. "bg_left"],
                 right  = beautiful[w .. "bg_right"],
             },
-            categories = {
-                spacing = beautiful[w .. "categories_spacing"] or 0,
+            applications = {
+                width   = beautiful[a .. "width"],
+                height  = beautiful[a .. "height"],
+                bg      = {
+                    normal = beautiful[a .. "bg_normal"],
+                    hover  = beautiful[a .. "bg_hover"],
+                    active = beautiful[a .. "bg_active"],
+                },
+                fg      = {
+                    normal = beautiful[a .. "fg_normal"],
+                    hover  = beautiful[a .. "fg_hover"],
+                    active = beautiful[a .. "fg_active"],
+                },
+                image   = {
+                    default    = beautiful[a .. "image_default"],
+                    padding    = beautiful[a .. "image_padding"],
+                    shape      = beautiful[a .. "image_shape"],
+                    stylesheet = beautiful[a .. "image_stylesheet"],
+                },
+                padding = beautiful[a .. "padding"],
+                spacing = beautiful[a .. "spacing"] or 0,
+                shape   = beautiful[a .. "shape"],
+                font    = beautiful[a .. "font"],
             },
-            buttons    = {
+            categories   = {
+                spacing = beautiful[c .. "spacing"] or 0,
+            },
+            buttons      = {
                 icons   = {
                     stylesheet = beautiful[i .. "stylesheet"],
                     reload     = {
@@ -330,7 +356,11 @@ function M:initApplications(reset)
     for _, v in ipairs(self.applications) do
         if (not self.category or v.category == self.category) and
             (v.name:match("^" .. self.pattern) or v.cmdline:match("^" .. self.pattern)) then
-            self.applicationsWidget:add(applicationWidget { application = v, callback = callback })
+            self.applicationsWidget:add(applicationWidget {
+                application = v,
+                callback = callback,
+                style = self.style.wibox.applications,
+            })
         end
     end
 end
