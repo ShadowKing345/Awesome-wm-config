@@ -8,7 +8,9 @@ local awful     = require "awful"
 local beautiful = require "beautiful"
 local dpi       = require "beautiful.xresources".apply_dpi
 local gTable    = require "gears.table"
+local gString   = require "gears.string"
 local wibox     = require "wibox"
+local menuGen   = require "menubar.menu_gen"
 
 local relPath           = (...):match ".*"
 local applicationWidget = require(relPath .. ".application")
@@ -23,7 +25,12 @@ local utils             = require "utils"
 
 --------------------------------------------------
 local M = {
-    mt = {},
+    pattern            = gString.query_to_pattern "",
+    categoriesWidget   = nil,
+    category           = nil,
+    applicationsWidget = nil,
+    applications       = nil,
+    mt                 = {},
 }
 
 local function call(spawn)
@@ -63,13 +70,16 @@ function M.defaultStyle(style)
             }
         },
         wibox    = {
-            bg      = {
+            bg         = {
                 top    = beautiful[w .. "bg_top"],
                 bottom = beautiful[w .. "bg_bottom"],
                 left   = beautiful[w .. "bg_left"],
                 right  = beautiful[w .. "bg_right"],
             },
-            buttons = {
+            categories = {
+                spacing = beautiful[w .. "categories_spacing"] or 0,
+            },
+            buttons    = {
                 icons   = {
                     stylesheet = beautiful[i .. "stylesheet"],
                     reload     = {
@@ -104,11 +114,28 @@ function M.defaultStyle(style)
                     hover  = beautiful[b .. "fg_hover"],
                 },
                 shape   = beautiful[b .. "shape"],
-                spacing = beautiful[b .. "spacing"],
+                spacing = beautiful[b .. "spacing"] or 0,
                 padding = beautiful[b .. "padding"],
             },
         },
     }, style or {})
+end
+
+function M:configureAppliactions()
+    menuGen.generate(function(result)
+        table.sort(result, function(a, b) return a.name < b.name end)
+        self.applications = result
+        self:initApplications(true)
+    end)
+end
+
+function M:setCategory(category)
+    if self.category == category then
+        return
+    end
+
+    self.category = category
+    self:initApplications(true)
 end
 
 function M:getIconStyle(iconname)
@@ -154,12 +181,21 @@ function M:createWidget(style)
             spacer.h,
             {
                 {
+                    self.categoriesWidget,
                     bg           = style.bg.left,
                     forced_width = fw,
                     widget       = wibox.container.background,
                 },
                 spacer.v,
                 {
+                    {
+                        {
+                            self.applicationsWidget,
+                            margins = 10,
+                            widget  = wibox.container.margin,
+                        },
+                        layout = wibox.layout.overflow.vertical,
+                    },
                     bg     = style.bg.right,
                     widget = wibox.container.background,
                 },
@@ -238,6 +274,67 @@ function M:createWidget(style)
     }
 end
 
+function M:initCategories(categories, force)
+    if self.categoriesWidget and not force then
+        return
+    end
+
+    local function setCategory(category)
+        return function()
+            M:setCategory(category)
+        end
+    end
+
+    self.categoriesWidget = self.categoriesWidget or wibox.widget {
+        spacing = dpi(self.style.wibox.categories.spacing),
+        layout  = wibox.layout.overflow.vertical,
+    }
+
+    local c = {}
+
+    for key, value in pairs(categories) do
+        table.insert(c, { key = key, value = value })
+    end
+    table.sort(c, function(a, b) return a.value.name < b.value.name end)
+    table.insert(c, 1, { value = { icon_name = "", name = "All", } })
+
+    self.categoriesWidget:reset()
+    for _, v in ipairs(c) do
+        self.categoriesWidget:add(categoryWidget { category = v.value, callback = setCategory(v.key), })
+    end
+end
+
+function M:initApplications(reset)
+    if self.applicationsWidget and not reset then
+        return
+    end
+
+    self.applicationsWidget = self.applicationsWidget or wibox.widget {
+        spacing           = 10,
+        forced_num_cols   = 5,
+        horizontal_expand = true,
+        layout            = wibox.layout.grid.vertical,
+    }
+
+    if not self.applications then
+        self:configureAppliactions()
+        return
+    end
+
+    local function callback(cmd)
+        awful.spawn(cmd)
+        self:hide()
+    end
+
+    self.applicationsWidget:reset()
+    for _, v in ipairs(self.applications) do
+        if (not self.category or v.category == self.category) and
+            (v.name:match("^" .. self.pattern) or v.cmdline:match("^" .. self.pattern)) then
+            self.applicationsWidget:add(applicationWidget { application = v, callback = callback })
+        end
+    end
+end
+
 function M:toggle(args)
     if self.visible then
         self:hide()
@@ -259,6 +356,8 @@ function M:show(args)
         awful.placement.under_mouse(self)
     end
 
+    self:initApplications(true)
+
     self.visible = true
 end
 
@@ -273,6 +372,14 @@ function M:new(args)
     args = args or {}
     self.style = self.defaultStyle(args.style or {})
 
+    if not self.categoriesWidget then
+        self:initCategories(args.categories or menuGen.all_categories)
+    end
+
+    if not self.applicationsWidget then
+        self:initApplications()
+    end
+
     local w = wibox {
         ontop  = true,
         width  = dpi(720),
@@ -281,7 +388,7 @@ function M:new(args)
         widget = self:createWidget(self.style.wibox)
     }
 
-    gTable.crush(w, self, false)
+    gTable.crush(w, self, true)
 
     return w
 end
