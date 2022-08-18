@@ -35,6 +35,7 @@ require "keybindings" (env)
 -- Everything else
 --------------------------------------------------
 require "rules-config":init {}
+require "ui.client" { env = env }
 require "service.pulseMixer" {}
 require "signals".init(env)
 
