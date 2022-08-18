@@ -14,7 +14,7 @@ local theme = require "theme.colors".theme
 local colors = require "theme.colors".colors
 local extensions = {
     layout   = require "theme.layout",
-    mainmenu = require "theme.mainMenu",
+    mainmenu = require "theme.mainmenu",
     wibar    = require "theme.wibar",
     widget   = require "theme.widget",
 }

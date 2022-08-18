@@ -17,7 +17,7 @@ local applicationWidget = require(relPath .. ".application")
 local categoryWidget    = require(relPath .. ".category")
 local buttonWidget      = require(relPath .. ".button")
 local launcherWidget    = require(relPath .. ".launcher")
-local inputField        = require "ui.widget.inputField"
+local inputField        = require "ui.widget.input-field"
 local profileWidget     = require "ui.widget.profile"
 -- NOTE: Remove when overflow layout comes out.
 wibox.layout.overflow   = require "ui.layouts.overflow"
