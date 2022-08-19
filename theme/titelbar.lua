@@ -4,6 +4,9 @@
 
 ]]
 --------------------------------------------------
+local colors = require "theme.colors"
+
+--------------------------------------------------
 local M = { mt = {} }
 
 --  general variables
@@ -12,6 +15,16 @@ local default_theme_path = require "gears.filesystem".get_themes_dir()
 
 function M:call(config)
     config.titlebar = {
+        bg               = {
+            normal = colors.theme.bg.normal,
+            focus  = colors.colors.black_3,
+            urgent = colors.theme.bg.urgent,
+        },
+        fg               = {
+            normal = colors.theme.fg.normal,
+            focus  = colors.theme.fg.focus,
+            urgent = colors.theme.fg.urgent,
+        },
         close_button     = {
             normal = default_theme_path .. "default/titlebar/close_normal.png",
             focus  = default_theme_path .. "default/titlebar/close_focus.png",
