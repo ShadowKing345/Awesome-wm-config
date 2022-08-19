@@ -3,8 +3,8 @@ local beautiful = require "beautiful"
 
 local signals = { mt = {} }
 
-function signals:init(env)
-    env = env or {}
+function signals:init(args)
+    args = args or {}
 
     client.connect_signal("manage", function(c)
         if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
@@ -19,6 +19,10 @@ function signals:init(env)
     client.connect_signal("unfocus", function(client)
         client.border_color = beautiful.border_normal
     end)
+end
+
+function signals.mt:__call(...)
+    return signals:init(...)
 end
 
 return setmetatable(signals, signals.mt)

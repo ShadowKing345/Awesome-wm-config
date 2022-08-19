@@ -1,10 +1,19 @@
+--[[
+
+
+    Client rules setup.
+
+]]
+--------------------------------------------------
 local awful = require "awful"
 local ruled = require "ruled"
 
-local M = {}
+--------------------------------------------------
+local M = { mt = {} }
 
 function M:init(args)
     args = args or {}
+    args.env = args.env or {}
 
     ruled.client.connect_signal("request::rules", function()
         ruled.client.append_rule {
@@ -44,17 +53,15 @@ function M:init(args)
             properties = { titlebars_enabled = true }
         }
 
-        self.rules = {
-            { rule = {}, properties = args.base_properties or self.base_properties },
-            { rule_any = args.floating_any or self.floating_any, properties = { floating = true } },
-            { rule_any = { type = { "normal", "dialog" } }, properties = { titlebars_enabled = true } },
-            { rule = { class = "discord" }, properties = { tag = "3", screen = 1, maximized = true } }, -- discord
-        }
-
-        for _, v in pairs(args.rules or {}) do
-            table.insert(self.rules, v)
+        if args.env.rules then
+            ruled.client.append_rules(args.env.rules)
         end
     end)
 end
 
-return M
+--------------------------------------------------
+function M.mt:__call(...)
+    return M:init(...)
+end
+
+return setmetatable(M, M.mt)

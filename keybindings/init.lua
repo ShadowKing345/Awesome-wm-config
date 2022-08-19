@@ -26,36 +26,42 @@ local modules = {
 ---@field button table
 local M = { mt = {} }
 
----@param env EnvConfig #The environment configurations.
-function M:new(env)
-    env = env or {}
+function M:new(args)
+    args = args or {}
+    local env = args.env or {}
 
-    self.global = { keyboard = {}, mouse = {
-        aButton { modifiers = {}, button = 4, callback = awful.tag.viewnext },
-        aButton { modifiers = {}, button = 5, callback = awful.tag.viewprev }
-    } }
-    self.client = { keyboard = {}, mouse = {
-        aButton {
-            modifiers = {},
-            button    = 1,
-            callback  = function(c) c:activate { context = "mouse_click" } end,
-        },
-        aButton {
-            modifiers = { env.modKey },
-            button    = 1,
-            callback  = function(c) c:activate { context = "mouse_click", action = "mouse_move", } end,
-        },
-        aButton {
-            modifiers = {},
-            button    = 3,
-            callback  = function(c) c:activate { context = "mouse_click" } end,
-        },
-        aButton {
-            modifiers = { env.modKey },
-            button    = 3,
-            callback  = function(c) c:activate { context = "mouse_click", action = "mouse_resize", } end,
+    self.global = {
+        keyboard = {},
+        mouse = {
+            aButton { modifiers = {}, button = 4, callback = awful.tag.viewnext },
+            aButton { modifiers = {}, button = 5, callback = awful.tag.viewprev }
         }
-    } }
+    }
+    self.client = {
+        keyboard = {},
+        mouse = {
+            aButton {
+                modifiers = {},
+                button    = 1,
+                callback  = function(c) c:activate { context = "mouse_click" } end,
+            },
+            aButton {
+                modifiers = { env.modKey },
+                button    = 1,
+                callback  = function(c) c:activate { context = "mouse_click", action = "mouse_move", } end,
+            },
+            aButton {
+                modifiers = {},
+                button    = 3,
+                callback  = function(c) c:activate { context = "mouse_click" } end,
+            },
+            aButton {
+                modifiers = { env.modKey },
+                button    = 3,
+                callback  = function(c) c:activate { context = "mouse_click", action = "mouse_resize", } end,
+            }
+        }
+    }
 
     for name, m in pairs(modules) do
         if m.keyboard then
@@ -104,8 +110,8 @@ function M:new(env)
 end
 
 --------------------------------------------------
-function M.mt:__call(env)
-    return M:new(env)
+function M.mt:__call(...)
+    return M:new(...)
 end
 
 return setmetatable(M, M.mt)

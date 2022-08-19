@@ -38,6 +38,10 @@ function env:new()
         awful.layout.suit.floating,
     }
 
+    self.rules = {
+        { rule = { class = "discord" }, properties = { tag = "3", screen = 1, maximized = true } }, -- discord
+    }
+
     beautiful.init(theme())
 
     return self

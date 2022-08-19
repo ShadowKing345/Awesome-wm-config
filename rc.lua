@@ -25,27 +25,30 @@ awful.layout.append_default_layouts(env.layouts)
 
 -- Screen configuration
 --------------------------------------------------
-require "ui.screen-config" (env)
+require "ui.screen-config" { env = env }
 
 
 -- Keybindings
 --------------------------------------------------
-require "keybindings" (env)
+require "keybindings" { env = env }
 
 -- Everything else
 --------------------------------------------------
-require "rules-config":init {}
+require "rules-config" { env = env }
 require "ui.client" { env = env }
-require "service.pulseMixer" {}
-require "signals".init(env)
+require "service.pulseMixer" { env = env }
+require "signals" { env = env }
 
 
 -- Note the collection of applications to autostart are mainly personal. Change them as you need to.
 require "autostart-config" {
-    "nvidia-settings --load-config-only",
-    "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1",
-    "picom -b",
-    "nm-applet",
-    "discord",
-    "mailspring -b",
+    list = {
+        "nvidia-settings --load-config-only",
+        "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1",
+        "picom -b",
+        "nm-applet",
+        "discord",
+        "mailspring -b",
+    },
+    env = env
 }
