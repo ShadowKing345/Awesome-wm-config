@@ -89,6 +89,12 @@ function M.client(env)
             press       = function(c) c:move_to_screen() end,
             description = "Move to next screen",
         },
+{
+ modifiers = {env.modKey, utils.keys.clt, },
+key ="t",
+press = awful.titlebar.toggle,
+description = "Toggles the titlebar for the focused client",
+},
 
         {
             modifiers = { env.modKey, utils.keys.shift },
