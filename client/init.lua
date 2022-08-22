@@ -4,9 +4,8 @@
 
 ]]
 --------------------------------------------------
-local awful     = require "awful"
-local beautiful = require "beautiful"
-local titlebar  = require "client.titlebar"
+local awful    = require "awful"
+local titlebar = require "client.titlebar"
 
 --------------------------------------------------
 local M = { mt = {} }
