@@ -38,7 +38,21 @@ function M:call(config)
             margin        = dpi(5),
             shape         = shape,
             timer_timeout = 10,
-        }
+        },
+        volume = {
+            bg      = {
+                normal = colors.theme.bg.button.normal,
+                hover  = colors.theme.bg.button.hover,
+                active = colors.theme.bg.button.active,
+            },
+            fg      = {
+                normal = colors.theme.fg.button.normal,
+                hover  = colors.theme.fg.button.hover,
+                active = colors.theme.fg.button.active,
+            },
+            padding = dpi(5),
+            margin  = dpi(5),
+        },
     }
 
     return config

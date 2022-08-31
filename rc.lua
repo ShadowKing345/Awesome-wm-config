@@ -25,6 +25,11 @@ awful.layout.append_default_layouts(env.layouts)
 require "ui.screen-config" { env = env }
 require "client" { env = env }
 
+-- Services
+--------------------------------------------------
+local pulseMixer = require "service.pulseMixer" { env = env }
+env.pulseMixer = pulseMixer
+
 -- Keybindings
 --------------------------------------------------
 require "keybindings" { env = env }
@@ -32,7 +37,6 @@ require "keybindings" { env = env }
 -- Everything else
 --------------------------------------------------
 require "rules-config" { env = env }
-require "service.pulseMixer" { env = env }
 
 -- Note the collection of applications to autostart are mainly personal. Change them as you need to.
 require "autostart-config" {
