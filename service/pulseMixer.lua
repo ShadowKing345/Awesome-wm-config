@@ -1,6 +1,7 @@
 --[[
 
-      Pulse Mixer API mapper
+        Pulse Mixer Service.
+        Please note that this does not update if the volume changes externally.
 
 ]]
 --------------------------------------------------
@@ -9,6 +10,7 @@ local gTable  = require "gears.table"
 local naughty = require "naughty"
 
 local utils = require "utils"
+local cmdf  = "%s %s %s"
 
 --------------------------------------------------
 ---Service for querying and controlling PulseAudio using pulsemixer commands.
@@ -29,8 +31,6 @@ local M = {
         changeVolume = "--change-volume %d",
         getVolume    = "--get-volume",
         setVolume    = "--set-volume %d",
-        setVolumeAll = "--set-volume-all ",
-        maxVolume    = "--max-volume %d",
     },
     types    = {
         input = "Source",
@@ -38,105 +38,140 @@ local M = {
     },
 }
 
----Changes the volume of a source/sink by a delta amount.
----@param amount number #The amount to change by.
----@param id? string #Id for source/sink.
-function M:changeVolume(amount, id)
-end
-
----Sets the volume to a given amount.
----Having an array of ammounts will change for each unique channel in order.
----@param amounts number|number[] #The ammount/amounts to change for each volume channel.
----@param id string #Id for source/sink
-function M:setVolume(amounts, id)
-end
-
----Gets the current volumes for all channels.
----Returns an empty array if none was found.
----@param id string #Id for source/sink.
+---Gets or sets the current volumes for all channels.
+---Returns an empty array if none was found or the new volumes if they are set.
+---@param args VolumeArgs #Arguments for this method.
 ---@return number[]
-function M:getVolume(id)
+function M:volume(args)
+    args         = args or {}
+    local object = self:_getObjectById(args.id) or self:_getDefault()
+
+    if not object then
+        return {}
+    end
+
+    if not args.amount then
+        return object.volumes
+    end
+
+    local cmd
+    if type(args.delta) == "nil" then
+        for i, _ in ipairs(object.volumes) do
+            object.volumes[i] = args.amount
+        end
+        cmd = self.commands.setVolume
+    else
+        for i, v in ipairs(object.volumes) do
+            object.volumes[i] = utils.clamp(v + args.amount, 0, 0)
+        end
+        cmd = self.commands.changeVolume
+    end
+
+    awful.spawn.with_shell(cmdf:format(self.commands.cmd, self.commands.id:format(object.id), cmd:format(args.amount)))
+    return object.volumes
 end
 
----Gets the current muted state
----@param id? string #Id of source or sink.
----@return boolean|nil
-function M:muted(id)
-end
+---Gets or sets if the PulseObject is muted or not.
+---Returns nil if none was found or the new state.
+---@param args MuteArgs #Arguments for this method.
+---@return boolean | nil
+function M:mute(args)
+    args         = args or {}
+    local object = self:_getObjectById(args.id) or self:_getDefault()
 
----Mutes a source or sink
----@param id? string #Id of source or sink
-function M:mute(id)
-end
+    naughty.notification { text = type(object) }
 
----Unmutes a source or sink
----@param id? string #Id of source or sink
-function M:unmute(id)
-end
-
----Toggles mutes a source or sink
----@param id? string #Id of source or sink
-function M:toggleMute(id)
-end
-
----Sets the default sink/source used.
----@param id string #Id of source/sink
-function M:setDefault(id)
-end
-
----Sets the maximum volume.
----Note this is just a wrapper method for the flag  of the same name. I have no idea what it is doing behind the scenes.
----@param amount number #The volume level to be set.
----@param id string #Id for source/sink
-function M:setMaxVolume(amount, id)
-end
-
----Gets the or an empty string.
----@param id? string
----@return string
-function M:_getId(id)
-end
-
----Returns a source or sink if one with matching id is found. nil otherwise
----@param id string #Id for source or sink.
----@return PulseObject | nil
-function M:_getObjectById(id)
-end
-
----Parses a string into a SourceSink object.
----@param str string
----@return PulseObject | nil
-function M:_parseObject(str)
-    local re = "(.*):%s+ID: ([^,]+), Name: ([^,]+), Mute: ([^,]+), Channels: ([^,]+), Volumes: %[(.*)%](.*)"
-
-    local type, id, name, muted, channels, volume, default = str:match(re)
-
-    if not type then
+    if not object then
         return
     end
 
-    local volumes = {}
-    for i in volume:gmatch "[^,]+" do
-        local v = tonumber((utils.trim(utils.trim(i), "'"):gsub("(.*)%%", "%1")))
-        table.insert(volumes, v)
+    if not args.toggle then
+        return object.muted
+    end
+
+    local cmd
+    if type(args.forceState) == "boolean" then
+        object.muted = args.forceState
+        cmd = object.muted and self.commands.mute or self.commands.unmute
+    else
+        object.muted = not object.muted
+        cmd = self.commands.toggleMute
     end
 
 
-    ---@type PulseObject
-    return {
-        id       = id,
-        name     = name,
-        channels = tonumber(channels),
-        volumes  = volumes,
-        output   = type:match "[^%s]+" == self.types.output,
-        muted    = muted == "1",
-        default  = default:match "Default" ~= nil,
-    }
+    awful.spawn.with_shell(cmdf:format(self.commands.cmd, self.commands.id:format(object.id), cmd))
+    return object.muted
+end
+
+---Returns the default PulseObject
+---@param output boolean? #Should it look for an output. (Default: true)
+---@return PulseObject | nil
+function M:_getDefault(output)
+    if type(output) == "nil" then
+        output = true
+    end
+
+    for _, v in ipairs(self.objects) do
+        if v.default and v.output == output then
+            return v
+        end
+    end
+
+    return nil
+end
+
+---Returns a PulseObject if one with matching id is found. nil otherwise
+---@param id string? #Id for PulseObject.
+---@return PulseObject | nil
+function M:_getObjectById(id)
+    if not id then
+        return nil
+    end
+
+    for _, v in ipairs(self.objects) do
+        if v.id == id then
+            return v
+        end
+    end
+
+    return nil
+end
+
+---Parses a string into a SourceSink object.
+---@param str string #The string to be parsed into objects.
+---@return PulseObject | nil
+function M:_parseObjects(str)
+    local re = "([^:]+):%s+ID: ([^,]+), Name: ([^,]+), Mute: ([^,]+), Channels: ([^,]+), Volumes: %[([^]]+)%]([^\n]*)\n"
+
+    self.objects = {}
+    for t, id, name, muted, channels, volume, default in str:gmatch(re) do
+        if not t then
+            return
+        end
+
+        local volumes = {}
+        for i in volume:gmatch "[^,]+" do
+            local v = tonumber((utils.trim(utils.trim(i), "'"):gsub("(.*)%%", "%1")))
+            table.insert(volumes, v)
+        end
+
+        ---@type PulseObject
+        local object = {
+            id       = id,
+            name     = name,
+            channels = tonumber(channels) or 0,
+            volumes  = volumes,
+            output   = t:match "[^%s]+" == self.types.output,
+            muted    = muted == "1",
+            default  = default:match "Default" ~= nil,
+        }
+
+        table.insert(self.objects, object)
+    end
 end
 
 ---Initalize sources and sinks.
 function M:init()
-
     awful.spawn.easy_async_with_shell(("%s %s %s"):format(self.commands.cmd, self.commands.list, ""),
         function(stdout, stderror, _, exitCode)
             if exitCode ~= 0 then
@@ -147,13 +182,7 @@ function M:init()
                 }
             end
 
-            self.objects = {}
-            for i in stdout:gmatch "[^\r\n]+" do
-                local object = self:_parseObject(i)
-                if object then
-                    table.insert(self.objects, object)
-                end
-            end
+            self:_parseObjects(stdout)
         end
     )
 end
@@ -220,5 +249,15 @@ return setmetatable(M, M.mt)
 ---@field changeVolume string #Flag to change volume by numbered amount *default "--change-volume %d"*
 ---@field getVolume string #Flag to get all volumes *default "--get-volume"*
 ---@field setVolume string #Flag to set volumes *default "--set-volume"*
----@field setVolumeAll string #Flag to set all channels volumes *default "--set-volume-all "*
----@field maxVolume string #Flag to set the maximum volume *default "--max-volume %d"*
+
+---Arguments for the volume method.
+---@class VolumeArgs
+---@field id string? #Id for PulseObject.
+---@field amount number? #Amount to set the volume to be.
+---@field delta boolean? #Sets amount to be a difference of the current volume.
+
+---Arguments for the mute method.
+---@class MuteArgs
+---@field id string? #Id of source or sink.
+---@field toggle boolean? #Should the state be toggled.
+---@field forceState boolean? #Forces the state to be this value.
