@@ -10,15 +10,16 @@ local awful     = require "awful"
 local beautiful = require "beautiful"
 local dpi       = require "beautiful.xresources".apply_dpi
 
-local desktop   = require "ui.desktop"
-local battery   = require "ui.widget.battery"
-local layoutbox = require "ui.widget.layoutbox"
-local mainMenu  = require "ui.mainmenu"
-local taglist   = require "ui.widget.taglist"
-local tasklist  = require "ui.widget.tasklist"
-local systray   = require "ui.widget.systray"
-local wibar     = require "ui.widget.wibar"
-local textClock = require "ui.widget.textclock"
+local desktop      = require "ui.desktop"
+local battery      = require "ui.widget.battery"
+local layoutbox    = require "ui.widget.layoutbox"
+local mainMenu     = require "ui.mainmenu"
+local taglist      = require "ui.widget.taglist"
+local tasklist     = require "ui.widget.tasklist"
+local systray      = require "ui.widget.systray"
+local wibar        = require "ui.widget.wibar"
+local textClock    = require "ui.widget.textclock"
+local volumeWidget = require "ui.widget.volume"
 
 --------------------------------------------------
 ---@class ScreenConfig
@@ -53,6 +54,7 @@ function M:connectScreen(s)
         clock     = self.textClock,
         systray   = s.systray,
         layoutbox = s.layoutbox,
+        volume    = self.volume,
     }
 end
 
@@ -84,9 +86,10 @@ function M:new(args)
 
     self.tags = env.tags or {}
 
-    self.battery = battery()
+    self.battery = battery { env = env }
     self.battery:startTimer()
 
+    self.volume = volumeWidget { env = env }
 
     beautiful.wibar_height = beautiful.wibar_height + (beautiful["wibar_border_width_top"] or dpi(1))
 

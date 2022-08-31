@@ -44,6 +44,7 @@ function M:new(args)
             args.tasklist,
             {
                 args.battery,
+                args.volume,
                 args.clock,
                 separator,
                 args.systray,
@@ -57,8 +58,11 @@ function M:new(args)
 end
 
 --------------------------------------------------
-function M.mt:__call(...)
-    return M:new(...)
+---Creates a new wibar instance.
+---@param args WibarArgs
+---@return table
+function M.mt:__call(args)
+    return M:new(args)
 end
 
 return setmetatable(M, M.mt)
@@ -73,3 +77,4 @@ return setmetatable(M, M.mt)
 ---@field clock table #Clock widget.
 ---@field systray table #System tray widget.
 ---@field layoutbox table #Layout box widget.
+---@field volume table #Volume widget.
