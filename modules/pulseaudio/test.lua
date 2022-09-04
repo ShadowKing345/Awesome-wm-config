@@ -1,3 +1,4 @@
+package.cpath = "./init.so;" .. package.cpath
 local inspect = require "pl.import_into" ().pretty.write
 local pulseaudio = require "pulseaudio"
 

@@ -1,9 +1,10 @@
 #include <lua.h>
-#include <string.h>
-
 #include <pulse/pulseaudio.h>
 
-typedef struct {
+#ifndef TYPES_H
+#define TYPES_H
+
+typedef struct pulseaudio_t {
   pa_threaded_mainloop *mainloop;
   pa_context *context;
 
@@ -16,3 +17,4 @@ typedef struct {
 } pulseaudio_t;
 
 typedef void(callback)(pulseaudio_t *pulse);
+#endif
