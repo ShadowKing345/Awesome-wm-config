@@ -1,8 +1,12 @@
+//
+// Created by alex on 9/5/22.
+//
+
 #include <lua.h>
 #include <pulse/pulseaudio.h>
 
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef PULSEAUDIO_TYPES_H
+#define PULSEAUDIO_TYPES_H
 
 typedef struct pulseaudio_t {
   pa_threaded_mainloop *mainloop;
