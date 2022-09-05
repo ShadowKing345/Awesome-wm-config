@@ -24,15 +24,15 @@ require "error-config"
 local env = require "env-config" ()
 awful.layout.append_default_layouts(env.layouts)
 
+-- Services
+--------------------------------------------------
+local pulseaudio_service = require "service.pulseaudio_service" { env = env }
+env.pulseaudio_service   = pulseaudio_service
+
 -- Screen configuration
 --------------------------------------------------
 require "ui.screen-config" { env = env }
 require "client" { env = env }
-
--- Services
---------------------------------------------------
-local pulseMixer = require "service.pulseMixer" { env = env }
-env.pulseMixer = pulseMixer
 
 -- Keybindings
 --------------------------------------------------

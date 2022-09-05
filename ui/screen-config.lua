@@ -71,7 +71,6 @@ function M:requestDesktop(s)
 end
 
 ---Creates a new instance of the screen configuration module.
----@param env EnvConfig
 function M:new(args)
     args = args or {}
     local env = args.env or {}
