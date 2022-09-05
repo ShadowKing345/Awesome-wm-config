@@ -9,8 +9,9 @@ local awful   = require "awful"
 local gTable  = require "gears.table"
 local naughty = require "naughty"
 
-local utils = require "utils"
-local cmdf  = "%s %s %s"
+local pulseaudio = require "modules".pulseaudio
+local utils      = require "utils"
+local cmdf       = "%s %s %s"
 
 --------------------------------------------------
 ---Service for querying and controlling PulseAudio using pulsemixer commands.
@@ -44,7 +45,7 @@ local M = {
 ---@return number[]
 function M:volume(args)
     args         = args or {}
-    local object = self:_getObjectById(args.id) or self:_getDefault()
+    local object = nil
 
     if not object then
         return {}
@@ -77,9 +78,7 @@ end
 ---@return boolean | nil
 function M:mute(args)
     args         = args or {}
-    local object = self:_getObjectById(args.id) or self:_getDefault()
-
-    naughty.notification { text = type(object) }
+    local object = nil
 
     if not object then
         return
@@ -103,88 +102,8 @@ function M:mute(args)
     return object.muted
 end
 
----Returns the default PulseObject
----@param output boolean? #Should it look for an output. (Default: true)
----@return PulseObject | nil
-function M:_getDefault(output)
-    if type(output) == "nil" then
-        output = true
-    end
-
-    for _, v in ipairs(self.objects) do
-        if v.default and v.output == output then
-            return v
-        end
-    end
-
-    return nil
-end
-
----Returns a PulseObject if one with matching id is found. nil otherwise
----@param id string? #Id for PulseObject.
----@return PulseObject | nil
-function M:_getObjectById(id)
-    if not id then
-        return nil
-    end
-
-    for _, v in ipairs(self.objects) do
-        if v.id == id then
-            return v
-        end
-    end
-
-    return nil
-end
-
----Parses a string into a SourceSink object.
----@param str string #The string to be parsed into objects.
----@return PulseObject | nil
-function M:_parseObjects(str)
-    local re = "([^:]+):%s+ID: ([^,]+), Name: ([^,]+), Mute: ([^,]+), Channels: ([^,]+), Volumes: %[([^]]+)%]([^\n]*)\n"
-
-    self.objects = {}
-    for t, id, name, muted, channels, volume, default in str:gmatch(re) do
-        if not t then
-            return
-        end
-
-        local volumes = {}
-        for i in volume:gmatch "[^,]+" do
-            local v = tonumber((utils.trim(utils.trim(i), "'"):gsub("(.*)%%", "%1")))
-            table.insert(volumes, v)
-        end
-
-        ---@type PulseObject
-        local object = {
-            id       = id,
-            name     = name,
-            channels = tonumber(channels) or 0,
-            volumes  = volumes,
-            output   = t:match "[^%s]+" == self.types.output,
-            muted    = muted == "1",
-            default  = default:match "Default" ~= nil,
-        }
-
-        table.insert(self.objects, object)
-    end
-end
-
 ---Initalize sources and sinks.
 function M:init()
-    awful.spawn.easy_async_with_shell(("%s %s %s"):format(self.commands.cmd, self.commands.list, ""),
-        function(stdout, stderror, _, exitCode)
-            if exitCode ~= 0 then
-                naughty.notification {
-                    title = "PulseMixerService Error",
-                    text = "The pulsemixer service was not able to initalize. Reason:\n" .. stderror,
-                    urgency = "critical",
-                }
-            end
-
-            self:_parseObjects(stdout)
-        end
-    )
 end
 
 ---Creates a new pulseMixer service instance.

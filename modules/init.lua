@@ -1,0 +1,3 @@
+return {
+    pulseaudio = require "pulseaudio"
+}

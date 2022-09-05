@@ -27,7 +27,7 @@ void pa_server_info_cb(UNUSED pa_context *_, const pa_server_info *info, void *u
     pa_threaded_mainloop_signal(pulse->mainloop, 0);
 }
 
-void pa_get_sinks_cb(UNUSED pa_context *_, const pa_sink_info *info, int eol, void *userdata) {
+void pa_get_sink_cb(UNUSED pa_context *_, const pa_sink_info *info, int eol, void *userdata) {
     pulseaudio_t *pulse = (pulseaudio_t *) userdata;
     if (!eol) {
         lua_State *L = pulse->L;
@@ -58,7 +58,7 @@ void pa_get_sink_input_cb(UNUSED pa_context *_, const pa_sink_input_info *info, 
     pa_threaded_mainloop_signal(pulse->mainloop, 0);
 }
 
-void pa_get_sources_cb(UNUSED pa_context *_, const pa_source_info *info, int eol, void *userdata) {
+void pa_get_source_cb(UNUSED pa_context *context, const pa_source_info *info, int eol, void *userdata) {
     pulseaudio_t *pulse = (pulseaudio_t *) userdata;
     if (!eol) {
         lua_State *L = pulse->L;
@@ -76,7 +76,7 @@ void pa_get_sources_cb(UNUSED pa_context *_, const pa_source_info *info, int eol
     pa_threaded_mainloop_signal(pulse->mainloop, 0);
 }
 
-void pa_get_source_outputs_cb(UNUSED pa_context *_, const pa_source_output_info *info, int eol, void *userdata) {
+void pa_get_source_output_cb(UNUSED pa_context *context, const pa_source_output_info *info, int eol, void *userdata) {
     pulseaudio_t *pulse = (pulseaudio_t *) userdata;
     if (!eol) {
         lua_State *L = pulse->L;
@@ -92,8 +92,6 @@ void pa_get_source_outputs_cb(UNUSED pa_context *_, const pa_source_output_info 
 void
 set_generic_values(lua_State *L, u_int32_t index, const char *name, const char *description, const pa_cvolume *volume,
                    int mute) {
-    double v = pa_sw_volume_to_linear(pa_cvolume_avg(volume));
-
     lua_pushnumber(L, index);
     lua_setfield(L, -2, "index");
 
@@ -103,7 +101,7 @@ set_generic_values(lua_State *L, u_int32_t index, const char *name, const char *
     lua_pushstring(L, description);
     lua_setfield(L, -2, "description");
 
-    lua_pushnumber(L, v);
+    lua_pushnumber(L, pa_cvolume_avg(volume));
     lua_setfield(L, -2, "volume");
 
     lua_pushboolean(L, mute);

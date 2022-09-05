@@ -14,24 +14,66 @@
 
 int l_call(lua_State *L, callback *call);
 
-int get_sinks(lua_State *L) { return l_call(L, pa_get_sinks); }
+int mute(lua_State *L) {
+    return 0;
+}
 
-int get_sink_inputs(lua_State *L) { return l_call(L, pa_get_sink_inputs); }
+int get(lua_State *L) {
+    if (!lua_istable(L, -1)) {
+        return luaL_error(L, "%s\n", "Arguments cannot be nil.");
+    }
 
-int get_sources(lua_State *L) { return l_call(L, pa_get_sources); }
+    lua_getfield(L, -1, "type");
+    if (lua_isnil(L, -1)) {
+        return luaL_error(L, "%s\n",
+                          "Argument type cannot be nil. Should be of type {sink, sink_input, source, source_output}.");
+    }
+    const char *type_str = lua_tostring(L, -1);
+    lua_pop(L, 1);
 
-int get_source_outputs(lua_State *L) { return l_call(L, pa_get_source_outputs); }
+    switch (string_type_to_enum(type_str)) {
+        case sink:
+            return l_call(L, pa_get_sinks);
+        case sink_input:
+            return l_call(L, pa_get_sink_inputs);
+        case source:
+            return l_call(L, pa_get_sources);
+        case source_output:
+            return l_call(L, pa_get_source_outputs);
+        case all:
+            return l_call(L, pa_get_all);
+        default:
+            return luaL_error(L, "%s\n",
+                              "Argument type is not valid. Should be of type {sink, sink_input, source, source_output}.");
+    }
+}
 
 const luaL_Reg pulseaudio_reg[] = {
-        {"get_sinks",          get_sinks},
-        {"get_sink_inputs",    get_sink_inputs},
-        {"get_sources",        get_sources},
-        {"get_source_outputs", get_source_outputs},
+        {"mute", mute},
+        {"get",  get},
         {NULL, NULL}
 };
 
 UNUSED int luaopen_pulseaudio(lua_State *L) {
     luaL_newlib(L, pulseaudio_reg);
+
+    lua_newtable(L);
+
+    lua_pushnumber(L, PA_VOLUME_MUTED);
+    lua_setfield(L, -2, "volume_mute");
+
+    lua_pushnumber(L, PA_VOLUME_NORM);
+    lua_setfield(L, -2, "volume_norm");
+
+    lua_newtable(L);
+    for (int i = 0; i < 4; i++) {
+        lua_pushstring(L, PA_TYPES_STRING[i]);
+        lua_rawseti(L, -2, i + 1);
+    }
+    lua_setfield(L, -2, "types");
+
+    lua_setfield(L, -2, "defaults");
+
     return 1;
 }
 
