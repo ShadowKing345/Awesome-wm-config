@@ -12,7 +12,7 @@ local wibox     = require "wibox"
 local utils = require "utils"
 
 --------------------------------------------------
-local M = { mt = {} }
+local M = { mt = {}, wibox = nil, pulseaudio_service = nil }
 
 function M.defaultStyle(style)
     local n = "widget_volume_"
@@ -27,9 +27,67 @@ function M.defaultStyle(style)
     }, style or {})
 end
 
+function M:init()
+    self.wibox = wibox {
+        x = 10,
+        y = 10,
+        width = 250,
+        height = 30,
+        visible = false,
+        ontop = true,
+        widget = wibox.widget {
+            text = self.pulseaudio_service:volume {},
+            widget = wibox.widget.textbox,
+        }
+    }
+end
+
+function M:toggle(args)
+    args = args or {}
+
+    if not self.wibox then
+        self:init()
+    end
+
+    if self.wibox.visible then
+        self:hide()
+    else
+        self:show(args)
+    end
+end
+
+function M:show(args)
+    args = args or {}
+
+    if not self.wibox then
+        self:init()
+    end
+
+    ((args.geometry and awful.placement.next_to or awful.placement.under_mouse) + awful.placement.no_offscreen)
+    (self.wibox, { geometry = args.geometry })
+
+    self.wibox.visible = true
+end
+
+function M:hide()
+    if not self.wibox then
+        self:init()
+    end
+
+    self.wibox.visible = false
+end
+
 function M:new(args)
     args = args or {}
     local style = self.defaultStyle(args.style or {})
+
+    if not self.pulseaudio_service or args.force_reload then
+        self.pulseaudio_service = args.env.pulseaudio_service or nil
+    end
+
+    if not self.wibox then
+        self:init()
+    end
 
     local button = wibox.widget {
         {
@@ -52,12 +110,13 @@ function M:new(args)
 
     button:connect_signal("mouse::enter", function() button.bg = style.bg.hover end)
     button:connect_signal("mouse::leave", function() button.bg = style.bg.normal end)
-    button:buttons(gTable.join(args.buttons or {},
-        awful.button({}, 1,
-            function() button.bg = style.bg.active end,
-            function() button.bg = style.bg.hover end
-        )
+    button:buttons(gTable.join(
+        args.buttons or {},
+        awful.button({}, 1, function() button.bg = style.bg.active end, function() button.bg = style.bg.hover end)
     ))
+    button:connect_signal("button::press", function(_, _, _, _, _, geometry)
+        self:toggle { geometry = geometry }
+    end)
 
     gTable.crush(w, self, false)
 
