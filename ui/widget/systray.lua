@@ -2,11 +2,8 @@
 
     System tray widget.
 
---]]
+]]
 --------------------------------------------------
-local setmetatable = setmetatable
-local unpack       = table.unpack
-
 local awful     = require "awful"
 local beautiful = require "beautiful"
 local gTable    = require "gears.table"
@@ -109,7 +106,6 @@ function M:updatePopupGeometry()
 
     self.popup.height = (border_width * 2) + padding_vertical + size
     self.popup.width = (border_width * 2) + padding_horizontal + (count * size)
-    self.popup.x = self.popup.x - (self.popup.width / 2)
 end
 
 ---Shows the popup.
@@ -120,13 +116,10 @@ function M:show(args)
     end
     args = args or {}
 
-    M:updatePopupGeometry()
+    self:updatePopupGeometry();
 
-    if args.geometry then
-        awful.placement.next_to(self.popup, { geometry = args.geometry })
-    else
-        awful.placement.under_mouse(self.popup)
-    end
+    ((args.geometry and awful.placement.next_to or awful.placement.under_mouse) + awful.placement.no_offscreen)
+    (self.popup, { geometry = args.geometry, preferred_anchors = "middle" })
 
     self.popup.visible = true
 end
@@ -193,17 +186,18 @@ function M:new(args)
     }
 
     button:buttons(gTable.join(
-        unpack(args.buttons or {}),
+        args.buttons or {},
         awful.button({}, 1,
             function() button.bg = sWidget.bg.active end,
             function() button.bg = sWidget.bg.hover end)
     ))
     button:connect_signal("mouse::enter", function() button.bg = sWidget.bg.hover end)
     button:connect_signal("mouse::leave", function() button.bg = sWidget.bg.normal end)
-    button:connect_signal("button::press",
-        function(_, _, _, _, _, geometry)
-            self:toggle { geometry = geometry }
-        end)
+    button:connect_signal("button::press", function(_, _, _, _, _, geometry)
+        self:toggle { geometry = geometry }
+    end)
+
+    gTable.crush(w, self, false)
 
     return w
 end
