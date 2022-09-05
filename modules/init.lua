@@ -1,3 +1,3 @@
 return {
-    pulseaudio = require "pulseaudio"
+    pulseaudio = require "pulseaudio" or nil,
 }

@@ -18,6 +18,10 @@ int mute(lua_State *L) {
     return 0;
 }
 
+int set_volume(lua_State *L) {
+    return 0;
+}
+
 int get(lua_State *L) {
     if (!lua_istable(L, -1)) {
         return luaL_error(L, "%s\n", "Arguments cannot be nil.");
@@ -49,8 +53,9 @@ int get(lua_State *L) {
 }
 
 const luaL_Reg pulseaudio_reg[] = {
-        {"mute", mute},
-        {"get",  get},
+        {"mute",       mute},
+        {"get",        get},
+        {"set_volume", set_volume},
         {NULL, NULL}
 };
 

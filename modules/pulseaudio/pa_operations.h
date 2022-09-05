@@ -8,6 +8,7 @@
 typedef void (*cb)();
 
 typedef pa_operation *(*pFunction)(pa_context *, cb, void *);
+typedef pa_operation *(*pFunctionI)(pa_context *, uint32_t, cb, void *);
 
 
 int pa_init(pulseaudio_t *pulse);
