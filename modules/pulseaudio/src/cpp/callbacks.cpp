@@ -5,7 +5,8 @@
 #define UNUSED __attribute((unused))
 
 #include <lua.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "callbacks.h"
 #include "types.h"
