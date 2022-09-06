@@ -51,6 +51,36 @@ void pa_get_all(pulseaudio_t *pulse) {
     lua_setfield(L, -2, "source_output");
 }
 
+void pa_mute_sink(pulseaudio_t *pulse) {
+    lua_State *L = pulse->L;
+
+    lua_getfield(L, -1, "mute");
+    lua_getfield(L, -1, "index");
+
+    int index = lua_tonumber(L, -1);
+    lua_pop(L, -1);
+
+    int mute;
+
+    if (lua_isnumber(L, -1)) {
+        mute = lua_tonumber(L, -1);
+    } else {
+        mute = 0;
+    }
+    lua_pop(L, -1);
+
+    pa_threaded_mainloop_lock(pulse->mainloop);
+    pa_operation *op = pa_context_set_sink_mute_by_index(pulse->context, index, mute, pa_success_cb, (void *) pulse);
+
+    while (pa_operation_get_state(op) == PA_OPERATION_RUNNING) {
+        pa_threaded_mainloop_wait(pulse->mainloop);
+    }
+
+    pa_threaded_mainloop_unlock(pulse->mainloop);
+
+    lua_pushboolean(L, pulse->success);
+}
+
 void state_cb(pa_context *context, void *userdata) {
     pulseaudio_t *pulse = (pulseaudio_t *) userdata;
 

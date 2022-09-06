@@ -89,6 +89,12 @@ void pa_get_source_output_cb(UNUSED pa_context *context, const pa_source_output_
     pa_threaded_mainloop_signal(pulse->mainloop, 0);
 }
 
+void pa_success_cb(UNUSED pa_context *_, int success, void *userdata) {
+    pulseaudio_t *pulse = (pulseaudio_t *) userdata;
+    pulse->success = success;
+    pa_threaded_mainloop_signal(pulse->mainloop, 0);
+}
+
 void
 set_generic_values(lua_State *L, u_int32_t index, const char *name, const char *description, const pa_cvolume *volume,
                    int mute) {

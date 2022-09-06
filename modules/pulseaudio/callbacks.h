@@ -17,4 +17,6 @@ void pa_get_source_cb(pa_context *context, const pa_source_info *info, int eol, 
 
 void pa_get_source_output_cb(pa_context *context, const pa_source_output_info *info, int eol, void *userdata);
 
+void pa_success_cb(pa_context *context, int success, void* userdata);
+
 #endif //PULSEAUDIO_CALLBACK_H

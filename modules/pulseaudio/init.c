@@ -12,14 +12,74 @@
 #include "pa_operations.h"
 #include "callbacks.h"
 
+const char *type_message = "Should be of type {sink, sink_input, source, source_output}";
+
 int l_call(lua_State *L, callback *call);
 
 int mute(lua_State *L) {
-    return 0;
+    if (!lua_istable(L, -1)) {
+        return luaL_error(L, "%s\n", "Arguments cannot be nil.");
+    }
+
+    lua_getfield(L, -1, "index");
+    if (lua_isnil(L, -1)) {
+        return luaL_error(L, "%s\n", "Index field cannot be nil.");
+    }
+    lua_setfield(L, -1, "index");
+
+    lua_getfield(L, -1, "type");
+    if (lua_isnil(L, -1)) {
+        return luaL_error(L, "%s\n", "Type field cannot be nil.");
+    }
+
+    const char *type_str = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    switch (string_type_to_enum(type_str)) {
+        case sink:
+            return l_call(L, pa_mute_sink);
+        case sink_input:
+            return l_call(L, pa_mute_sink_input);
+        case source:
+            return l_call(L, pa_mute_source);
+        case source_output:
+            return l_call(L, pa_mute_source_output);
+        default:
+            return luaL_error(L, "%s %s\n", "Wrong type value.", type_message);
+    }
 }
 
 int set_volume(lua_State *L) {
-    return 0;
+    if (!lua_istable(L, -1)) {
+        return luaL_error(L, "%s\n", "Arguments cannot be nil.");
+    }
+
+    lua_getfield(L, -1, "index");
+    if (lua_isnil(L, -1)) {
+        return luaL_error(L, "%s\n", "Index field cannot be nil.");
+    }
+    lua_setfield(L, -1, "index");
+
+    lua_getfield(L, -1, "type");
+    if (lua_isnil(L, -1)) {
+        return luaL_error(L, "%s\n", "Type field cannot be nil.");
+    }
+
+    const char *type_str = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    switch (string_type_to_enum(type_str)) {
+        case sink:
+            return l_call(L, pa_volume_sink);
+        case sink_input:
+            return l_call(L, pa_volume_sink_input);
+        case source:
+            return l_call(L, pa_volume_source);
+        case source_output:
+            return l_call(L, pa_volume_source_output);
+        default:
+            return luaL_error(L, "%s %s\n", "Wrong type value.", type_message);
+    }
 }
 
 int get(lua_State *L) {
@@ -29,8 +89,7 @@ int get(lua_State *L) {
 
     lua_getfield(L, -1, "type");
     if (lua_isnil(L, -1)) {
-        return luaL_error(L, "%s\n",
-                          "Argument type cannot be nil. Should be of type {sink, sink_input, source, source_output}.");
+        return luaL_error(L, "%s %s\n", "Argument type cannot be nil.", type_message);
     }
     const char *type_str = lua_tostring(L, -1);
     lua_pop(L, 1);
