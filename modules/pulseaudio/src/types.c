@@ -2,7 +2,7 @@
 // Created by alex on 9/5/22.
 //
 
-#include <cstring>
+#include <string.h>
 
 #include "types.h"
 

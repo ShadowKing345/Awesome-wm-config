@@ -5,16 +5,14 @@
 #ifndef PULSEAUDIO_LUA_MODULE_H
 #define PULSEAUDIO_LUA_MODULE_H
 
-class lua_module {
-public:
-    lua_module(sol::state_view *lua);
+int get_object(lua_State *L);
 
-    sol::table get();
-//    int set_volume();
-//    int mute();
-//    int set_default();
-private:
-    sol::state_view *lua;
-};
+int set_volume(lua_State *L);
+
+int mute_object(lua_State *L);
+
+int set_default_sink_source(lua_State *L);
+
+int move_input_output(lua_State *L);
 
 #endif //PULSEAUDIO_LUA_MODULE_H

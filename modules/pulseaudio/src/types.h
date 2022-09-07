@@ -35,8 +35,7 @@ typedef struct mute_args_t {
     int mute;
 } mute_args_t;
 
-class pulseaudio_t {
-public:
+typedef struct pulseaudio_t {
     pa_threaded_mainloop *mainloop;
     pa_context *context;
 
@@ -46,7 +45,7 @@ public:
     char *default_source;
 
     int success;
-};
+} pulseaudio_t;
 
 typedef int(pa_callback_t)(pulseaudio_t *pulse, enum PA_TYPE type);
 

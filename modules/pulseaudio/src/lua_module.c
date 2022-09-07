@@ -4,61 +4,63 @@
 
 #define UNUSED __attribute((unused))
 
-#include "sol/sol.hpp"
-
 #include <lua.h>
+#include <lauxlib.h>
 #include <pulse/pulseaudio.h>
 
 #include "lua_module.h"
+#include "types.h"
 
 const char *type_message = "Should be of type {sink, sink_input, source, source_output}";
 
-sol::table lua_module::get() {
-    return this->lua->create_table_with(1, 3);
+int get_object(lua_State *L) {
+    lua_newtable(L);
+    return 1;
 }
 
-lua_module::lua_module(sol::state_view *lua) {
-    this->lua = lua;
+int set_volume(lua_State *L) {
+    return 0;
 }
 
-extern "C" UNUSED int luaopen_pulseaudio(lua_State *L) {
-    sol::state_view lua = sol::state_view(L);
-    auto luaModule = lua_module(&lua);
+int mute_object(lua_State *L) {
+    return 0;
+}
 
-    lua.open_libraries(sol::lib::base);
+int set_default_sink_source(lua_State *L) {
+    return 0;
+}
 
-    sol::table table = lua.create_table_with(
-            "defaults",
-            lua.create_table_with(
-                    "volume_mute", PA_VOLUME_MUTED,
-                    "volume_norm", PA_VOLUME_NORM
-            ),
-            "get",
-            &lua_module::get
-    );
-//    const luaL_Reg pulseaudio_reg[] = {
-//            {"mute",       mute},
-//            {"get",        get},
-//            {"set_volume", set_volume},
-//            {nullptr,      nullptr}
-//    };
-//
-//    luaL_newlib(L, pulseaudio_reg);
-//
-//    lua_newtable(L);
-//
-//    lua_pushnumber(L, PA_VOLUME_MUTED);
-//    lua_setfield(L, -2, "volume_mute");
-//
-//    lua_pushnumber(L, PA_VOLUME_NORM);
-//    lua_setfield(L, -2, "volume_norm");
-//
-//    lua_newtable(L);
-//    for (int i = 0; i < 4; i++) {
-//        lua_pushstring(L, PA_TYPES_STRING[i]);
-//        lua_rawseti(L, -2, i + 1);
-//    }
-//    lua_setfield(L, -2, "types");
-    sol::stack::push(lua, table);
+int move_input_output(lua_State *L) {
+    return 0;
+}
+
+UNUSED int luaopen_pulseaudio(lua_State *L) {
+    const luaL_Reg pulseaudio_reg[] = {
+            {"get_object",              get_object},
+            {"set_volume",              set_volume},
+            {"mute_object",             mute_object},
+            {"set_default_sink_source", set_default_sink_source},
+            {"move_input_output",       move_input_output},
+            {NULL, NULL}
+    };
+
+    luaL_newlib(L, pulseaudio_reg);
+
+    lua_newtable(L);
+
+    lua_pushnumber(L, PA_VOLUME_MUTED);
+    lua_setfield(L, -2, "volume_mute");
+
+    lua_pushnumber(L, PA_VOLUME_NORM);
+    lua_setfield(L, -2, "volume_norm");
+
+    lua_newtable(L);
+    for (int i = 0; i < 4; i++) {
+        lua_pushstring(L, PA_TYPES_STRING[i]);
+        lua_rawseti(L, -2, i + 1);
+    }
+    lua_setfield(L, -2, "types");
+    lua_setfield(L, -2, "defaults");
+
     return 1;
 }
