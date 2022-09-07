@@ -9,11 +9,11 @@ typedef void (*cb)();
 
 typedef pa_operation *(*pFunction)(pa_context *, cb, void *);
 
-int pa_get(pulseaudio_t *pulse, enum PA_TYPE type);
+int pa_get(pulseaudio_t *pulse, void *userdata);
 
-int pa_volume(pulseaudio_t *pulse, enum PA_TYPE type);
+int pa_set_volume(pulseaudio_t *pulse, void *userdata);
 
-int pa_mute(pulseaudio_t *pulse, enum PA_TYPE type);
+int pa_mute_object(pulseaudio_t *pulse, void *userdata);
 
 int pa_init(pulseaudio_t *pulse);
 

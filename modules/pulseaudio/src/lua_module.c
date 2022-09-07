@@ -10,20 +10,42 @@
 
 #include "lua_module.h"
 #include "types.h"
+#include "pa_operations.h"
 
-const char *type_message = "Should be of type {sink, sink_input, source, source_output}";
+int l_call(lua_State *L, pa_callback_t cb, void *userdata) {
+    pulseaudio_t pulse;
+    pulse.L = L;
+
+    if (!pa_init(&pulse)) {
+        pa_deinit(&pulse);
+        return luaL_error(L, "%s\n", "Failed to initialize pulseaudio.");
+    }
+
+    int result = cb(&pulse, userdata);
+    pa_deinit(&pulse);
+
+    return result;
+}
 
 int get_object(lua_State *L) {
-    lua_newtable(L);
-    return 1;
+    get_args_t get_args;
+    try_parse_get_args(L, &get_args);
+
+    return l_call(L, pa_get, (void *) &get_args);
 }
 
 int set_volume(lua_State *L) {
-    return 0;
+    volume_args_t volume_args;
+    try_parse_volume_args(L, &volume_args);
+
+    return l_call(L, pa_set_volume, (void *) &volume_args);
 }
 
 int mute_object(lua_State *L) {
-    return 0;
+    mute_args_t mute_args;
+    try_parse_mute_args(L, &mute_args);
+
+    return l_call(L, pa_mute_object, (void *) &mute_args);
 }
 
 int set_default_sink_source(lua_State *L) {
