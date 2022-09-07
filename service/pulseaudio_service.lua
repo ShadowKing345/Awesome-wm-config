@@ -53,7 +53,7 @@ function M:init()
         return
     end
 
-    self.objects = pulseaudio.get { type = "all" }
+    self.objects = pulseaudio.get_object { type = "all" }
 end
 
 ---Creates a new pulseMixer service instance.
