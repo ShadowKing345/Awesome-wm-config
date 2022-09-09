@@ -9,9 +9,9 @@ local M = { groupName = "Audio" }
 
 function M.keyboard(env)
     env = env or {}
-    local pulseMixer = env.pulseMixer
+    local service = env.pulseaudio_service
 
-    if not pulseMixer then
+    if not service then
         return {}
     end
 
@@ -19,19 +19,19 @@ function M.keyboard(env)
         {
             modifiers   = {},
             key         = "XF86AudioMute",
-            press       = function() pulseMixer:mute { toggle = true } end,
+            press       = function() service:mute { mode = service.PAS_MUTE_MODES.TOGGLE } end,
             description = "Toggle Mute",
         },
         {
             modifiers   = {},
             key         = "XF86AudioRaiseVolume",
-            press       = function() pulseMixer:volume { amount = 1, delta = true } end,
+            press       = function() service:volume { amount = 1, delta = true, type = "sink" } end,
             description = "Raise Volume",
         },
         {
             modifiers   = {},
             key         = "XF86AudioLowerVolume",
-            press       = function() pulseMixer:volume { amount = -1, delta = true } end,
+            press       = function() service:volume { amount = -1, delta = true, type = "sink" } end,
             description = "Lower Volume",
         },
     }
