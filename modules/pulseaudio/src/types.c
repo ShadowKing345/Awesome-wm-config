@@ -77,8 +77,8 @@ void try_parse_volume_args(lua_State *L, volume_args_t *args) {
     try_parse_get_args_enf(L, (get_args_t *) args, 1);
 
     lua_getfield(L, -1, "volume");
-    if (!lua_isnumber(L, -1)) {
-        luaL_error(L, "Bad argument type. Volume must be of type number.\n");
+    if (!lua_isinteger(L, -1)) {
+        luaL_error(L, "Bad argument type. Volume must be of type integer.\n");
         return;
     }
     args->volume = lua_tointeger(L, -1);
