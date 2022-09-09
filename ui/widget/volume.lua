@@ -6,6 +6,7 @@
 --------------------------------------------------
 local awful     = require "awful"
 local beautiful = require "beautiful"
+local gears     = require "gears"
 local gTable    = require "gears.table"
 local wibox     = require "wibox"
 
@@ -27,17 +28,67 @@ function M.defaultStyle(style)
     }, style or {})
 end
 
+---@param obj PAObject
+function M:_create_slider_widget(obj)
+    if not obj then
+        return nil
+    end
+
+    local slider = wibox.widget {
+        bar_shape           = gears.shape.rounded_rect,
+        bar_height          = 3,
+        bar_color           = "#ff0000",
+        handle_color        = "#00ff00",
+        handle_width        = 10,
+        handle_shape        = gears.shape.circle,
+        handle_border_color = "#0000ff",
+        handle_border_width = 1,
+        minimum             = self.pulseaudio_service.defaults.volume_mute,
+        maximum             = self.pulseaudio_service.defaults.volume_norm,
+        widget              = wibox.widget.slider,
+    }
+    slider.value = obj.volume
+    slider:connect_signal(
+        "property::value",
+        function(_, new_value)
+            self.pulseaudio_service:volume { index = obj.index, amount = new_value, raw = true }
+        end
+    )
+
+    return wibox.widget {
+        slider,
+        direction = "east",
+        widget    = wibox.container.rotate,
+    }
+end
+
 function M:init()
+    local width = 50
+
     self.wibox = wibox {
         x = 10,
         y = 10,
-        width = 250,
-        height = 30,
+        width = 50 * 3,
+        height = 300,
         visible = false,
         ontop = true,
         widget = wibox.widget {
-            text = self.pulseaudio_service:volume {},
-            widget = wibox.widget.textbox,
+            {
+                {
+                    text   = "Output",
+                    widget = wibox.widget.textbox,
+                },
+                {
+                    text   = "Input",
+                    widget = wibox.widget.textbox,
+                },
+                layout = wibox.layout.flex.horizontal,
+            },
+            {
+                self:_create_slider_widget(self.pulseaudio_service.objects.sink[1] or {}),
+                layout = wibox.layout.fixed.horizontal,
+            },
+            layout = wibox.layout.align.vertical,
         }
     }
 end

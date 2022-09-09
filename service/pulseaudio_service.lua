@@ -213,7 +213,10 @@ end
 function M:new(args)
     args = args or {}
 
-    self:init()
+    if _check_pa() then
+        self.defaults = pulseaudio.defaults
+        self:init()
+    end
     return self
 end
 
@@ -277,8 +280,7 @@ return setmetatable(M, M.mt)
 ---@field index string #Id of source/sink.
 ---@field name string? #Name of source/sink.
 ---@field mute boolean #Is source/sink muted.
----@field channels number #Number of channels.
----@field volumes number[] #Collection of all the channel volumes.
+---@field volume number #Average volume of all channels..
 ---@field default boolean #Is source/sink the default.
 
 ---Arguments for pulsemixer service.
