@@ -26,8 +26,7 @@ awful.layout.append_default_layouts(env.layouts)
 
 -- Services
 --------------------------------------------------
-local pulseaudio_service = require "service.pulseaudio_service" { env = env }
-env.pulseaudio_service   = pulseaudio_service
+env.pulseaudio_service = require "service.pulseaudio_service" { env = env }
 
 -- Screen configuration
 --------------------------------------------------
