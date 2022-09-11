@@ -8,7 +8,8 @@
     "mousegrabber",
     "screen",
     "root",
-    "tab"
+    "tab",
+    "tag"
   ],
   "workspace": {
     "library": [

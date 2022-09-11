@@ -4,7 +4,7 @@
 --
 --------------------------------------------------
 local setmetatable = setmetatable
-local unpack       = unpack or table.unpack
+local unpack       = table.unpack
 
 local beautiful    = require "beautiful"
 local gTable       = require "gears.table"
@@ -168,12 +168,12 @@ return setmetatable(category, category.mt)
 ---@class CategoryStyle
 ---@field bg ButtonStyle #The background color.
 ---@field fg ButtonStyle #The foreground color.
----@field padding|{left:number,right:number,top:number,bottom:number} number #The amount of padding used.
+---@field padding {left:number,right:number,top:number,bottom:number} | number #The amount of padding used.
 ---@field spacing number #The amount of space between elements.
----@field default_icon string #The icon used if none can be found.
+---@field default_icon string | nil #The icon used if none can be found.
 ---@field icon_width number #The width for the category icon.
 ---@field icon_height number #The height for the category icon.
----@field right_icon string #The image used for the right button.
+---@field right_icon string | nil #The image used for the right button.
 ---@field right_width number #The width for the right button.
 ---@field right_height number #The height for the right button.
 ---@field font string #Font for the text.
