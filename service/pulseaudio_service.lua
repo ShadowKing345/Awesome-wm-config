@@ -42,6 +42,7 @@ local M = {
     mt               = {},
     objects          = {},
     subscribers      = {},
+    PA_TYPES         = PA_TYPES,
     PAS_SIGNAL_TYPES = PAS_SIGNAL_TYPES,
     PAS_MUTE_MODES   = PAS_MUTE_MODES,
 }
@@ -258,6 +259,32 @@ function M:_get_object(type, index)
     return query(tables)
 end
 
+---Returns a list of the objects stored in the service.
+---@param type PA_TYPES? #The type of object you wish to get. (Default: all)
+---@param flatten boolean? #Flatten the list down to a single array. (Default: false)
+---@return PAObject[] | table<PA_TYPES, PAObject[]>
+function M:get_objects(type, flatten)
+    if not type then
+        type = PA_TYPES.ALL
+    end
+
+    local objs = type == PA_TYPES.ALL and self.objects or self.objects[type]
+
+    if flatten and type == PA_TYPES.ALL and objs then
+        local flatten_result = {}
+
+        for _, category in pairs(objs) do
+            for _, obj in ipairs(category) do
+                table.insert(flatten_result, obj)
+            end
+        end
+
+        return flatten_result
+    end
+
+    return objs
+end
+
 --------------------------------------------------
 ---Creates a new pulseMixer service instance.
 ---@param args PASArgs
@@ -277,11 +304,12 @@ return setmetatable(M, M.mt)
 
 ---Defines a PulseAudioObject.
 ---@class PAObject
----@field index string #Id of source/sink.
+---@field index number #Id of source/sink.
 ---@field name string? #Name of source/sink.
 ---@field mute boolean #Is source/sink muted.
 ---@field volume number #Average volume of all channels..
 ---@field default boolean #Is source/sink the default.
+---@field type PA_TYPES #Type for the object.
 
 ---Arguments for pulsemixer service.
 ---@class PASArgs
