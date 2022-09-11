@@ -40,6 +40,8 @@ void pa_get_sink_cb(UNUSED pa_context *_, const pa_sink_info *info, int eol, voi
             lua_pushboolean(L, 0);
         }
         lua_setfield(L, -2, "default");
+        lua_pushstring(L, "sink");
+        lua_setfield(L, -2, "type");
         append_to_list(L);
     }
     pa_threaded_mainloop_signal(pulse->mainloop, 0);
@@ -53,6 +55,10 @@ void pa_get_sink_input_cb(UNUSED pa_context *_, const pa_sink_input_info *info, 
         set_generic_values(L, info->index, info->name, NULL, &info->volume,
                            info->mute);
         set_application_values(L, info->proplist);
+
+        lua_pushstring(L, "sink_input");
+        lua_setfield(L, -2, "type");
+
         append_to_list(L);
     }
     pa_threaded_mainloop_signal(pulse->mainloop, 0);
@@ -71,6 +77,10 @@ void pa_get_source_cb(UNUSED pa_context *context, const pa_source_info *info, in
             lua_pushboolean(L, 0);
         }
         lua_setfield(L, -2, "default");
+
+        lua_pushstring(L, "source");
+        lua_setfield(L, -2, "type");
+
         append_to_list(L);
     }
     pa_threaded_mainloop_signal(pulse->mainloop, 0);
@@ -84,6 +94,10 @@ void pa_get_source_output_cb(UNUSED pa_context *context, const pa_source_output_
         set_generic_values(L, info->index, info->name, NULL, &info->volume,
                            info->mute);
         set_application_values(L, info->proplist);
+
+        lua_pushstring(L, "source_output");
+        lua_setfield(L, -2, "type");
+
         append_to_list(L);
     }
     pa_threaded_mainloop_signal(pulse->mainloop, 0);
