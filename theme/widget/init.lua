@@ -11,7 +11,12 @@ local gShape    = require "gears.shape"
 local colors = require "theme.colors"
 
 --------------------------------------------------
-local M = { mt = {} }
+local M = {
+    widget_calls = {
+        volume = require "theme.widget.volume"
+    },
+    mt = {},
+}
 
 local function shape(ctx, width, height)
     gShape.rounded_rect(ctx, width, height, dpi(3))
@@ -39,21 +44,11 @@ function M:call(config)
             shape         = shape,
             timer_timeout = 10,
         },
-        volume = {
-            bg      = {
-                normal = colors.theme.bg.button.normal,
-                hover  = colors.theme.bg.button.hover,
-                active = colors.theme.bg.button.active,
-            },
-            fg      = {
-                normal = colors.theme.fg.button.normal,
-                hover  = colors.theme.fg.button.hover,
-                active = colors.theme.fg.button.active,
-            },
-            padding = dpi(5),
-            margin  = dpi(5),
-        },
     }
+
+    for _, c in pairs(self.widget_calls) do
+        config = c(config)
+    end
 
     return config
 end
