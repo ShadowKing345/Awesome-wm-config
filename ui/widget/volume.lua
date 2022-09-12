@@ -14,15 +14,18 @@ local utils = require "utils"
 
 --------------------------------------------------
 local M = {
-    mt = {},
-    wibox = nil,
+    mt                 = {},
+    wibox              = nil,
     ---@type PulseAudioService
-    pulseaudio_service = nil
+    pulseaudio_service = nil,
+    wibox_style        = nil,
+    sliders            = nil,
 }
 
 function M.default_style(style)
     local n = "widget_volume_"
     local w = n .. "wibox_"
+    local s = w .. "slider_"
     return utils.deepMerge({
         bg      = {
             normal = beautiful[n .. "bg_normal"],
@@ -45,33 +48,42 @@ function M.default_style(style)
                 },
                 padding = beautiful[w .. "button_padding"] or 0,
             },
-            handle = {
-                color        = beautiful[w .. "handle_color"] or beautiful.bg_focus,
-                shape        = beautiful[w .. "handle_shape"] or gShape.circle,
-                width        = beautiful[w .. "handle_width"] or 10,
-                border_color = beautiful[w .. "handle_border_color"],
-                border_width = beautiful[w .. "handle_border_width"] or 0,
-            }
+            slider = {
+                width  = beautiful[s .. "width"] or 50,
+                bg     = beautiful[s .. "bg"],
+                handle = {
+                    color        = beautiful[s .. "handle_color"] or beautiful.bg_focus,
+                    shape        = beautiful[s .. "handle_shape"] or gShape.circle,
+                    width        = beautiful[s .. "handle_width"] or 10,
+                    border_color = beautiful[s .. "handle_border_color"],
+                    border_width = beautiful[s .. "handle_border_width"] or 0,
+                },
+                bar    = {
+                    height = beautiful[s .. "bar_height"] or 3,
+                    color  = beautiful[s .. "bar_color"],
+                    shape  = beautiful[s .. "bar_shape"] or gShape.rounded_rect,
+                }
+            },
         },
     }, style or {})
 end
 
 ---@param obj PAObject
 ---@return any
-function M:_create_slider_widget(obj)
-    if not obj then
+function M:_create_slider_widget(obj, style)
+    if not (obj and style) then
         return nil
     end
 
     local slider = wibox.widget {
-        bar_shape           = gShape.rounded_rect,
-        bar_height          = 3,
-        bar_color           = "#ff0000",
-        handle_color        = "#00ff00",
-        handle_width        = 10,
-        handle_shape        = gShape.circle,
-        handle_border_color = "#0000ff",
-        handle_border_width = 1,
+        bar_shape           = style.bar.shape,
+        bar_height          = style.bar.height,
+        bar_color           = style.bar.color,
+        handle_color        = style.handle.color,
+        handle_width        = style.handle.width,
+        handle_shape        = style.handle.shape,
+        handle_border_color = style.handle.border_color,
+        handle_border_width = style.handle.border_width,
         minimum             = self.pulseaudio_service.defaults.volume_mute,
         maximum             = self.pulseaudio_service.defaults.volume_norm,
         widget              = wibox.widget.slider,
@@ -93,33 +105,44 @@ function M:_create_slider_widget(obj)
     end)
 
     return wibox.widget {
-        slider,
-        direction = "east",
-        widget    = wibox.container.rotate,
+        {
+            slider,
+            direction = "east",
+            widget    = wibox.container.rotate,
+        },
+        bg           = style.bg,
+        forced_width = style.width,
+        widget       = wibox.container.background,
     }
 end
 
-function M:_get_sliders(force)
-    if self.object_widgets and not force then
+function M:_get_sliders(force, style)
+    style = style or self.wibox_style.slider
+    if self.slider_widgets and not force then
         return
     end
 
     local objs = self.pulseaudio_service:get_objects(self.pulseaudio_service.PA_TYPES.ALL, true)
 
-    self.object_widgets = {
+    self.slider_widgets = {
         layout = wibox.layout.fixed.horizontal,
     }
 
     for _, obj in ipairs(objs) do
-        table.insert(self.object_widgets, self:_create_slider_widget(obj))
+        table.insert(self.slider_widgets, self:_create_slider_widget(obj, style))
     end
 end
 
 local function _gen_button(text, style, button)
     local btn = wibox.widget {
         {
-            text   = text,
-            widget = wibox.widget.textbox,
+            {
+                text   = text,
+                align  = "center",
+                widget = wibox.widget.textbox,
+            },
+            margins = style.padding,
+            widget  = wibox.container.margin,
         },
         bg     = style.bg.normal,
         fg     = style.fg.normal,
@@ -150,34 +173,6 @@ local function _gen_button(text, style, button)
         )
     ))
     return btn
-end
-
-function M:init(style)
-    self:_get_sliders(true)
-
-    local output_btn = _gen_button("output", style.button, awful.button({}, 1, function()  end))
-    local input_btn  = _gen_button("input", style.button, awful.button({}, 1, function() end))
-
-    self.wibox = wibox {
-        x = 10,
-        y = 10,
-        width = 50 * 3,
-        height = 300,
-        visible = false,
-        ontop = true,
-        widget = wibox.widget
-        {
-            {
-                output_btn,
-                input_btn,
-                layout = wibox.layout.flex.horizontal,
-            },
-            self.object_widgets,
-            layout = wibox.layout.align.vertical,
-        }
-    }
-
-    self.pulseaudio_service:connect_signal("update::all", function() self:_get_sliders(true) end)
 end
 
 function M:toggle(args)
@@ -213,6 +208,39 @@ function M:hide()
     end
 
     self.wibox.visible = false
+end
+
+function M:init(style)
+    if not self.wibox_style then
+        self.wibox_style = style
+    end
+    style = style or self.wibox_style
+
+    self:_get_sliders(true, style.slider)
+
+    local output_btn = _gen_button("output", style.button, awful.button({}, 1, function() end))
+    local input_btn  = _gen_button("input", style.button, awful.button({}, 1, function() end))
+
+    self.wibox = wibox {
+        x = 10,
+        y = 10,
+        width = style.slider.width * 4,
+        height = 300,
+        visible = false,
+        ontop = true,
+        widget = wibox.widget
+        {
+            {
+                output_btn,
+                input_btn,
+                layout = wibox.layout.flex.horizontal,
+            },
+            self.slider_widgets,
+            layout = wibox.layout.align.vertical,
+        }
+    }
+
+    self.pulseaudio_service:connect_signal("update::all", function() self:_get_sliders(true) end)
 end
 
 function M:new(args)
