@@ -1,3 +1,6 @@
+Due to a large amount of limitations I found within awesomewm code I have chosen to leave it for a different window manager.
+I shall leave this repo open for anyone to see but otherwise it can be declared as abandoned.
+
 # Awesome Window Manager Config
 The awesome window manager config I created for myself.
 Using Catppucin color scheme with rough understanding of how the colors are meant to be applied.
