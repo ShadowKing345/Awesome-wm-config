@@ -6,9 +6,11 @@
 
 #include <lua.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "callbacks.h"
 #include "types.h"
+#include "pa_operations.h"
 
 void
 set_generic_values(lua_State *L, u_int32_t index, const char *name, const char *description, const pa_cvolume *volume,
@@ -149,6 +151,63 @@ void set_application_values(lua_State *L, const pa_proplist *proplist) {
     lua_setfield(L, -2, "application");
 }
 
+/**
+ * Callback for when a pulseaudio event occurs.
+ * @param c Unused context.
+ * @param t Event type
+ * @param idx Index id of pulseaudio object.
+ * @param userdata void* cast of pulseaudio_t
+ */
+void pa_subscription_cb(UNUSED pa_context *c, pa_subscription_event_type_t t, uint32_t idx, void *userdata) {
+    pulseaudio_t *pulse = (pulseaudio_t *) userdata;
+    lua_State *L = pulse->L;
+
+    if ((t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SINK) {
+        if ((t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_NEW) {
+            lua_rawgeti(L, LUA_REGISTRYINDEX, pulse->tab_index);
+            lua_rawgeti(L, -1, pulse->fn);
+
+            get_args_t args;
+            args.index = (int) idx;
+            args.type = sink;
+
+            lua_pushnumber(L, idx);
+            lua_call(L, 1, 0);
+
+            lua_pop(L, 2);
+        }
+    }
+}
+
+/**
+ * Callback for the pulseaudio context state.
+ * @param context Pulseaudio context pointer.
+ * @param userdata void* cast of pulseaudio_t
+ */
+void pa_state_cb(pa_context *context, void *userdata) {
+    pulseaudio_t *pulse = (pulseaudio_t *) userdata;
+
+    switch (pa_context_get_state(context)) {
+        case PA_CONTEXT_READY:
+            printf("Context ready\n");
+            pa_context_set_subscribe_callback(context, pa_subscription_cb, userdata);
+            pa_operation *op = pa_context_subscribe(context, PA_SUBSCRIPTION_MASK_ALL, NULL, NULL);
+        case PA_CONTEXT_FAILED:
+        case PA_CONTEXT_TERMINATED:
+            pa_threaded_mainloop_signal(pulse->mainloop, 0);
+            break;
+        case PA_CONTEXT_UNCONNECTED:
+        case PA_CONTEXT_CONNECTING:
+        case PA_CONTEXT_AUTHORIZING:
+        case PA_CONTEXT_SETTING_NAME:
+            break;
+    }
+}
+
+/**
+ * Puts the previous value from the lua stack into the table before that using the number index not a key.
+ * @param L lua_State*
+ */
 void append_to_list(lua_State *L) {
     lua_len(L, -2);
     lua_Number size = lua_tonumber(L, -1);

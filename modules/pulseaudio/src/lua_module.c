@@ -13,16 +13,16 @@
 #include "pa_operations.h"
 
 int l_call(lua_State *L, pa_callback_t cb, void *userdata) {
-    pulseaudio_t pulse;
     pulse.L = L;
 
-    if (!pa_init(&pulse)) {
-        pa_deinit(&pulse);
-        return luaL_error(L, "%s\n", "Failed to initialize pulseaudio.");
+    if (!pulse.is_initalised) {
+        if (!pa_init(&pulse)) {
+            pa_de_init(&pulse);
+            return luaL_error(L, "%s\n", "Failed to initialize pulseaudio.");
+        }
     }
 
     int result = cb(&pulse, userdata);
-    pa_deinit(&pulse);
 
     return result;
 }
@@ -49,6 +49,20 @@ int mute_object(lua_State *L) {
 }
 
 int set_default_sink_source(lua_State *L) {
+    pulse.L = L;
+
+    lua_newtable(L);
+    int tab_index = luaL_ref(L, LUA_REGISTRYINDEX);
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, tab_index);
+    lua_insert(L, -2);
+
+    int t = luaL_ref(L, -2);
+    lua_pop(L, 1);
+
+    pulse.tab_index = tab_index;
+    pulse.fn = t;
+
     return 0;
 }
 
@@ -56,7 +70,19 @@ int move_input_output(lua_State *L) {
     return 0;
 }
 
+/**
+ * Lua C module entry point.
+ * @param L The current lua context state.
+ * @return Number of returns to the lua require function.
+ */
 UNUSED int luaopen_pulseaudio(lua_State *L) {
+    if (!pulse.is_initalised) {
+        if (!pa_init(&pulse)) {
+            pa_de_init(&pulse);
+            return luaL_error(L, "%s\n", "Failed to initialize pulseaudio.");
+        }
+    }
+
     const luaL_Reg pulseaudio_reg[] = {
             {"get_object",              get_object},
             {"set_volume",              set_volume},

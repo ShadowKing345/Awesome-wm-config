@@ -2,11 +2,11 @@
 // Created by alex on 9/5/22.
 //
 
-#include <lua.h>
-#include <pulse/pulseaudio.h>
-
 #ifndef PULSEAUDIO_TYPES_H
 #define PULSEAUDIO_TYPES_H
+
+#include <lua.h>
+#include <pulse/pulseaudio.h>
 
 typedef enum PA_TYPE {
     sink,
@@ -45,6 +45,11 @@ typedef struct pulseaudio_t {
     char *default_source;
 
     int success;
+
+    int is_initalised;
+
+    int fn;
+    int tab_index;
 } pulseaudio_t;
 
 typedef int(pa_callback_t)(pulseaudio_t *pulse, void *userdata);

@@ -2,10 +2,10 @@
 // Created by alex on 9/5/22.
 //
 
-#include "pulse/pulseaudio.h"
-
 #ifndef PULSEAUDIO_CALLBACK_H
 #define PULSEAUDIO_CALLBACK_H
+
+#include "pulse/pulseaudio.h"
 
 void pa_server_info_cb(pa_context *context, const pa_server_info *info, void *userdata);
 
@@ -17,6 +17,8 @@ void pa_get_source_cb(pa_context *context, const pa_source_info *info, int eol, 
 
 void pa_get_source_output_cb(pa_context *context, const pa_source_output_info *info, int eol, void *userdata);
 
-void pa_success_cb(pa_context *context, int success, void* userdata);
+void pa_success_cb(pa_context *context, int success, void *userdata);
+
+void pa_state_cb(pa_context *context, void *userdata);
 
 #endif //PULSEAUDIO_CALLBACK_H

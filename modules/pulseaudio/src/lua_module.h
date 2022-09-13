@@ -5,6 +5,10 @@
 #ifndef PULSEAUDIO_LUA_MODULE_H
 #define PULSEAUDIO_LUA_MODULE_H
 
+#include "types.h"
+
+static pulseaudio_t pulse;
+
 int get_object(lua_State *L);
 
 int set_volume(lua_State *L);

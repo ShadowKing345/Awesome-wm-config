@@ -17,6 +17,6 @@ int pa_mute_object(pulseaudio_t *pulse, void *userdata);
 
 int pa_init(pulseaudio_t *pulse);
 
-void pa_deinit(pulseaudio_t *pulse);
+void pa_de_init(pulseaudio_t *pulse);
 
 #endif //PULSEAUDIO_PA_OPERATIONS_H

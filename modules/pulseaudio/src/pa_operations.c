@@ -12,8 +12,6 @@
 #include "callbacks.h"
 #include "pa_operations.h"
 
-void state_cb(pa_context *context, void *userdata);
-
 void async_wait(pa_operation *op, pa_threaded_mainloop *mainloop);
 
 int pa_get(pulseaudio_t *pulse, void *userdata) {
@@ -178,12 +176,17 @@ int pa_mute_object(pulseaudio_t *pulse, void *userdata) {
     return 1;
 }
 
+/**
+ * Initializes the pulseaudio_t object.
+ * @param pulse pointer to the pulse object.
+ * @return Boolean number if its succeeded or failed.
+ */
 int pa_init(pulseaudio_t *pulse) {
     pulse->mainloop = pa_threaded_mainloop_new();
     pulse->context = pa_context_new(pa_threaded_mainloop_get_api(pulse->mainloop), "lua_pulseaudio");
     pulse->default_sink = NULL;
 
-    pa_context_set_state_callback(pulse->context, state_cb, pulse);
+    pa_context_set_state_callback(pulse->context, pa_state_cb, pulse);
 
     pa_context_connect(pulse->context, NULL, PA_CONTEXT_NOFLAGS, NULL);
 
@@ -196,10 +199,17 @@ int pa_init(pulseaudio_t *pulse) {
         return 0;
     }
     pa_threaded_mainloop_unlock(pulse->mainloop);
+
+    pulse->is_initalised = 1;
+
     return 1;
 }
 
-void pa_deinit(pulseaudio_t *pulse) {
+/**
+ * Un-initializes the pulseaudio_t object.
+ * @param pulse pointer to the pulse object.
+ */
+void pa_de_init(pulseaudio_t *pulse) {
     pa_context_unref(pulse->context);
     pulse->context = NULL;
 
@@ -207,25 +217,15 @@ void pa_deinit(pulseaudio_t *pulse) {
     pa_threaded_mainloop_free(pulse->mainloop);
 
     pulse->mainloop = NULL;
+
+    pulse->is_initalised = 0;
 }
 
-void state_cb(pa_context *context, void *userdata) {
-    pulseaudio_t *pulse = (pulseaudio_t *) userdata;
-
-    switch (pa_context_get_state(context)) {
-        case PA_CONTEXT_READY:
-        case PA_CONTEXT_FAILED:
-        case PA_CONTEXT_TERMINATED:
-            pa_threaded_mainloop_signal(pulse->mainloop, 0);
-            break;
-        case PA_CONTEXT_UNCONNECTED:
-        case PA_CONTEXT_CONNECTING:
-        case PA_CONTEXT_AUTHORIZING:
-        case PA_CONTEXT_SETTING_NAME:
-            break;
-    }
-}
-
+/**
+ * A function that waits for a pulseaudio operation to finish.
+ * @param op Pointer to the pa_operation currently running.
+ * @param mainloop Pointer to the mainloop.
+ */
 void async_wait(pa_operation *op, pa_threaded_mainloop *mainloop) {
     while (pa_operation_get_state(op) == PA_OPERATION_RUNNING) {
         pa_threaded_mainloop_wait(mainloop);
