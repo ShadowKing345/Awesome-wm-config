@@ -1,11 +1,9 @@
 local M = {
-    pulseaudio = nil,
+    pulseaudio = {
+        get_object = function(args) return args.type == "all" and {} or nil end,
+        set_volume = function() return false end,
+        mute_object = function() return false end,
+    },
 }
-
-local t_pulseaudio, pulseaudio = pcall(require, "pulseaudio")
-
-if t_pulseaudio then
-    M.pulseaudio = pulseaudio
-end
 
 return M
